@@ -1,0 +1,24 @@
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Python Cache & Compiled Files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Environment Variables & Secrets (খুবই জরুরি)
+.env
+.env.local
+*.env
+
+# Local Databases (যদি SQLite ব্যবহার করো)
+*.db
+*.sqlite3
+
+# IDE & Editor Settings
+.vscode/
+.idea/

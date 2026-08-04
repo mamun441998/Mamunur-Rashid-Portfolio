@@ -1,0 +1,316 @@
+'use client';
+
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Mail, MessageSquare, Globe, Send, Check, Copy, Terminal, ExternalLink, Sparkles } from 'lucide-react';
+
+export default function Contact() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText('mamun441998@gmail.com');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setStatus(null);
+
+    try {
+      const response = await fetch('/api/contact/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send request');
+      }
+
+      setStatus({
+        type: 'success',
+        message: 'Message dispatched successfully! I will respond within 24 hours.',
+      });
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (err) {
+      setStatus({
+        type: 'error',
+        message: 'Failed to deliver message. Please reach out directly via Email or WhatsApp.',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <section
+      id="contact"
+      className="min-h-screen w-full py-24 px-6 sm:px-10 lg:px-16 flex flex-col justify-center items-center bg-[#030303] text-white snap-start relative overflow-hidden select-none"
+    >
+      {/* Dynamic Ambient Neon Glows */}
+      <div className="absolute top-1/3 left-1/4 w-[450px] h-[450px] bg-[#00ffc2]/5 blur-[160px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-cyan-500/5 blur-[150px] rounded-full pointer-events-none" />
+
+      {/* Main Wide Container */}
+      <div className="max-w-7xl w-full z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        {/* Left Side: Tech Contact HUD */}
+        <div className="lg:col-span-6 space-y-8">
+          
+          {/* Section Terminal Tag */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#00ffc2]/10 border border-[#00ffc2]/20 text-[#00ffc2] text-xs font-mono"
+          >
+            <Terminal className="w-3.5 h-3.5" />
+            <span>INITIATE_COMMUNICATION.LOG</span>
+            <span className="w-2 h-2 rounded-full bg-[#00ffc2] animate-pulse ml-1" />
+          </motion.div>
+
+          {/* Heading */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight font-space-grotesk leading-[1.15]">
+              Let&apos;s Build <br />
+              <span className="text-[#00ffc2] text-glow">Scalable Systems</span> Together.
+            </h2>
+            <p className="text-gray-400 mt-4 text-sm sm:text-base font-inter leading-relaxed max-w-lg">
+              Have an enterprise architecture challenge, SaaS project in mind, or looking to hire a dedicated full-stack tech lead? Send a message or query directly.
+            </p>
+          </motion.div>
+
+          {/* System Status Pill */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="p-3.5 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-3 text-xs font-mono text-gray-300 w-fit"
+          >
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00ffc2] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#00ffc2]"></span>
+            </span>
+            <span>Available for Worldwide Remote Projects & Contracts</span>
+          </motion.div>
+
+          {/* Contact Cards Grid */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="space-y-4 font-inter"
+          >
+            {/* Email Card */}
+            <div className="group relative p-4 rounded-2xl bg-[#090909] border border-white/10 hover:border-[#00ffc2]/40 transition-all duration-300 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-[#00ffc2]/10 border border-[#00ffc2]/20 flex items-center justify-center text-[#00ffc2] group-hover:scale-105 transition-transform duration-300">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-mono text-gray-400">DIRECT EMAIL</p>
+                  <a
+                    href="mailto:mamun441998@gmail.com"
+                    className="text-sm font-semibold text-white hover:text-[#00ffc2] transition-colors cursor-pointer"
+                  >
+                    mamun441998@gmail.com
+                  </a>
+                </div>
+              </div>
+
+              <button
+                onClick={handleCopyEmail}
+                type="button"
+                className="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-[#00ffc2]/50 text-gray-300 hover:text-[#00ffc2] transition-all cursor-pointer"
+                title="Copy Email"
+              >
+                {copied ? <Check className="w-4 h-4 text-[#00ffc2]" /> : <Copy className="w-4 h-4" />}
+              </button>
+            </div>
+
+            {/* WhatsApp Card */}
+            <a
+              href="https://wa.me/8801978529953"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group p-4 rounded-2xl bg-[#090909] border border-white/10 hover:border-[#00ffc2]/40 transition-all duration-300 flex items-center justify-between cursor-pointer block"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-[#00ffc2]/10 border border-[#00ffc2]/20 flex items-center justify-center text-[#00ffc2] group-hover:scale-105 transition-transform duration-300">
+                  <MessageSquare className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-mono text-gray-400">INSTANT MESSAGING</p>
+                  <p className="text-sm font-semibold text-white group-hover:text-[#00ffc2] transition-colors">
+                    +880 1978529953
+                  </p>
+                </div>
+              </div>
+              <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 group-hover:border-[#00ffc2]/50 text-gray-300 group-hover:text-[#00ffc2] transition-all">
+                <ExternalLink className="w-4 h-4" />
+              </div>
+            </a>
+
+            {/* Worldwide Availability Card */}
+            <div className="p-4 rounded-2xl bg-[#090909] border border-white/10 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#00ffc2]">
+                <Globe className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs font-mono text-gray-400">AVAILABILITY & LOCATION</p>
+                <p className="text-sm font-semibold text-white">
+                  Worldwide Remote <span className="text-gray-400 font-normal">• Multi-Timezone Flexible</span>
+                </p>
+              </div>
+            </div>
+
+          </motion.div>
+        </div>
+
+        {/* Right Side: Form Panel */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="lg:col-span-6 bg-[#080808] border border-white/10 rounded-3xl p-6 sm:p-8 relative shadow-2xl overflow-hidden group"
+        >
+          {/* Subtle Top Border Glow */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#00ffc2]/40 to-transparent" />
+
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/5">
+            <div className="flex items-center gap-2 text-xs font-mono text-gray-400">
+              <Sparkles className="w-4 h-4 text-[#00ffc2]" />
+              <span>SEND_DIRECT_DISPATCH</span>
+            </div>
+            <span className="text-[10px] font-mono text-gray-500 uppercase">Global Endpoint</span>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-mono text-gray-400 mb-1.5">YOUR NAME</label>
+              <input
+                type="text"
+                name="name"
+                required
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="John Doe"
+                className="w-full bg-[#111111] border border-white/10 focus:border-[#00ffc2] focus:bg-[#151515] rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition-all placeholder:text-gray-600 font-inter"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-mono text-gray-400 mb-1.5">YOUR EMAIL</label>
+              <input
+                type="email"
+                name="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="john@example.com"
+                className="w-full bg-[#111111] border border-white/10 focus:border-[#00ffc2] focus:bg-[#151515] rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition-all placeholder:text-gray-600 font-inter"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-mono text-gray-400 mb-1.5">SUBJECT</label>
+              <input
+                type="text"
+                name="subject"
+                required
+                value={formData.subject}
+                onChange={handleChange}
+                placeholder="SaaS Platform Architecture / Work Inquiry"
+                className="w-full bg-[#111111] border border-white/10 focus:border-[#00ffc2] focus:bg-[#151515] rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition-all placeholder:text-gray-600 font-inter"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-mono text-gray-400 mb-1.5">MESSAGE</label>
+              <textarea
+                name="message"
+                required
+                rows={4}
+                value={formData.message}
+                onChange={handleChange}
+                placeholder="Details about your system scope, timeline, or position..."
+                className="w-full bg-[#111111] border border-white/10 focus:border-[#00ffc2] focus:bg-[#151515] rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition-all resize-none placeholder:text-gray-600 font-inter"
+              />
+            </div>
+
+            {status && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`p-3.5 rounded-xl text-xs font-mono ${
+                  status.type === 'success'
+                    ? 'bg-[#00ffc2]/10 text-[#00ffc2] border border-[#00ffc2]/30'
+                    : 'bg-red-500/10 text-red-400 border border-red-500/30'
+                }`}
+              >
+                {status.message}
+              </motion.div>
+            )}
+
+            {/* PERFECT WORKING LIQUID HOVER BUTTON */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="group relative w-full h-12 rounded-xl border border-[#00ffc2]/40 bg-transparent overflow-hidden transition-all duration-300 hover:border-[#00ffc2] hover:shadow-[0_0_20px_rgba(0,255,194,0.3)] disabled:opacity-50 disabled:cursor-not-allowed mt-2 cursor-pointer"
+            >
+              {/* Liquid Wave Filling Layer */}
+              <span
+                className={`absolute inset-0 w-full h-full bg-[#00ffc2] pointer-events-none transition-transform duration-500 ease-out ${
+                  loading ? 'translate-y-0' : 'translate-y-[102%] group-hover:translate-y-0'
+                }`}
+              />
+
+              {/* Text Content */}
+              <span
+                className={`relative z-10 w-full h-full flex items-center justify-center gap-2 text-sm font-semibold font-space-grotesk text-[#00ffc2] transition-colors duration-300 ${
+                  loading ? 'text-black' : 'group-hover:text-black'
+                }`}
+              >
+                {loading ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                    <span>Dispatching Message...</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4 stroke-[2.5]" />
+                    <span>Send Message</span>
+                  </>
+                )}
+              </span>
+            </button>
+          </form>
+        </motion.div>
+
+      </div>
+    </section>
+  );
+}
