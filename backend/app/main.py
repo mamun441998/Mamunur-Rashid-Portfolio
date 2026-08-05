@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 from datetime import date
 from fastapi import FastAPI
@@ -8,6 +9,8 @@ from app.db.session import create_db_and_tables, engine
 from app.models.experience import Experience
 from app.models.project import Project
 from app.models.skill import Skill
+from app.models.admin import Admin
+from app.core.security import get_password_hash
 from app.routes import auth, contact, experience, projects, skills
 
 # Data to Seed
@@ -109,9 +112,28 @@ projects_data = [
 ]
 
 
+def create_initial_admin():
+    """Create default Admin user if not exists"""
+    with Session(engine) as session:
+        existing_admin = session.exec(select(Admin).where(Admin.username == "admin")).first()
+        if not existing_admin:
+            print("🔑 Creating default Admin user...")
+            hashed_pwd = get_password_hash("M@mun2182")
+            new_admin = Admin(
+                username="admin",
+                hashed_password=hashed_pwd
+            )
+            session.add(new_admin)
+            session.commit()
+            print("✅ Default Admin created successfully!")
+
+
 def run_db_seed():
     """Seed database if tables are empty"""
     with Session(engine) as session:
+        # Seed Admin User First
+        create_initial_admin()
+
         # Check if skills table already has data
         existing_skills = session.exec(select(Skill)).first()
         if not existing_skills:
