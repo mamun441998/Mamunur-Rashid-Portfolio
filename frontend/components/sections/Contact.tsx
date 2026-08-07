@@ -31,8 +31,12 @@ export default function Contact() {
     setLoading(true);
     setStatus(null);
 
+    // Get Base Backend URL safely
+    const rawUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+    const BACKEND_URL = rawUrl.replace(/\/$/, '');
+
     try {
-      const response = await fetch('/api/contact/', {
+      const response = await fetch(`${BACKEND_URL}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -48,11 +52,12 @@ export default function Contact() {
       });
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (err) {
+      console.error("Contact Form Error:", err);
       setStatus({
         type: 'error',
         message: 'Failed to deliver message. Please reach out directly via Email or WhatsApp.',
       });
-    } finally {
+    } font-inter finally {
       setLoading(false);
     }
   };
@@ -62,17 +67,14 @@ export default function Contact() {
       id="contact"
       className="min-h-screen w-full py-24 px-6 sm:px-10 lg:px-16 flex flex-col justify-center items-center bg-[#030303] text-white snap-start relative overflow-hidden select-none"
     >
-      {/* Dynamic Ambient Neon Glows */}
       <div className="absolute top-1/3 left-1/4 w-[450px] h-[450px] bg-[#00ffc2]/5 blur-[160px] rounded-full pointer-events-none" />
       <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-cyan-500/5 blur-[150px] rounded-full pointer-events-none" />
 
-      {/* Main Wide Container */}
       <div className="max-w-7xl w-full z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         
         {/* Left Side: Tech Contact HUD */}
         <div className="lg:col-span-6 space-y-8">
           
-          {/* Section Terminal Tag */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -84,7 +86,6 @@ export default function Contact() {
             <span className="w-2 h-2 rounded-full bg-[#00ffc2] animate-pulse ml-1" />
           </motion.div>
 
-          {/* Heading */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -100,7 +101,6 @@ export default function Contact() {
             </p>
           </motion.div>
 
-          {/* System Status Pill */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -115,7 +115,6 @@ export default function Contact() {
             <span>Available for Worldwide Remote Projects & Contracts</span>
           </motion.div>
 
-          {/* Contact Cards Grid */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -123,7 +122,6 @@ export default function Contact() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="space-y-4 font-inter"
           >
-            {/* Email Card */}
             <div className="group relative p-4 rounded-2xl bg-[#090909] border border-white/10 hover:border-[#00ffc2]/40 transition-all duration-300 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-[#00ffc2]/10 border border-[#00ffc2]/20 flex items-center justify-center text-[#00ffc2] group-hover:scale-105 transition-transform duration-300">
@@ -150,7 +148,6 @@ export default function Contact() {
               </button>
             </div>
 
-            {/* WhatsApp Card */}
             <a
               href="https://wa.me/8801978529953"
               target="_blank"
@@ -173,7 +170,6 @@ export default function Contact() {
               </div>
             </a>
 
-            {/* Worldwide Availability Card */}
             <div className="p-4 rounded-2xl bg-[#090909] border border-white/10 flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#00ffc2]">
                 <Globe className="w-5 h-5" />
@@ -197,7 +193,6 @@ export default function Contact() {
           transition={{ duration: 0.5 }}
           className="lg:col-span-6 bg-[#080808] border border-white/10 rounded-3xl p-6 sm:p-8 relative shadow-2xl overflow-hidden group"
         >
-          {/* Subtle Top Border Glow */}
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#00ffc2]/40 to-transparent" />
 
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/5">
@@ -275,20 +270,17 @@ export default function Contact() {
               </motion.div>
             )}
 
-            {/* PERFECT WORKING LIQUID HOVER BUTTON */}
             <button
               type="submit"
               disabled={loading}
               className="group relative w-full h-12 rounded-xl border border-[#00ffc2]/40 bg-transparent overflow-hidden transition-all duration-300 hover:border-[#00ffc2] hover:shadow-[0_0_20px_rgba(0,255,194,0.3)] disabled:opacity-50 disabled:cursor-not-allowed mt-2 cursor-pointer"
             >
-              {/* Liquid Wave Filling Layer */}
               <span
                 className={`absolute inset-0 w-full h-full bg-[#00ffc2] pointer-events-none transition-transform duration-500 ease-out ${
                   loading ? 'translate-y-0' : 'translate-y-[102%] group-hover:translate-y-0'
                 }`}
               />
 
-              {/* Text Content */}
               <span
                 className={`relative z-10 w-full h-full flex items-center justify-center gap-2 text-sm font-semibold font-space-grotesk text-[#00ffc2] transition-colors duration-300 ${
                   loading ? 'text-black' : 'group-hover:text-black'
