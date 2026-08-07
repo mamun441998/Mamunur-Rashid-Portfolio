@@ -62,6 +62,10 @@ import {
   Check,
 } from "lucide-react";
 
+// Safe Dynamic Backend Host Resolution
+const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || "https://mamunur-rashid-portfolio-backend.onrender.com";
+const BACKEND_URL = rawApiUrl.replace(/\/$/, '');
+
 // GitHub SVG Component
 const GithubIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
   <svg
@@ -271,7 +275,6 @@ interface MessageItem {
   message: string;
   created_at?: string;
   is_read?: boolean;
-  // UI fallback mapping
   clientName?: string;
   content?: string;
   timestamp?: string;
@@ -365,8 +368,6 @@ const renderServiceIcon = (iconName: string) => {
 };
 
 export default function MRP_OS_Dashboard() {
-  const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
-
   const [activeTab, setActiveTab] = useState<NavigationTab>("dashboard");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -532,7 +533,6 @@ export default function MRP_OS_Dashboard() {
   useEffect(() => {
     if (selectedMsg) {
       setReplySubject(`Re: ${selectedMsg.subject || "Your Portfolio Message"}`);
-      // Auto Mark As Read on backend if unread
       if (!selectedMsg.is_read) {
         markMessageAsRead(selectedMsg.id);
       }
@@ -620,6 +620,8 @@ export default function MRP_OS_Dashboard() {
         if (formatted.length > 0 && !selectedMsg) {
           setSelectedMsg(formatted[0]);
         }
+      } else {
+        console.warn("Failed to fetch messages. Status:", resMsg.status);
       }
     } catch (err) {
       console.error("Failed to fetch real contact messages:", err);
@@ -633,7 +635,6 @@ export default function MRP_OS_Dashboard() {
     if (token) headers["Authorization"] = `Bearer ${token}`;
 
     try {
-      // 1. Fetch Real Projects
       const resProj = await fetch(`${BACKEND_URL}/api/projects`);
       let projList = [];
       if (resProj.ok) {
@@ -641,10 +642,8 @@ export default function MRP_OS_Dashboard() {
         setProjects(projList);
       }
 
-      // 2. Fetch Real Messages
       await fetchRealMessagesOnly();
 
-      // 3. Fetch Services
       const resServices = await fetch(`${BACKEND_URL}/api/services`);
       if (resServices.ok) {
         const dbServices = await resServices.json();
@@ -653,7 +652,6 @@ export default function MRP_OS_Dashboard() {
         }
       }
 
-      // 4. Fetch Real Analytics
       const resAnalytics = await fetch(`${BACKEND_URL}/api/analytics`, { headers });
       if (resAnalytics.ok) {
         const analyticsData = await resAnalytics.json();
@@ -674,11 +672,9 @@ export default function MRP_OS_Dashboard() {
         });
       }
 
-      // 5. Fetch Real Skills
       const resSkills = await fetch(`${BACKEND_URL}/api/skills`);
       if (resSkills.ok) setSkills(await resSkills.json());
 
-      // 6. Fetch Real Work Experiences
       const resExp = await fetch(`${BACKEND_URL}/api/experiences`);
       if (resExp.ok) {
         const dbExps: ExperienceItem[] = await resExp.json();
@@ -703,7 +699,6 @@ export default function MRP_OS_Dashboard() {
     }
   };
 
-  // MARK MESSAGE AS READ IN BACKEND
   const markMessageAsRead = async (msgId: number | string) => {
     const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
     try {
@@ -717,7 +712,6 @@ export default function MRP_OS_Dashboard() {
     } catch (err) {}
   };
 
-  // DELETE MESSAGE FROM BACKEND
   const handleDeleteMessage = async (msgId: number | string) => {
     if (!confirm("Are you sure you want to delete this message?")) return;
     const token = typeof window !== "undefined" ? localStorage.getItem("admin_token") : null;
@@ -738,7 +732,6 @@ export default function MRP_OS_Dashboard() {
     }
   };
 
-  // SEND REAL REPLY EMAIL VIA BACKEND SMTP TO USER GMAIL
   const handleSendEmailReply = async () => {
     if (!selectedMsg || !aiDraftReply.trim()) return;
     setIsSendingEmail(true);
@@ -775,7 +768,6 @@ export default function MRP_OS_Dashboard() {
     }
   };
 
-  // CASE STUDY BLUEPRINT CRUD
   const handleOpenCsModal = (cs?: CaseStudyItem) => {
     if (cs) {
       setEditingCs(cs);
@@ -868,7 +860,6 @@ export default function MRP_OS_Dashboard() {
     }));
   };
 
-  // SERVICES ENGINE CRUD
   const handleOpenServiceModal = (service?: ServiceItem) => {
     if (service) {
       setEditingService(service);
@@ -944,7 +935,6 @@ export default function MRP_OS_Dashboard() {
     }
   };
 
-  // PROJECTS MANAGEMENT
   const handleOpenProjectModal = (project?: ProjectItem) => {
     if (project) {
       setEditingProject(project);
@@ -1012,7 +1002,6 @@ export default function MRP_OS_Dashboard() {
     }
   };
 
-  // SKILLS MANAGEMENT
   const handleOpenSkillModal = (skill?: SkillItem) => {
     if (skill) {
       setEditingSkill(skill);
@@ -1078,7 +1067,6 @@ export default function MRP_OS_Dashboard() {
     }
   };
 
-  // EXPERIENCE MANAGEMENT
   const handleOpenExpModal = (exp?: ExperienceItem) => {
     if (exp) {
       setEditingExp(exp);
@@ -1156,7 +1144,6 @@ export default function MRP_OS_Dashboard() {
     }
   };
 
-  // AI Prompt Generator
   const handleAiAction = (actionType: string) => {
     if (!selectedMsg) return;
     setIsGeneratingAi(true);
@@ -1186,7 +1173,6 @@ export default function MRP_OS_Dashboard() {
         } bg-[#080a10]/90 backdrop-blur-2xl border-r border-white/10 flex flex-col justify-between p-5 transition-all duration-300 relative z-30 shrink-0`}
       >
         <div>
-          {/* Brand Logo & System ID */}
           <div className="flex items-center justify-between mb-8 pb-5 border-b border-white/10">
             <div className="flex items-center gap-3.5 overflow-hidden">
               <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-[#00FFC2]/50 shadow-[0_0_20px_rgba(0,255,194,0.3)] shrink-0">
@@ -1218,7 +1204,6 @@ export default function MRP_OS_Dashboard() {
             </button>
           </div>
 
-          {/* Navigation Items */}
           <nav className="space-y-1.5 overflow-y-auto max-h-[calc(100vh-180px)] pr-1 custom-scrollbar">
             {[
               { id: "dashboard", label: "Dashboard Core", icon: LayoutDashboard },
@@ -1272,7 +1257,6 @@ export default function MRP_OS_Dashboard() {
           </nav>
         </div>
 
-        {/* System Operator Footer */}
         <div className="pt-4 border-t border-white/10 flex items-center gap-3.5">
           <div className="relative">
             <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#00FFC2]/50 bg-white/10">
@@ -2685,7 +2669,7 @@ export default function MRP_OS_Dashboard() {
             </div>
           )}
 
-          {/* TAB 8: MESSAGES HUB - 100% PRODUCTION INTEGRATED WITH BACKEND & GMAIL */}
+          {/* TAB 8: MESSAGES HUB - PRODUCTION INTEGRATED */}
           {activeTab === "messages" && (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-160px)]">
               
@@ -2732,7 +2716,6 @@ export default function MRP_OS_Dashboard() {
                       <div className="text-xs font-bold text-[#00FFC2] truncate">{msg.subject || "Portfolio Contact Form Inquiry"}</div>
                       <div className="text-xs text-gray-300 truncate mt-1.5">{msg.message || msg.content}</div>
 
-                      {/* Quick Delete Button */}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -2752,7 +2735,6 @@ export default function MRP_OS_Dashboard() {
               <div className="lg:col-span-5 bg-[#080a10] border border-white/10 rounded-3xl p-8 flex flex-col justify-between overflow-y-auto custom-scrollbar">
                 {selectedMsg ? (
                   <div className="space-y-5">
-                    {/* Message Header */}
                     <div className="border-b border-white/10 pb-5">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-mono px-3 py-1 rounded-full bg-[#7C3AED]/20 text-purple-300 border border-purple-500/30 font-bold uppercase">
@@ -2777,12 +2759,10 @@ export default function MRP_OS_Dashboard() {
                       </div>
                     </div>
 
-                    {/* Message Body Content */}
                     <div className="p-5 bg-white/[0.02] border border-white/10 rounded-2xl text-sm leading-relaxed text-gray-200 font-inter whitespace-pre-wrap min-h-[140px]">
                       {selectedMsg.message || selectedMsg.content}
                     </div>
 
-                    {/* DIRECT EMAIL REPLY COMPOSER BOX */}
                     <div className="mt-6 pt-5 border-t border-white/10 space-y-4">
                       <div className="flex items-center justify-between">
                         <label className="text-xs font-mono text-[#00FFC2] font-bold uppercase tracking-wider flex items-center gap-2">
