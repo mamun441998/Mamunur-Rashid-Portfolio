@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from datetime import date
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlmodel import Session, select
+from sqlmodel import Session, select, SQLModel
 
 from app.db.session import create_db_and_tables, engine
 from app.models.experience import Experience
@@ -150,6 +150,8 @@ def run_db_seed():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Drops existing outdated tables and rebuilds fresh schema with 'subject' column
+    SQLModel.metadata.drop_all(engine)
     create_db_and_tables()
     try:
         run_db_seed()
