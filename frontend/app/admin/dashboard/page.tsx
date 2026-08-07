@@ -60,6 +60,7 @@ import {
   Cloud,
   UserCheck,
   Check,
+  LogOut,
 } from "lucide-react";
 
 // Safe Dynamic Backend Host Resolution
@@ -373,6 +374,14 @@ export default function MRP_OS_Dashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // LOGOUT FUNCTION
+  const handleLogout = () => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("admin_token");
+      window.location.reload();
+    }
+  };
+
   // REAL ANALYTICS DASHBOARD STATE
   const [stats, setStats] = useState<AnalyticsStats>({
     totalVisitors: 0,
@@ -593,7 +602,7 @@ export default function MRP_OS_Dashboard() {
       }
     } catch (err) {
       setCmsSaveStatus("Saved locally (Offline/Development Mode).");
-    } finally {
+    } fontically: {
       setLoading(false);
       setTimeout(() => setCmsSaveStatus(null), 4000);
     }
@@ -1204,7 +1213,7 @@ export default function MRP_OS_Dashboard() {
             </button>
           </div>
 
-          <nav className="space-y-1.5 overflow-y-auto max-h-[calc(100vh-180px)] pr-1 custom-scrollbar">
+          <nav className="space-y-1.5 overflow-y-auto max-h-[calc(100vh-220px)] pr-1 custom-scrollbar">
             {[
               { id: "dashboard", label: "Dashboard Core", icon: LayoutDashboard },
               { id: "cms", label: "Portfolio CMS", icon: FileCode2 },
@@ -1257,25 +1266,36 @@ export default function MRP_OS_Dashboard() {
           </nav>
         </div>
 
-        <div className="pt-4 border-t border-white/10 flex items-center gap-3.5">
-          <div className="relative">
-            <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#00FFC2]/50 bg-white/10">
-              <Image
-                src="/Profile-Picture.png"
-                alt="Mamunur Rashid"
-                fill
-                sizes="40px"
-                className="object-cover"
-              />
+        {/* SIDEBAR FOOTER WITH PROFILE AND LOGOUT */}
+        <div className="pt-4 border-t border-white/10 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 overflow-hidden">
+            <div className="relative shrink-0">
+              <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#00FFC2]/50 bg-white/10">
+                <Image
+                  src="/Profile-Picture.png"
+                  alt="Mamunur Rashid"
+                  fill
+                  sizes="40px"
+                  className="object-cover"
+                />
+              </div>
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#00FFC2] rounded-full border-2 border-black animate-pulse" />
             </div>
-            <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#00FFC2] rounded-full border-2 border-black animate-pulse" />
+            {!sidebarCollapsed && (
+              <div className="flex flex-col truncate">
+                <span className="text-sm font-bold text-white truncate">Mamunur Rashid</span>
+                <span className="text-xs font-mono text-gray-400 font-medium truncate">Root Operator</span>
+              </div>
+            )}
           </div>
-          {!sidebarCollapsed && (
-            <div className="flex flex-col truncate">
-              <span className="text-sm font-bold text-white truncate">Mamunur Rashid</span>
-              <span className="text-xs font-mono text-gray-400 font-medium truncate">Root Operator</span>
-            </div>
-          )}
+
+          <button
+            onClick={handleLogout}
+            title="Logout Admin Session"
+            className="p-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 hover:text-rose-300 transition flex items-center justify-center shrink-0"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
         </div>
       </aside>
 
