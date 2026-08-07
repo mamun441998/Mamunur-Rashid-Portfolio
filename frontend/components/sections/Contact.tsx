@@ -31,8 +31,8 @@ export default function Contact() {
     setLoading(true);
     setStatus(null);
 
-    // Get Base Backend URL safely
-    const rawUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+    // Get Base Backend URL safely from environment or default to local/fallback
+    const rawUrl = process.env.NEXT_PUBLIC_API_URL || 'https://mamunur-rashid-portfolio-backend.onrender.com';
     const BACKEND_URL = rawUrl.replace(/\/$/, '');
 
     try {
@@ -57,7 +57,7 @@ export default function Contact() {
         type: 'error',
         message: 'Failed to deliver message. Please reach out directly via Email or WhatsApp.',
       });
-    } font-inter finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -74,7 +74,6 @@ export default function Contact() {
         
         {/* Left Side: Tech Contact HUD */}
         <div className="lg:col-span-6 space-y-8">
-          
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -181,7 +180,6 @@ export default function Contact() {
                 </p>
               </div>
             </div>
-
           </motion.div>
         </div>
 
