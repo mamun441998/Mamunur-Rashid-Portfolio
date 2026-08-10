@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Save } from "lucide-react";
 import { api } from "@/lib/api";
+import { withDefaults } from "@/lib/defaults";
 import type { SiteSetting } from "@/lib/types";
 import {
   SectionHeader,
@@ -44,7 +45,9 @@ export default function PortfolioCMS() {
   const [status, setStatus] = useState<Status>(null);
 
   useEffect(() => {
-    api.settings.get().then(setData).catch(() => setStatus({ type: "error", message: "Failed to load settings." }));
+    api.settings.get()
+      .then((s) => setData(withDefaults(s)))
+      .catch(() => setStatus({ type: "error", message: "Failed to load settings." }));
   }, []);
 
   const set = (key: keyof SiteSetting, value: string) =>

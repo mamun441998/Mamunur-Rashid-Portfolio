@@ -3,15 +3,22 @@
 import { FaGithub, FaLinkedin, FaFacebook } from "react-icons/fa";
 import { Mail } from "lucide-react";
 import { SOCIAL_LINKS, SITE_CONFIG } from "@/lib/constants";
+import { useSettings } from "@/hooks/useSettings";
 
 export default function SocialLinks() {
-  // Direct Gmail Web Compose URL targeting your email address
-  const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${SITE_CONFIG?.email || "mamun441998@gmail.com"}`;
+  const { data: settings } = useSettings();
+
+  // Live from admin settings, falling back to the hard-coded defaults.
+  const github = settings?.github_url?.trim() || SOCIAL_LINKS.github;
+  const linkedin = settings?.linkedin_url?.trim() || SOCIAL_LINKS.linkedin;
+  const facebook = settings?.facebook_url?.trim() || SOCIAL_LINKS.facebook;
+  const email = settings?.email?.trim() || SITE_CONFIG?.email || "mamun441998@gmail.com";
+  const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}`;
 
   const links = [
-    { href: SOCIAL_LINKS.github, icon: FaGithub, label: "GitHub" },
-    { href: SOCIAL_LINKS.linkedin, icon: FaLinkedin, label: "LinkedIn" },
-    { href: SOCIAL_LINKS.facebook, icon: FaFacebook, label: "Facebook" },
+    { href: github, icon: FaGithub, label: "GitHub" },
+    { href: linkedin, icon: FaLinkedin, label: "LinkedIn" },
+    { href: facebook, icon: FaFacebook, label: "Facebook" },
     { href: gmailComposeUrl, icon: Mail, label: "Email" },
   ];
 

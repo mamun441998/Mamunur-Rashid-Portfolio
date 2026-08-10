@@ -53,7 +53,7 @@ export default function ResumePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-gray-200 pt-20 pb-16 px-2 md:px-6 selection:bg-[#00ffc2] selection:text-black print:p-0 print:m-0 print:bg-white print:text-black">
+    <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-text-primary)] pt-20 pb-16 px-2 md:px-6 selection:bg-[#00ffc2] selection:text-black print:p-0 print:m-0 print:bg-white print:text-black">
       
       {/* PERFECT FULL-PAGE COVERAGE PRINT CSS (FORCE 100% SCALE IN PRINT) */}
       <style jsx global>{`
@@ -88,24 +88,27 @@ export default function ResumePage() {
             max-width: 100% !important;
           }
 
-          /* Force Container to Cover 100% A4 Page Space */
+          /* Force Container to Cover the full A4 page.
+             Use fixed mm (not vw/vh) so mobile browsers size it to the A4 sheet,
+             not the small device viewport — otherwise mobile PDFs come out squished. */
           .print-resume-card {
             transform: none !important;
             zoom: 1 !important;
             border: none !important;
             box-shadow: none !important;
             border-radius: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            max-width: 100vw !important;
-            max-height: 100vh !important;
-            margin: 0 !important;
+            width: 210mm !important;
+            height: 297mm !important;
+            max-width: 210mm !important;
+            max-height: 297mm !important;
+            margin: 0 auto !important;
             padding: 10mm 12mm !important;
             background-color: #FAF9F6 !important;
             display: flex !important;
             flex-direction: column !important;
             justify-content: space-between !important;
             box-sizing: border-box !important;
+            overflow: hidden !important;
           }
 
           /* Print Header Styling */
@@ -217,7 +220,7 @@ export default function ResumePage() {
       <div className="max-w-4xl mx-auto mb-6 flex flex-wrap items-center justify-between gap-4 print-hide">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-gray-400 hover:text-[#00ffc2] transition-colors group"
+          className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[var(--color-text-muted)] hover:text-[#00ffc2] transition-colors group"
         >
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
           <span>Back to Portfolio</span>
@@ -237,7 +240,7 @@ export default function ResumePage() {
               <ZoomOut size={16} />
             </button>
             
-            <span className="px-2 text-gray-200 min-w-[50px] text-center font-bold">
+            <span className="px-2 text-[var(--color-text-secondary)] min-w-[50px] text-center font-bold">
               {Math.round(zoomLevel * 100)}%
             </span>
 
@@ -254,7 +257,7 @@ export default function ResumePage() {
               <button
                 onClick={handleResetZoom}
                 title="Reset Zoom"
-                className="p-1 ml-1 text-gray-400 hover:text-[#00ffc2] transition-colors cursor-pointer"
+                className="p-1 ml-1 text-[var(--color-text-muted)] hover:text-[#00ffc2] transition-colors cursor-pointer"
               >
                 <RotateCcw size={14} />
               </button>
@@ -281,7 +284,7 @@ export default function ResumePage() {
             className={`px-4 py-1.5 rounded-full capitalize transition-all cursor-pointer ${
               filter === tab
                 ? "bg-[#00ffc2] text-black font-bold shadow-[0_0_15px_rgba(0,255,194,0.3)] scale-105"
-                : "bg-white/5 text-gray-400 hover:text-white border border-white/10 hover:border-[#00ffc2]/40"
+                : "bg-white/5 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] border border-[var(--color-border)] hover:border-[#00ffc2]/40"
             }`}
           >
             {tab}
@@ -305,13 +308,13 @@ export default function ResumePage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="print-resume-card w-full bg-[#0a0a0a] border border-white/10 rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] relative flex flex-col justify-between"
+            className="print-resume-card w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] relative flex flex-col justify-between"
           >
             {/* Background Glow */}
             <div className="absolute top-0 right-0 w-[350px] h-[350px] bg-[#00ffc2]/5 blur-[120px] rounded-full pointer-events-none print-hide" />
 
             {/* Header */}
-            <header className="print-header bg-gradient-to-r from-[#111111] via-[#0d0d0d] to-[#111111] p-4 md:p-5 border-b border-white/10">
+            <header className="print-header bg-[var(--color-surface-elevated)] p-4 md:p-5 border-b border-[var(--color-border)]">
               <div className="flex items-center justify-between gap-4 w-full">
                 
                 {/* Left Header Info */}
@@ -321,7 +324,7 @@ export default function ResumePage() {
                       <Sparkles size={11} /> {SITE_CONFIG.roles[0]}
                     </span>
                   </div>
-                  <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+                  <h1 className="text-2xl md:text-3xl font-extrabold text-[var(--color-text-primary)] tracking-tight">
                     {SITE_CONFIG.name}
                   </h1>
                   <p className="text-[#00ffc2] font-mono text-xs md:text-sm mt-0.5 font-semibold tracking-wide">
@@ -329,22 +332,22 @@ export default function ResumePage() {
                   </p>
 
                   {/* Contact Grid */}
-                  <div className="grid grid-cols-2 gap-2 font-mono text-[10px] md:text-[11px] text-gray-300 mt-2.5">
-                    <div className="print-contact-badge flex items-center gap-1.5 bg-white/5 px-2 py-1 rounded-lg border border-white/5">
+                  <div className="grid grid-cols-2 gap-2 font-mono text-[10px] md:text-[11px] text-[var(--color-text-secondary)] mt-2.5">
+                    <div className="print-contact-badge flex items-center gap-1.5 bg-white/5 px-2 py-1 rounded-lg border border-[var(--color-border)]">
                       <Phone size={12} className="text-[#00ffc2] print-icon-teal" />
                       <span className="font-medium">{SITE_CONFIG.phone}</span>
                     </div>
-                    <div className="print-contact-badge flex items-center gap-1.5 bg-white/5 px-2 py-1 rounded-lg border border-white/5">
+                    <div className="print-contact-badge flex items-center gap-1.5 bg-white/5 px-2 py-1 rounded-lg border border-[var(--color-border)]">
                       <Mail size={12} className="text-[#00ffc2] print-icon-teal" />
                       <a href={`mailto:${SITE_CONFIG.email}`} className="hover:text-[#00ffc2] transition-colors truncate font-medium">
                         {SITE_CONFIG.email}
                       </a>
                     </div>
-                    <div className="print-contact-badge flex items-center gap-1.5 bg-white/5 px-2 py-1 rounded-lg border border-white/5">
+                    <div className="print-contact-badge flex items-center gap-1.5 bg-white/5 px-2 py-1 rounded-lg border border-[var(--color-border)]">
                       <MapPin size={12} className="text-[#00ffc2] print-icon-teal" />
                       <span className="font-medium">{SITE_CONFIG.location}</span>
                     </div>
-                    <div className="print-contact-badge flex items-center gap-1.5 bg-white/5 px-2 py-1 rounded-lg border border-white/5">
+                    <div className="print-contact-badge flex items-center gap-1.5 bg-white/5 px-2 py-1 rounded-lg border border-[var(--color-border)]">
                       <Globe size={12} className="text-[#00ffc2] print-icon-teal" />
                       <span className="font-medium">{SITE_CONFIG.nationality}</span>
                     </div>
@@ -375,10 +378,10 @@ export default function ResumePage() {
                 {/* Executive Summary */}
                 {(filter === "all" || filter === "experience") && (
                   <section className="space-y-1">
-                    <h2 className="text-xs font-mono uppercase tracking-widest text-[#00ffc2] font-bold flex items-center gap-1.5 border-b border-white/10 pb-1">
+                    <h2 className="text-xs font-mono uppercase tracking-widest text-[#00ffc2] font-bold flex items-center gap-1.5 border-b border-[var(--color-border)] pb-1">
                       <Code2 size={13} /> Executive Summary
                     </h2>
-                    <p className="text-xs text-gray-300 leading-relaxed bg-white/[0.02] p-2.5 rounded-xl border border-white/5 print-box-padding print-text-shrink">
+                    <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed bg-white/[0.02] p-2.5 rounded-xl border border-[var(--color-border)] print-box-padding print-text-shrink">
                       {RESUME_DATA.summary}
                     </p>
                   </section>
@@ -387,24 +390,24 @@ export default function ResumePage() {
                 {/* Work Experience */}
                 {(filter === "all" || filter === "experience") && (
                   <section className="space-y-1.5">
-                    <h2 className="text-xs font-mono uppercase tracking-widest text-[#00ffc2] font-bold flex items-center gap-1.5 border-b border-white/10 pb-1">
+                    <h2 className="text-xs font-mono uppercase tracking-widest text-[#00ffc2] font-bold flex items-center gap-1.5 border-b border-[var(--color-border)] pb-1">
                       <Briefcase size={13} /> Work Experience
                     </h2>
 
                     {RESUME_DATA.experience.map((exp, idx) => (
                       <div 
                         key={idx} 
-                        className="space-y-1 bg-gradient-to-b from-white/[0.03] to-transparent p-2.5 rounded-xl border border-white/5 print-box-padding"
+                        className="space-y-1 bg-gradient-to-b from-white/[0.03] to-transparent p-2.5 rounded-xl border border-[var(--color-border)] print-box-padding"
                       >
                         <div className="flex items-baseline justify-between gap-1">
-                          <h3 className="text-xs font-bold text-white">{exp.role}</h3>
+                          <h3 className="text-xs font-bold text-[var(--color-text-primary)]">{exp.role}</h3>
                           <span className="print-chip text-[10px] font-mono font-semibold text-[#00ffc2] bg-[#00ffc2]/10 px-2 py-0.5 rounded border border-[#00ffc2]/20">
                             {exp.period}
                           </span>
                         </div>
-                        <div className="text-[10px] font-mono text-gray-400 font-medium">{exp.company} • {exp.location}</div>
+                        <div className="text-[10px] font-mono text-[var(--color-text-muted)] font-medium">{exp.company} • {exp.location}</div>
                         
-                        <ul className="mt-1 space-y-1 text-[11px] text-gray-300">
+                        <ul className="mt-1 space-y-1 text-[11px] text-[var(--color-text-secondary)]">
                           {exp.points.map((pt, pIdx) => (
                             <li key={pIdx} className="flex items-start gap-1.5 leading-relaxed print-text-shrink">
                               <span className="text-[#00ffc2] print-icon-teal font-bold">•</span>
@@ -420,20 +423,20 @@ export default function ResumePage() {
                 {/* Featured Projects */}
                 {(filter === "all" || filter === "projects") && (
                   <section className="space-y-1.5">
-                    <h2 className="text-xs font-mono uppercase tracking-widest text-[#00ffc2] font-bold flex items-center gap-1.5 border-b border-white/10 pb-1">
+                    <h2 className="text-xs font-mono uppercase tracking-widest text-[#00ffc2] font-bold flex items-center gap-1.5 border-b border-[var(--color-border)] pb-1">
                       <Layers size={13} /> Featured SaaS Projects
                     </h2>
 
                     {RESUME_DATA.projects.map((proj, idx) => (
-                      <div key={idx} className="space-y-1 bg-white/[0.02] p-2.5 rounded-xl border border-white/5 print-box-padding">
+                      <div key={idx} className="space-y-1 bg-white/[0.02] p-2.5 rounded-xl border border-[var(--color-border)] print-box-padding">
                         <div className="flex items-baseline justify-between flex-wrap gap-1">
-                          <h3 className="text-xs font-bold text-white flex items-center gap-1">
+                          <h3 className="text-xs font-bold text-[var(--color-text-primary)] flex items-center gap-1">
                             {proj.name} 
-                            <span className="text-[10px] font-normal text-gray-400">({proj.subtitle})</span>
+                            <span className="text-[10px] font-normal text-[var(--color-text-muted)]">({proj.subtitle})</span>
                           </h3>
-                          <span className="text-[10px] font-mono text-gray-400 font-medium">{proj.period}</span>
+                          <span className="text-[10px] font-mono text-[var(--color-text-muted)] font-medium">{proj.period}</span>
                         </div>
-                        <p className="text-[11px] text-gray-300 leading-relaxed print-text-shrink">{proj.description}</p>
+                        <p className="text-[11px] text-[var(--color-text-secondary)] leading-relaxed print-text-shrink">{proj.description}</p>
                         
                         <div className="flex flex-wrap gap-1 pt-0.5">
                           {proj.highlights.map((h, hIdx) => (
@@ -450,14 +453,14 @@ export default function ResumePage() {
                 {/* Programming Languages */}
                 {(filter === "all" || filter === "skills") && (
                   <section className="space-y-1.5">
-                    <h2 className="text-xs font-mono uppercase tracking-widest text-[#00ffc2] font-bold flex items-center gap-1.5 border-b border-white/10 pb-1">
+                    <h2 className="text-xs font-mono uppercase tracking-widest text-[#00ffc2] font-bold flex items-center gap-1.5 border-b border-[var(--color-border)] pb-1">
                       <Code2 size={13} /> Programming Languages
                     </h2>
 
                     <div className="grid grid-cols-2 gap-1.5 text-[10px]">
                       {RESUME_DATA.programmingLanguages.map((lang, idx) => (
-                        <div key={idx} className="flex items-center justify-between bg-white/[0.02] p-2 rounded-lg border border-white/5 print-box-padding">
-                          <span className="text-gray-200 font-semibold truncate pr-1">{lang.name}</span>
+                        <div key={idx} className="flex items-center justify-between bg-white/[0.02] p-2 rounded-lg border border-[var(--color-border)] print-box-padding">
+                          <span className="text-[var(--color-text-secondary)] font-semibold truncate pr-1">{lang.name}</span>
                           <div className="flex gap-1 shrink-0">
                             {[1, 2, 3, 4, 5].map((step) => (
                               <div
@@ -484,7 +487,7 @@ export default function ResumePage() {
                 {/* Tech Stack */}
                 {(filter === "all" || filter === "skills") && (
                   <section className="space-y-1.5">
-                    <h2 className="text-xs font-mono uppercase tracking-widest text-[#00ffc2] font-bold flex items-center gap-1.5 border-b border-white/10 pb-1">
+                    <h2 className="text-xs font-mono uppercase tracking-widest text-[#00ffc2] font-bold flex items-center gap-1.5 border-b border-[var(--color-border)] pb-1">
                       <Code2 size={13} /> Technical Stack
                     </h2>
 
@@ -492,7 +495,7 @@ export default function ResumePage() {
                       {RESUME_DATA.technicalStack.map((tech, idx) => (
                         <span
                           key={idx}
-                          className="print-chip px-2 py-0.5 rounded bg-white/5 text-[9px] font-mono font-medium text-gray-200 border border-white/10"
+                          className="print-chip px-2 py-0.5 rounded bg-white/5 text-[9px] font-mono font-medium text-[var(--color-text-secondary)] border border-[var(--color-border)]"
                         >
                           {tech}
                         </span>
@@ -504,17 +507,17 @@ export default function ResumePage() {
                 {/* Achievements */}
                 {(filter === "all" || filter === "experience") && (
                   <section className="space-y-1.5">
-                    <h2 className="text-xs font-mono uppercase tracking-widest text-[#00ffc2] font-bold flex items-center gap-1.5 border-b border-white/10 pb-1">
+                    <h2 className="text-xs font-mono uppercase tracking-widest text-[#00ffc2] font-bold flex items-center gap-1.5 border-b border-[var(--color-border)] pb-1">
                       <Award size={13} /> Engineering Achievements
                     </h2>
 
                     <div className="space-y-1.5">
                       {RESUME_DATA.achievements.map((ach, idx) => (
-                        <div key={idx} className="space-y-0.5 bg-white/[0.02] p-2 rounded-xl border border-white/5 print-box-padding">
-                          <h3 className="text-[11px] font-bold text-white flex items-center gap-1">
+                        <div key={idx} className="space-y-0.5 bg-white/[0.02] p-2 rounded-xl border border-[var(--color-border)] print-box-padding">
+                          <h3 className="text-[11px] font-bold text-[var(--color-text-primary)] flex items-center gap-1">
                             <span className="text-[#00ffc2] print-icon-teal">⚡</span> {ach.title}
                           </h3>
-                          <p className="text-[10px] text-gray-300 leading-relaxed print-text-shrink">{ach.description}</p>
+                          <p className="text-[10px] text-[var(--color-text-secondary)] leading-relaxed print-text-shrink">{ach.description}</p>
                         </div>
                       ))}
                     </div>
@@ -524,17 +527,17 @@ export default function ResumePage() {
                 {/* Education */}
                 {(filter === "all" || filter === "experience") && (
                   <section className="space-y-1.5">
-                    <h2 className="text-xs font-mono uppercase tracking-widest text-[#00ffc2] font-bold flex items-center gap-1.5 border-b border-white/10 pb-1">
+                    <h2 className="text-xs font-mono uppercase tracking-widest text-[#00ffc2] font-bold flex items-center gap-1.5 border-b border-[var(--color-border)] pb-1">
                       <GraduationCap size={13} /> Education
                     </h2>
 
                     {RESUME_DATA.education.map((edu, idx) => (
-                      <div key={idx} className="bg-white/[0.02] p-2 rounded-xl border border-white/5 print-box-padding">
+                      <div key={idx} className="bg-white/[0.02] p-2 rounded-xl border border-[var(--color-border)] print-box-padding">
                         <div className="flex justify-between items-baseline">
-                          <h3 className="text-xs font-bold text-white">{edu.degree}</h3>
-                          <span className="text-[9px] font-mono text-gray-400 font-medium">{edu.period}</span>
+                          <h3 className="text-xs font-bold text-[var(--color-text-primary)]">{edu.degree}</h3>
+                          <span className="text-[9px] font-mono text-[var(--color-text-muted)] font-medium">{edu.period}</span>
                         </div>
-                        <p className="text-[10px] text-gray-400 font-medium mt-0.5">{edu.institution} • {edu.location}</p>
+                        <p className="text-[10px] text-[var(--color-text-muted)] font-medium mt-0.5">{edu.institution} • {edu.location}</p>
                       </div>
                     ))}
                   </section>
@@ -545,7 +548,7 @@ export default function ResumePage() {
             </div>
 
             {/* Footer */}
-            <footer className="print-footer border-t border-white/10 py-2 px-4 text-center font-mono text-[9px] text-gray-400 bg-black/40 mt-auto">
+            <footer className="print-footer border-t border-[var(--color-border)] py-2 px-4 text-center font-mono text-[9px] text-[var(--color-text-muted)] bg-black/40 mt-auto">
               Designed & Executed by {SITE_CONFIG.name} — Full Stack Engineer
             </footer>
 

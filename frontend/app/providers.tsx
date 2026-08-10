@@ -10,8 +10,12 @@ export default function Providers({ children }: { children: ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 1000 * 60 * 5, // 5 minutes caching
-            refetchOnWindowFocus: false,
+            // Near-real-time: reflect admin edits quickly on the public site.
+            staleTime: 1000 * 10,          // treat data fresh for 10s only
+            refetchOnWindowFocus: true,    // refetch when returning to the tab
+            refetchOnMount: true,
+            refetchInterval: 1000 * 30,    // passive live refresh every 30s
+            refetchIntervalInBackground: false,
           },
         },
       })

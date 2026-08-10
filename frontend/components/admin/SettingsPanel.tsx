@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Save, KeyRound, User, ShieldCheck } from "lucide-react";
 import { api, changePasswordRequest } from "@/lib/api";
+import { withDefaults } from "@/lib/defaults";
 import type { SiteSetting } from "@/lib/types";
 import {
   SectionHeader,
@@ -28,7 +29,9 @@ export default function SettingsPanel() {
   const [pwStatus, setPwStatus] = useState<Status>(null);
 
   useEffect(() => {
-    api.settings.get().then(setData).catch(() => setProfileStatus({ type: "error", message: "Failed to load profile." }));
+    api.settings.get()
+      .then((s) => setData(withDefaults(s)))
+      .catch(() => setProfileStatus({ type: "error", message: "Failed to load profile." }));
   }, []);
 
   const set = (k: keyof SiteSetting, v: string) => setData((p) => (p ? { ...p, [k]: v } : p));
