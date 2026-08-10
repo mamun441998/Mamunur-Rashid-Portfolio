@@ -18,7 +18,9 @@ export default function Contact() {
   const [copied, setCopied] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const { data: settings } = useSettings();
-  const calendlyUrl = settings?.calendly_url?.trim() || '';
+  // Always have a working scheduling link, even before the CMS value is set.
+  const DEFAULT_CALENDLY = 'https://calendly.com/mamun441998/30min';
+  const calendlyUrl = settings?.calendly_url?.trim() || DEFAULT_CALENDLY;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -110,6 +112,22 @@ export default function Contact() {
             </span>
             <span>Available for Worldwide Remote Projects & Contracts</span>
           </motion.div>
+
+          {/* Schedule a Meeting CTA (Calendly) */}
+          <motion.a
+            href={calendlyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.25 }}
+            className="group inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#00ffc2] text-black text-sm font-semibold font-space-grotesk transition-all duration-300 hover:shadow-[0_0_25px_rgba(0,255,194,0.4)] hover:scale-[1.02] w-fit"
+          >
+            <CalendarClock className="w-4 h-4" />
+            <span>Schedule a Meeting</span>
+            <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100" />
+          </motion.a>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}

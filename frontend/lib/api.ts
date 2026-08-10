@@ -178,6 +178,11 @@ export const api = {
         body: data,
         auth: true,
       }),
+    testEmail: () =>
+      request<{ status: string; message: string }>("/api/contact/test-email", {
+        method: "POST",
+        auth: true,
+      }),
   },
   meetings: {
     list: () => request<Meeting[]>("/api/calendly/meetings", { auth: true }),

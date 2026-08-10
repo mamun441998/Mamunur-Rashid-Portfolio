@@ -12,7 +12,6 @@ import SkillsStack from "@/components/admin/SkillsStack";
 import ExperienceLog from "@/components/admin/ExperienceLog";
 import ServicesEngine from "@/components/admin/ServicesEngine";
 import CaseStudyBuilder from "@/components/admin/CaseStudyBuilder";
-import MessagesHub from "@/components/admin/MessagesHub";
 import LeadsCRM from "@/components/admin/LeadsCRM";
 import MeetingsPanel from "@/components/admin/MeetingsPanel";
 import AnalyticsCenter from "@/components/admin/AnalyticsCenter";
@@ -28,16 +27,17 @@ export default function AdminDashboard() {
   const loadBadges = useCallback(async () => {
     setRefreshing(true);
     try {
-      const [projects, skills, experience, services, casestudy, messages, meetings] = await Promise.all([
+      const [projects, skills, experience, services, casestudy, unread, meetings] = await Promise.all([
         api.projects.list().then((r) => r.length).catch(() => 0),
         api.skills.list().then((r) => r.length).catch(() => 0),
         api.experiences.list().then((r) => r.length).catch(() => 0),
         api.services.list().then((r) => r.length).catch(() => 0),
         api.caseStudies.list().then((r) => r.length).catch(() => 0),
-        api.contact.list().then((r) => r.length).catch(() => 0),
+        api.contact.stats().then((s) => s.unread).catch(() => 0),
         api.meetings.list().then((r) => r.length).catch(() => 0),
       ]);
-      setBadges({ projects, skills, experience, services, casestudy, messages, crm: messages, meetings });
+      // The "Messages & Leads" badge shows the UNREAD count, not the total.
+      setBadges({ projects, skills, experience, services, casestudy, crm: unread, meetings });
     } finally {
       setRefreshing(false);
     }
@@ -88,7 +88,6 @@ export default function AdminDashboard() {
             {tab === "experience" && <ExperienceLog onChanged={loadBadges} />}
             {tab === "services" && <ServicesEngine onChanged={loadBadges} />}
             {tab === "casestudy" && <CaseStudyBuilder onChanged={loadBadges} />}
-            {tab === "messages" && <MessagesHub onChanged={loadBadges} />}
             {tab === "crm" && <LeadsCRM onChanged={loadBadges} />}
             {tab === "meetings" && <MeetingsPanel onChanged={loadBadges} />}
             {tab === "analytics" && <AnalyticsCenter />}

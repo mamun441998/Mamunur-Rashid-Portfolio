@@ -1,3 +1,4 @@
+import logging
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -14,7 +15,16 @@ from app.db.session import get_session
 from app.models.admin import Admin
 from app.models.contact import ContactMessage, LeadStatus
 
+logger = logging.getLogger("portfolio.contact")
+
 router = APIRouter(prefix="/api/contact", tags=["contact"])
+
+# Fail fast rather than hang the request if the SMTP server is unreachable.
+SMTP_TIMEOUT = 20
+
+
+class EmailSendError(Exception):
+    """Raised with a human-readable reason when an SMTP send fails."""
 
 
 # ------------------------------------------------------------------
@@ -42,11 +52,15 @@ class StatusUpdate(BaseModel):
 # Email helpers (SMTP config from settings, not os.getenv)
 # ------------------------------------------------------------------
 def _smtp_send(to_email: str, subject: str, body: str, from_label: str) -> None:
+    """Send an email via SMTP (STARTTLS). Raises EmailSendError with a clear,
+    admin-facing reason on any failure; logs full details server-side."""
     sender_email = settings.smtp_email
     sender_password = settings.smtp_password
     if not sender_email or not sender_password:
-        print("[Email skipped] SMTP credentials not configured.")
-        return
+        raise EmailSendError(
+            "SMTP credentials are not configured (set SMTP_EMAIL and SMTP_PASSWORD "
+            "in the Render environment)."
+        )
 
     email_msg = MIMEMultipart()
     email_msg["From"] = f"{from_label} <{sender_email}>"
@@ -54,11 +68,29 @@ def _smtp_send(to_email: str, subject: str, body: str, from_label: str) -> None:
     email_msg["Subject"] = subject
     email_msg.attach(MIMEText(body, "plain"))
 
-    server = smtplib.SMTP(settings.smtp_host, settings.smtp_port)
-    server.starttls()
-    server.login(sender_email, sender_password)
-    server.send_message(email_msg)
-    server.quit()
+    logger.info(
+        "Sending email via %s:%s as %s -> %s",
+        settings.smtp_host, settings.smtp_port, sender_email, to_email,
+    )
+
+    try:
+        with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=SMTP_TIMEOUT) as server:
+            server.ehlo()
+            server.starttls()
+            server.ehlo()
+            server.login(sender_email, sender_password)
+            server.send_message(email_msg)
+    except smtplib.SMTPAuthenticationError as exc:
+        logger.exception("SMTP authentication failed")
+        raise EmailSendError(
+            "SMTP auth failed — the Gmail App Password for "
+            f"{sender_email} was rejected. Verify SMTP_PASSWORD in Render is a valid "
+            "16-character Gmail App Password (no spaces) and that 2-Step Verification "
+            "is enabled on that account."
+        ) from exc
+    except (smtplib.SMTPException, OSError, TimeoutError) as exc:
+        logger.exception("SMTP send failed")
+        raise EmailSendError(f"Email delivery failed: {exc}") from exc
 
 
 def send_email_notification(msg_name: str, msg_email: str, msg_subject: str, msg_body: str) -> None:
@@ -202,12 +234,7 @@ def reply_to_message(
     reply_data: EmailReplySchema,
     current_admin: Admin = Depends(get_current_admin),
 ):
-    """Send a direct email reply to a client."""
-    if not settings.smtp_password or not settings.smtp_email:
-        raise HTTPException(
-            status_code=400,
-            detail="SMTP credentials are missing in backend environment variables.",
-        )
+    """Send a direct email reply to a client. Returns a clear error on failure."""
     try:
         _smtp_send(
             reply_data.to_email,
@@ -215,6 +242,28 @@ def reply_to_message(
             reply_data.reply_message,
             "Mamunur Rashid",
         )
-        return {"status": "success", "message": "Email sent successfully"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to send email: {str(e)}")
+        return {"status": "success", "message": f"Email sent to {reply_data.to_email}"}
+    except EmailSendError as exc:
+        raise HTTPException(status_code=502, detail=str(exc))
+
+
+@router.post("/test-email")
+def test_email(current_admin: Admin = Depends(get_current_admin)):
+    """Admin-only: send a test email to NOTIFICATION_EMAIL to verify SMTP config."""
+    recipient = settings.alert_recipient
+    if not recipient:
+        raise HTTPException(
+            status_code=400,
+            detail="No NOTIFICATION_EMAIL / SMTP_EMAIL configured to send a test to.",
+        )
+    try:
+        _smtp_send(
+            recipient,
+            "✅ Portfolio SMTP test",
+            "This is a test email from your portfolio backend. "
+            "If you received this, SMTP replies are working.",
+            "Portfolio Alert",
+        )
+        return {"status": "success", "message": f"Test email sent to {recipient}"}
+    except EmailSendError as exc:
+        raise HTTPException(status_code=502, detail=str(exc))
