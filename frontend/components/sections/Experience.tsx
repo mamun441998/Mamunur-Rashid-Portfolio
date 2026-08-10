@@ -70,7 +70,7 @@ function TechnicalMotionCard({
       className="relative group mb-10"
     >
       {/* Circuit Glow Effect */}
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-[#00ffc2]/0 via-[#00ffc2]/20 to-cyan-500/0 rounded-2xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+      <div className="absolute -inset-0.5 bg-gradient-to-r from-[#081419]/0 via-[#081419]/20 to-[#081419]/0 rounded-2xl blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
       {/* Top Corner Icons (Cpu + GitHub Link) */}
       <div className="absolute top-4 right-4 z-20 flex items-center gap-3">
@@ -92,7 +92,7 @@ function TechnicalMotionCard({
         </div>
       </div>
 
-      <div className="relative z-10 bg-[var(--panel-3)] border border-white/5 group-hover:border-[#00ffc2]/30 rounded-2xl p-1 transition-all duration-500 shadow-xl">
+      <div className="relative z-10 bg-[var(--panel-3)] border border-[var(--bd)] group-hover:border-[#081419]/30 rounded-2xl p-1 transition-all duration-500 shadow-xl">
         {children}
       </div>
     </motion.div>

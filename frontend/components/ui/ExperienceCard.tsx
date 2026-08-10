@@ -39,14 +39,14 @@ export default function ExperienceCard({ experience, isLast = false }: Experienc
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
-        className="bg-[var(--panel)] border border-[var(--bd)] hover:border-[#00ffc2]/50 rounded-2xl p-6 md:p-8 transition-all duration-300 relative overflow-hidden shadow-lg hover:shadow-[0_0_30px_rgba(0,255,194,0.1)] mb-10"
+        className="bg-[var(--panel)] border border-[var(--bd)] hover:border-[#081419]/50 rounded-2xl p-6 md:p-8 transition-all duration-300 relative overflow-hidden shadow-lg hover:shadow-[0_0_30px_rgba(8,20,25,0.15)] mb-10"
       >
         {/* Subtle Ambient Background Gradient */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-[#00ffc2]/5 rounded-bl-full pointer-events-none group-hover:bg-[#00ffc2]/10 transition-colors duration-500" />
+        <div className="absolute top-0 right-0 w-32 h-32 bg-[#00ffc2]/5 rounded-bl-full pointer-events-none group-hover:bg-[#081419]/10 transition-colors duration-500" />
 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-4">
           <div>
-            <h3 className="text-xl md:text-2xl font-bold text-[var(--txt)] font-space-grotesk group-hover:text-[#00ffc2] transition-colors">
+            <h3 className="text-xl md:text-2xl font-bold text-[var(--txt)] font-space-grotesk group-hover:text-[#081419] transition-colors">
               {experience.role}
             </h3>
             <p className="text-[var(--color-accent)] font-mono text-sm mt-1 font-medium">
