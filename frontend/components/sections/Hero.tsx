@@ -7,6 +7,7 @@ import SocialLinks from "@/components/ui/SocialLinks";
 import ScrollIndicator from "@/components/ui/ScrollIndicator";
 import TypewriterText from "@/components/ui/TypewriterText";
 import { SITE_CONFIG } from "@/lib/constants";
+import { useSettings } from "@/hooks/useSettings";
 import { Handshake, Play, X } from "lucide-react";
 
 const containerVariants: Variants = {
@@ -49,6 +50,14 @@ const letterVariants: Variants = {
 
 export default function Hero() {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const { data: settings } = useSettings();
+
+  // Live tagline from admin settings; fall back to the current static copy.
+  const heroTagline = settings?.hero_tagline?.trim() || SITE_CONFIG.tagline;
+  const heroRoles =
+    settings?.role_title?.trim()
+      ? [settings.role_title.trim(), ...SITE_CONFIG.roles]
+      : SITE_CONFIG.roles;
 
   const scrollToProjects = () => {
     document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
@@ -84,7 +93,7 @@ export default function Hero() {
           className="mb-6 h-6 flex items-center justify-center"
         >
           <span className="text-xs sm:text-sm tracking-[0.2em] uppercase text-[var(--color-accent)] font-mono font-medium">
-            <TypewriterText words={SITE_CONFIG.roles} />
+            <TypewriterText words={heroRoles} />
           </span>
         </motion.div>
 
@@ -134,7 +143,7 @@ export default function Hero() {
           variants={itemVariants}
           className="mt-6 max-w-2xl text-base md:text-lg lg:text-xl text-[var(--color-text-secondary)] leading-relaxed font-inter"
         >
-          {SITE_CONFIG.tagline}
+          {heroTagline}
         </motion.p>
 
         {/* Action Buttons & Social Links */}

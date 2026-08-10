@@ -2,16 +2,16 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { isAuthenticated } from "@/lib/auth";
 
 export default function AdminPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem("admin_token");
-    if (token) {
-      router.push("/admin/dashboard");
+    if (isAuthenticated()) {
+      router.replace("/admin/dashboard");
     } else {
-      router.push("/admin/login");
+      router.replace("/admin/login");
     }
   }, [router]);
 

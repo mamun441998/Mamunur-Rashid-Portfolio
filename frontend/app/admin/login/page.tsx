@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { loginRequest } from "@/lib/api";
+import { setToken } from "@/lib/auth";
 
 export default function AdminLogin() {
   const [username, setUsername] = useState("");
@@ -15,62 +17,13 @@ export default function AdminLogin() {
     setLoading(true);
     setError("");
 
-    // Trim whitespace to prevent typo errors
-    const cleanUsername = username.trim();
-    const cleanPassword = password.trim();
-
-    // Ensure URL has no trailing slash
-    const rawUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
-    const BACKEND_URL = rawUrl.replace(/\/$/, "");
-
     try {
-      // 1. Try URL-encoded Form Data (Standard OAuth2 in FastAPI)
-      const formData = new URLSearchParams();
-      formData.append("username", cleanUsername);
-      formData.append("password", cleanPassword);
-
-      let res = await fetch(`${BACKEND_URL}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: formData,
-      });
-
-      // 2. Fallback: If 422 or 400 (JSON payload expected), try sending JSON
-      if (res.status === 422 || res.status === 400) {
-        res = await fetch(`${BACKEND_URL}/api/auth/login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: cleanUsername,
-            password: cleanPassword,
-          }),
-        });
-      }
-
-      // 3. Fallback: Try secondary route (/api/login) if 404
-      if (res.status === 404) {
-        res = await fetch(`${BACKEND_URL}/api/login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: formData,
-        });
-      }
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(
-          data.detail || data.message || "Invalid username or password"
-        );
-      }
-
-      // Handle token storage safely
-      const token = data.access_token || data.token;
+      const data = await loginRequest(username.trim(), password.trim());
+      const token = data.access_token;
       if (!token) {
         throw new Error("No access token received from server");
       }
-
-      localStorage.setItem("admin_token", token);
+      setToken(token);
       router.push("/admin/dashboard");
     } catch (err: any) {
       console.error("Login Error:", err);

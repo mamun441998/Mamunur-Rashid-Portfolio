@@ -1,17 +1,21 @@
 'use client';
 
+import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { 
-  Code2, 
-  Cpu, 
-  Layers, 
-  Zap, 
-  Globe2, 
-  ShieldCheck, 
-  ArrowUpRight, 
+import {
+  Code2,
+  Cpu,
+  Layers,
+  Zap,
+  Globe2,
+  ShieldCheck,
+  ArrowUpRight,
   Terminal,
   CheckCircle2
 } from 'lucide-react';
+import { api } from '@/lib/api';
+import type { Service as ApiService } from '@/lib/types';
 
 interface ServiceItem {
   id: string;
@@ -24,7 +28,17 @@ interface ServiceItem {
   highlight?: boolean;
 }
 
-const services: ServiceItem[] = [
+// Map backend icon_name strings to the lucide icon components used in the design.
+const ICON_COMPONENTS: Record<string, any> = {
+  Layers,
+  Code2,
+  Cpu,
+  Zap,
+  Globe2,
+  ShieldCheck,
+};
+
+const fallbackServices: ServiceItem[] = [
   {
     id: 'saas',
     title: 'Full-Stack SaaS Architecture',
@@ -83,6 +97,27 @@ const services: ServiceItem[] = [
 ];
 
 export default function Services() {
+  const { data: apiServices } = useQuery<ApiService[]>({
+    queryKey: ['services'],
+    queryFn: () => api.services.list(),
+    retry: 1,
+  });
+
+  // Use live services when available; keep the current values as fallback.
+  const services: ServiceItem[] = useMemo(() => {
+    if (!apiServices || apiServices.length === 0) return fallbackServices;
+    return apiServices.map((s) => ({
+      id: s.slug || String(s.id),
+      title: s.title,
+      tagline: s.tagline,
+      description: s.description,
+      icon: ICON_COMPONENTS[s.icon_name] || Layers,
+      features: s.features ? s.features.split(',').map((f) => f.trim()).filter(Boolean) : [],
+      techStack: s.tech_stack ? s.tech_stack.split(',').map((t) => t.trim()).filter(Boolean) : [],
+      highlight: s.highlight,
+    }));
+  }, [apiServices]);
+
   return (
     <section
       id="services"

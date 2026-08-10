@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, MessageSquare, Globe, Send, Check, Copy, Terminal, ExternalLink, Sparkles } from 'lucide-react';
+import { Mail, MessageSquare, Globe, Send, Check, Copy, Terminal, ExternalLink, Sparkles, CalendarClock } from 'lucide-react';
+import { api } from '@/lib/api';
+import { useSettings } from '@/hooks/useSettings';
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -15,6 +17,8 @@ export default function Contact() {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const { data: settings } = useSettings();
+  const calendlyUrl = settings?.calendly_url?.trim() || '';
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,20 +35,13 @@ export default function Contact() {
     setLoading(true);
     setStatus(null);
 
-    // Get Base Backend URL safely from environment or default to local/fallback
-    const rawUrl = process.env.NEXT_PUBLIC_API_URL || 'https://mamunur-rashid-portfolio-backend.onrender.com';
-    const BACKEND_URL = rawUrl.replace(/\/$/, '');
-
     try {
-      const response = await fetch(`${BACKEND_URL}/api/contact`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+      await api.contact.send({
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject || 'Portfolio Contact Inquiry',
+        message: formData.message,
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to send request');
-      }
 
       setStatus({
         type: 'success',
@@ -301,6 +298,37 @@ export default function Contact() {
         </motion.div>
 
       </div>
+
+      {/* Calendly inline scheduling — only shown when an admin sets the URL */}
+      {calendlyUrl && (
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="max-w-7xl w-full z-10 mt-16"
+        >
+          <div className="bg-[#080808] border border-white/10 rounded-3xl p-6 sm:p-8 relative shadow-2xl overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#00ffc2]/40 to-transparent" />
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/5">
+              <div className="flex items-center gap-2 text-xs font-mono text-gray-400">
+                <CalendarClock className="w-4 h-4 text-[#00ffc2]" />
+                <span>SCHEDULE_A_MEETING</span>
+              </div>
+              <span className="text-[10px] font-mono text-gray-500 uppercase">Powered by Calendly</span>
+            </div>
+            <div className="rounded-2xl overflow-hidden border border-white/10 bg-white">
+              <iframe
+                src={calendlyUrl}
+                title="Schedule a meeting with Mamunur Rashid"
+                className="w-full border-0"
+                style={{ height: '680px' }}
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </motion.div>
+      )}
     </section>
   );
 }

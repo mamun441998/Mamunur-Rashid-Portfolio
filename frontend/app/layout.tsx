@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Inter } from "next/font/google";
 import Navbar from "@/components/layout/Navbar";
+import AnalyticsTracker from "@/components/AnalyticsTracker";
+import CommandPalette from "@/components/CommandPalette";
 import Providers from "./providers";
 import "./globals.css";
 
@@ -50,6 +52,8 @@ export default function RootLayout({
     >
       <body className="antialiased">
         <Providers>
+          <AnalyticsTracker />
+          <CommandPalette />
           <Navbar />
           {children}
         </Providers>

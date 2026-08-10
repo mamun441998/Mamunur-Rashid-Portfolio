@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import StatCard from "@/components/ui/StatCard";
 import { ABOUT_CONTENT } from "@/lib/constants";
+import { useSettings } from "@/hooks/useSettings";
 import { Camera, Video } from "lucide-react";
 
 const containerVariants = {
@@ -25,6 +26,25 @@ const itemVariants = {
 
 export default function About() {
   const [activeTab, setActiveTab] = useState<"photo" | "video">("photo");
+  const { data: settings } = useSettings();
+
+  // Live bio paragraphs from admin settings; fall back to static copy.
+  const paragraphs =
+    settings?.about_text?.trim()
+      ? settings.about_text
+          .split(/\n{2,}|\n/)
+          .map((p) => p.trim())
+          .filter(Boolean)
+      : ABOUT_CONTENT.paragraphs;
+
+  // Override the first two stat values from settings; keep labels + rest as-is.
+  const stats = ABOUT_CONTENT.stats.map((stat, i) => {
+    if (i === 0 && settings?.years_experience?.trim())
+      return { ...stat, value: settings.years_experience.trim() };
+    if (i === 1 && settings?.projects_completed?.trim())
+      return { ...stat, value: settings.projects_completed.trim() };
+    return stat;
+  });
 
   return (
     <section
@@ -160,7 +180,7 @@ export default function About() {
               viewport={{ once: true }}
               className="space-y-4 font-inter"
             >
-              {ABOUT_CONTENT.paragraphs.map((para, i) => (
+              {paragraphs.map((para, i) => (
                 <motion.p
                   key={i}
                   variants={itemVariants}
@@ -211,7 +231,7 @@ export default function About() {
           transition={{ duration: 0.7, delay: 0.3 }}
           className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6"
         >
-          {ABOUT_CONTENT.stats.map((stat, i) => (
+          {stats.map((stat, i) => (
             <StatCard
               key={stat.label}
               value={stat.value}
