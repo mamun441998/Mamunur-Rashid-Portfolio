@@ -1,7 +1,11 @@
+import json
 import logging
+import os
 import smtplib
 import socket
 import ssl
+import urllib.error
+import urllib.request
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timezone
@@ -53,8 +57,56 @@ class StatusUpdate(BaseModel):
 # ------------------------------------------------------------------
 # Email helpers (SMTP config from settings, not os.getenv)
 # ------------------------------------------------------------------
+def _send_via_brevo(to_email: str, subject: str, body: str, from_label: str) -> None:
+    """Send a plain-text email through Brevo's HTTP API (works from Render, which
+    blocks outbound SMTP). Requires BREVO_API_KEY in the environment and a
+    Brevo-verified sender (SMTP_EMAIL)."""
+    api_key = os.getenv("BREVO_API_KEY")
+    sender_email = settings.smtp_email
+    if not sender_email:
+        raise EmailSendError("Sender email (SMTP_EMAIL) is not configured.")
+
+    payload = json.dumps({
+        "sender": {"name": from_label or "Mamunur Rashid", "email": sender_email},
+        "to": [{"email": to_email}],
+        "replyTo": {"email": sender_email},
+        "subject": subject,
+        "textContent": body,
+    }).encode("utf-8")
+
+    req = urllib.request.Request(
+        "https://api.brevo.com/v3/smtp/email",
+        data=payload,
+        method="POST",
+        headers={
+            "api-key": api_key,
+            "Content-Type": "application/json",
+            "accept": "application/json",
+        },
+    )
+    logger.info("Sending email via Brevo API as %s -> %s", sender_email, to_email)
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            if resp.status not in (200, 201):
+                raise EmailSendError(f"Brevo returned status {resp.status}")
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", "ignore")
+        logger.exception("Brevo send failed: %s", detail)
+        raise EmailSendError(
+            f"Email delivery failed (Brevo {exc.code}). "
+            "401 = wrong/missing BREVO_API_KEY; 400 = sender not verified in Brevo. "
+            f"Details: {detail}"
+        ) from exc
+    except Exception as exc:
+        logger.exception("Brevo send failed")
+        raise EmailSendError(f"Email delivery failed: {exc}") from exc
+
+
 def _smtp_send(to_email: str, subject: str, body: str, from_label: str) -> None:
-    """Send an email via SMTP (STARTTLS), forcing an IPv4 connection.
+    """Send an email. Prefers the Brevo HTTP API when BREVO_API_KEY is set (required
+    on Render, which blocks SMTP); otherwise falls back to direct SMTP for local dev.
+
+    SMTP path forces an IPv4 connection:
 
     Render containers often resolve smtp.gmail.com to an IPv6 (AAAA) address but
     have no IPv6 route, so a plain connect fails with "[Errno 101] Network is
@@ -64,6 +116,11 @@ def _smtp_send(to_email: str, subject: str, body: str, from_label: str) -> None:
 
     Raises EmailSendError with a clear, admin-facing reason on any failure.
     """
+    # Prefer Brevo HTTP API when configured (Render blocks outbound SMTP).
+    if os.getenv("BREVO_API_KEY"):
+        _send_via_brevo(to_email, subject, body, from_label)
+        return
+
     sender_email = settings.smtp_email
     sender_password = settings.smtp_password
     if not sender_email or not sender_password:
