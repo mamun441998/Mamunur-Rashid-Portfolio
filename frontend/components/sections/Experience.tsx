@@ -64,7 +64,7 @@ function ExperienceSkeleton() {
       {[...Array(2)].map((_, i) => (
         <div key={i} className="pl-8 md:pl-10 relative animate-pulse">
           <div className="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white/10" />
-          <div className="h-44 bg-[#0a0a0a] border border-white/5 rounded-2xl p-6 flex flex-col justify-between">
+          <div className="h-44 bg-[var(--panel-2)] border border-white/5 rounded-2xl p-6 flex flex-col justify-between">
             <div className="h-6 w-1/3 bg-white/10 rounded" />
             <div className="h-4 w-full bg-white/5 rounded" />
             <div className="h-4 w-2/3 bg-white/5 rounded" />
@@ -108,7 +108,7 @@ function TechnicalMotionCard({
             target="_blank"
             rel="noopener noreferrer"
             title="View Repository on GitHub"
-            className="flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-gray-300 hover:text-[#00ffc2] hover:border-[#00ffc2]/40 hover:bg-[#00ffc2]/10 transition-all duration-300 group/link"
+            className="flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded-full bg-white/5 border border-[var(--bd)] text-gray-300 hover:text-[#00ffc2] hover:border-[#00ffc2]/40 hover:bg-[#00ffc2]/10 transition-all duration-300 group/link"
           >
             <GithubIcon className="w-3.5 h-3.5 transition-transform group-hover/link:scale-110" />
             <span className="hidden sm:inline">Repo</span>
@@ -120,7 +120,7 @@ function TechnicalMotionCard({
         </div>
       </div>
 
-      <div className="relative z-10 bg-[#070707] border border-white/5 group-hover:border-[#00ffc2]/30 rounded-2xl p-1 transition-all duration-500 shadow-xl">
+      <div className="relative z-10 bg-[var(--panel-3)] border border-white/5 group-hover:border-[#00ffc2]/30 rounded-2xl p-1 transition-all duration-500 shadow-xl">
         {children}
       </div>
     </motion.div>
@@ -139,7 +139,7 @@ export default function ExperienceSection() {
   return (
     <section
       id="experience"
-      className="min-h-screen w-full py-24 px-6 sm:px-10 lg:px-16 flex flex-col justify-center items-center bg-[#030303] text-white snap-start relative overflow-hidden select-none"
+      className="min-h-screen w-full py-24 px-6 sm:px-10 lg:px-16 flex flex-col justify-center items-center bg-[var(--sec-bg)] text-[var(--txt)] snap-start relative overflow-hidden select-none"
     >
       {/* Glow Effects */}
       <div className="absolute bottom-1/4 left-10 w-[400px] h-[400px] bg-[#00ffc2]/5 blur-[150px] rounded-full pointer-events-none" />

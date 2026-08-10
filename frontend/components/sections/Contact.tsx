@@ -25,12 +25,17 @@ export default function Contact() {
     'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ1BoiiiiIA5Oo22YNFCmFPMHCes4DDo3IATKgLs43xvKX72cWk1MJkpA0Sj-dDwYpJckYI70L-q';
   const meetingUrl = settings?.calendly_url?.trim() || DEFAULT_MEETING_URL;
 
+  // Contact details are admin-controlled (Portfolio CMS / Settings), with fallbacks.
+  const contactEmail = settings?.email?.trim() || 'mamun441998@gmail.com';
+  const contactPhone = settings?.phone?.trim() || '+880 1978529953';
+  const whatsappNumber = contactPhone.replace(/[^0-9]/g, '');
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleCopyEmail = () => {
-    navigator.clipboard.writeText('mamun441998@gmail.com');
+    navigator.clipboard.writeText(contactEmail);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -67,7 +72,7 @@ export default function Contact() {
   return (
     <section
       id="contact"
-      className="min-h-screen w-full py-24 px-6 sm:px-10 lg:px-16 flex flex-col justify-center items-center bg-[#030303] text-white snap-start relative overflow-hidden select-none"
+      className="min-h-screen w-full py-24 px-6 sm:px-10 lg:px-16 flex flex-col justify-center items-center bg-[var(--sec-bg)] text-[var(--txt)] snap-start relative overflow-hidden select-none"
     >
       <div className="absolute top-1/3 left-1/4 w-[450px] h-[450px] bg-[#00ffc2]/5 blur-[160px] rounded-full pointer-events-none" />
       <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-cyan-500/5 blur-[150px] rounded-full pointer-events-none" />
@@ -80,7 +85,7 @@ export default function Contact() {
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#00ffc2]/10 border border-[#00ffc2]/20 text-[#00ffc2] text-xs font-mono"
+            className="flex w-fit mx-auto lg:mx-0 items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#00ffc2]/10 border border-[#00ffc2]/20 text-[#00ffc2] text-xs font-mono"
           >
             <Terminal className="w-3.5 h-3.5" />
             <span>INITIATE_COMMUNICATION.LOG</span>
@@ -92,12 +97,13 @@ export default function Contact() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-center lg:text-left"
           >
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight font-space-grotesk leading-[1.15]">
               Let&apos;s Build <br />
               <span className="text-[#00ffc2] text-glow">Scalable Systems</span> Together.
             </h2>
-            <p className="text-gray-400 mt-4 text-sm sm:text-base font-inter leading-relaxed max-w-lg">
+            <p className="text-gray-400 mt-4 text-sm sm:text-base font-inter leading-relaxed max-w-lg mx-auto lg:mx-0">
               Have an enterprise architecture challenge, SaaS project in mind, or looking to hire a dedicated full-stack tech lead? Send a message or query directly.
             </p>
           </motion.div>
@@ -142,7 +148,7 @@ export default function Contact() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="space-y-4 font-inter"
           >
-            <div className="group relative p-4 rounded-2xl bg-[#090909] border border-white/10 hover:border-[#00ffc2]/40 transition-all duration-300 flex items-center justify-between">
+            <div className="group relative p-4 rounded-2xl bg-[var(--panel)] border border-[var(--bd)] hover:border-[#00ffc2]/40 transition-all duration-300 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-[#00ffc2]/10 border border-[#00ffc2]/20 flex items-center justify-center text-[#00ffc2] group-hover:scale-105 transition-transform duration-300">
                   <Mail className="w-5 h-5" />
@@ -150,10 +156,10 @@ export default function Contact() {
                 <div>
                   <p className="text-xs font-mono text-gray-400">DIRECT EMAIL</p>
                   <a
-                    href="mailto:mamun441998@gmail.com"
-                    className="text-sm font-semibold text-white hover:text-[#00ffc2] transition-colors cursor-pointer"
+                    href={`mailto:${contactEmail}`}
+                    className="text-sm font-semibold text-[var(--txt)] hover:text-[#00ffc2] transition-colors cursor-pointer break-all"
                   >
-                    mamun441998@gmail.com
+                    {contactEmail}
                   </a>
                 </div>
               </div>
@@ -161,7 +167,7 @@ export default function Contact() {
               <button
                 onClick={handleCopyEmail}
                 type="button"
-                className="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-[#00ffc2]/50 text-gray-300 hover:text-[#00ffc2] transition-all cursor-pointer"
+                className="p-2.5 rounded-xl bg-white/5 border border-[var(--bd)] hover:border-[#00ffc2]/50 text-gray-300 hover:text-[#00ffc2] transition-all cursor-pointer"
                 title="Copy Email"
               >
                 {copied ? <Check className="w-4 h-4 text-[#00ffc2]" /> : <Copy className="w-4 h-4" />}
@@ -169,10 +175,10 @@ export default function Contact() {
             </div>
 
             <a
-              href="https://wa.me/8801978529953"
+              href={`https://wa.me/${whatsappNumber}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="group p-4 rounded-2xl bg-[#090909] border border-white/10 hover:border-[#00ffc2]/40 transition-all duration-300 flex items-center justify-between cursor-pointer block"
+              className="group p-4 rounded-2xl bg-[var(--panel)] border border-[var(--bd)] hover:border-[#00ffc2]/40 transition-all duration-300 flex items-center justify-between cursor-pointer block"
             >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-xl bg-[#00ffc2]/10 border border-[#00ffc2]/20 flex items-center justify-center text-[#00ffc2] group-hover:scale-105 transition-transform duration-300">
@@ -180,23 +186,23 @@ export default function Contact() {
                 </div>
                 <div>
                   <p className="text-xs font-mono text-gray-400">INSTANT MESSAGING</p>
-                  <p className="text-sm font-semibold text-white group-hover:text-[#00ffc2] transition-colors">
-                    +880 1978529953
+                  <p className="text-sm font-semibold text-[var(--txt)] group-hover:text-[#00ffc2] transition-colors">
+                    {contactPhone}
                   </p>
                 </div>
               </div>
-              <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 group-hover:border-[#00ffc2]/50 text-gray-300 group-hover:text-[#00ffc2] transition-all">
+              <div className="p-2.5 rounded-xl bg-white/5 border border-[var(--bd)] group-hover:border-[#00ffc2]/50 text-gray-300 group-hover:text-[#00ffc2] transition-all">
                 <ExternalLink className="w-4 h-4" />
               </div>
             </a>
 
-            <div className="p-4 rounded-2xl bg-[#090909] border border-white/10 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#00ffc2]">
+            <div className="p-4 rounded-2xl bg-[var(--panel)] border border-[var(--bd)] flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-white/5 border border-[var(--bd)] flex items-center justify-center text-[#00ffc2]">
                 <Globe className="w-5 h-5" />
               </div>
               <div>
                 <p className="text-xs font-mono text-gray-400">AVAILABILITY & LOCATION</p>
-                <p className="text-sm font-semibold text-white">
+                <p className="text-sm font-semibold text-[var(--txt)]">
                   Worldwide Remote <span className="text-gray-400 font-normal">• Multi-Timezone Flexible</span>
                 </p>
               </div>
@@ -210,7 +216,7 @@ export default function Contact() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="lg:col-span-6 bg-[#080808] border border-white/10 rounded-3xl p-6 sm:p-8 relative shadow-2xl overflow-hidden group"
+          className="lg:col-span-6 bg-[var(--panel-4)] border border-[var(--bd)] rounded-3xl p-6 sm:p-8 relative shadow-2xl overflow-hidden group"
         >
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#00ffc2]/40 to-transparent" />
 
@@ -232,7 +238,7 @@ export default function Contact() {
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="John Doe"
-                className="w-full bg-[#111111] border border-white/10 focus:border-[#00ffc2] focus:bg-[#151515] rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition-all placeholder:text-gray-600 font-inter"
+                className="w-full bg-[var(--input)] border border-[var(--bd)] focus:border-[#00ffc2] focus:bg-[var(--input-focus)] rounded-xl px-4 py-3 text-sm text-[var(--txt)] focus:outline-none transition-all placeholder:text-gray-600 font-inter"
               />
             </div>
 
@@ -245,7 +251,7 @@ export default function Contact() {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="john@example.com"
-                className="w-full bg-[#111111] border border-white/10 focus:border-[#00ffc2] focus:bg-[#151515] rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition-all placeholder:text-gray-600 font-inter"
+                className="w-full bg-[var(--input)] border border-[var(--bd)] focus:border-[#00ffc2] focus:bg-[var(--input-focus)] rounded-xl px-4 py-3 text-sm text-[var(--txt)] focus:outline-none transition-all placeholder:text-gray-600 font-inter"
               />
             </div>
 
@@ -258,7 +264,7 @@ export default function Contact() {
                 value={formData.subject}
                 onChange={handleChange}
                 placeholder="SaaS Platform Architecture / Work Inquiry"
-                className="w-full bg-[#111111] border border-white/10 focus:border-[#00ffc2] focus:bg-[#151515] rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition-all placeholder:text-gray-600 font-inter"
+                className="w-full bg-[var(--input)] border border-[var(--bd)] focus:border-[#00ffc2] focus:bg-[var(--input-focus)] rounded-xl px-4 py-3 text-sm text-[var(--txt)] focus:outline-none transition-all placeholder:text-gray-600 font-inter"
               />
             </div>
 
@@ -271,7 +277,7 @@ export default function Contact() {
                 value={formData.message}
                 onChange={handleChange}
                 placeholder="Details about your system scope, timeline, or position..."
-                className="w-full bg-[#111111] border border-white/10 focus:border-[#00ffc2] focus:bg-[#151515] rounded-xl px-4 py-3 text-sm text-white focus:outline-none transition-all resize-none placeholder:text-gray-600 font-inter"
+                className="w-full bg-[var(--input)] border border-[var(--bd)] focus:border-[#00ffc2] focus:bg-[var(--input-focus)] rounded-xl px-4 py-3 text-sm text-[var(--txt)] focus:outline-none transition-all resize-none placeholder:text-gray-600 font-inter"
               />
             </div>
 

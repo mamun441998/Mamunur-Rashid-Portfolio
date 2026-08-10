@@ -121,7 +121,7 @@ export default function Services() {
   return (
     <section
       id="services"
-      className="py-24 px-6 sm:px-10 lg:px-16 bg-[var(--color-background)] text-[var(--color-text-primary)] relative overflow-hidden select-none"
+      className="py-24 px-6 sm:px-10 lg:px-16 bg-[var(--sec-bg)] text-[var(--color-text-primary)] relative overflow-hidden select-none"
     >
       <div className="max-w-7xl mx-auto space-y-16">
         

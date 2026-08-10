@@ -20,6 +20,7 @@ import type { AnalyticsStats, ContactStats } from "@/lib/types";
 import AnimatedNumber from "./AnimatedNumber";
 import Sparkline from "./Sparkline";
 import VisitorHeatmap from "./VisitorHeatmap";
+import ScientificBackground from "./ScientificBackground";
 
 interface Counts {
   projects: number;
@@ -129,7 +130,9 @@ export default function DashboardCore({
   const countries = analytics?.by_country?.length ?? 0;
 
   return (
-    <div>
+    <div className="relative">
+      <ScientificBackground />
+      <div className="relative z-10">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold font-space-grotesk text-white tracking-tight">Dashboard Core</h1>
@@ -192,6 +195,7 @@ export default function DashboardCore({
           value={String(contact ? contact.contacted + contact.meeting : 0)}
           hint={`${contact?.new ?? 0} new · ${contact?.closed ?? 0} closed`}
         />
+      </div>
       </div>
     </div>
   );

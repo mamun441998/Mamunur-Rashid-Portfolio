@@ -18,26 +18,72 @@
 
   --color-border: #1c1c22;
   --color-border-hover: #2a2a33;
+
+  /* Section tokens — DARK values are the exact current hex (dark stays identical) */
+  --sec-bg: #030303;
+  --sec-bg-2: #050505;
+  --panel: #090909;
+  --panel-2: #0a0a0a;
+  --panel-3: #070707;
+  --panel-4: #080808;
+  --input: #111111;
+  --input-focus: #151515;
+  --txt: #ffffff;
+  --bd: rgba(255, 255, 255, 0.1);
 }
 
-/* ☀️ Light Theme (High Contrast & Clean Surfaces) */
+/* ☀️ Light Theme (soft-gray sections with gaps; Hero stays dark, handled below) */
 .light,
 [data-theme="light"] {
-  --color-background: #f8fafc;
+  --color-background: #ffffff;   /* page / gap color */
   --color-surface: #ffffff;
   --color-surface-elevated: #f1f5f9;
 
-  --color-accent: #0284c7;
-  --color-accent-dim: #0284c71a;
-  --color-accent-glow: #0284c733;
+  /* Accent stays emerald in light mode (as requested) */
+  --color-accent: #00ffc2;
+  --color-accent-dim: #00ffc21a;
+  --color-accent-glow: #00ffc233;
 
-  /* Pure High Contrast Text Colors for Light Mode */
   --color-text-primary: #0f172a;
   --color-text-secondary: #334155;
   --color-text-muted: #64748b;
 
   --color-border: #cbd5e1;
   --color-border-hover: #94a3b8;
+
+  /* Section tokens — LIGHT: soft-gray sections, white panels, dark text */
+  --sec-bg: #eef2f7;
+  --sec-bg-2: #e7ecf2;
+  --panel: #ffffff;
+  --panel-2: #f8fafc;
+  --panel-3: #ffffff;
+  --panel-4: #ffffff;
+  --input: #ffffff;
+  --input-focus: #eef2f7;
+  --txt: #0f172a;
+  --bd: rgba(15, 23, 42, 0.12);
+}
+
+/* Hero (#home) always keeps the dark palette, even in light mode */
+.light #home,
+[data-theme="light"] #home {
+  --color-background: #030303;
+  --color-surface: #0a0a0f;
+  --color-surface-elevated: #111117;
+  --color-accent: #00ffc2;
+  --color-accent-dim: #00ffc233;
+  --color-accent-glow: #00ffc255;
+  --color-text-primary: #f5f5f7;
+  --color-text-secondary: #8b8b93;
+  --color-text-muted: #56565e;
+  --color-border: #1c1c22;
+  --color-border-hover: #2a2a33;
+}
+
+/* Light mode: visible gaps between the soft-gray sections */
+.light main > section + section,
+[data-theme="light"] main > section + section {
+  margin-top: 0.85rem;
 }
 
 /* 🎨 Tailwind v4 Theme Variables Mapping */

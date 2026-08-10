@@ -15,12 +15,13 @@ import CaseStudyBuilder from "@/components/admin/CaseStudyBuilder";
 import LeadsCRM from "@/components/admin/LeadsCRM";
 import MeetingsPanel from "@/components/admin/MeetingsPanel";
 import AnalyticsCenter from "@/components/admin/AnalyticsCenter";
+import SettingsPanel from "@/components/admin/SettingsPanel";
 
 const POLL_MS = 15000; // re-fetch live data every 15s while the tab is visible
 const TAB_KEY = "mrp_admin_tab";
 const VALID_TABS: AdminTab[] = [
   "dashboard", "cms", "projects", "skills", "experience",
-  "services", "casestudy", "crm", "meetings", "analytics",
+  "services", "casestudy", "crm", "meetings", "analytics", "settings",
 ];
 
 export default function AdminDashboard() {
@@ -150,6 +151,7 @@ export default function AdminDashboard() {
             {tab === "crm" && <LeadsCRM onChanged={loadBadges} refreshSignal={tick} />}
             {tab === "meetings" && <MeetingsPanel onChanged={loadBadges} refreshSignal={tick} />}
             {tab === "analytics" && <AnalyticsCenter refreshSignal={tick} />}
+            {tab === "settings" && <SettingsPanel />}
           </div>
         </main>
       </div>

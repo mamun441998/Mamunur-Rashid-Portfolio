@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useSettings } from "@/hooks/useSettings";
 import {
   LayoutDashboard,
   FileCode2,
@@ -13,6 +14,7 @@ import {
   Mail,
   CalendarClock,
   LineChart,
+  Settings,
   Activity,
 } from "lucide-react";
 
@@ -26,7 +28,8 @@ export type AdminTab =
   | "casestudy"
   | "crm"
   | "meetings"
-  | "analytics";
+  | "analytics"
+  | "settings";
 
 export interface NavBadges {
   projects?: number;
@@ -49,6 +52,7 @@ const NAV: { id: AdminTab; label: string; icon: any; badgeKey?: keyof NavBadges 
   { id: "crm", label: "Messages & Leads", icon: Mail, badgeKey: "crm" },
   { id: "meetings", label: "Meetings Panel", icon: CalendarClock, badgeKey: "meetings" },
   { id: "analytics", label: "Analytics Center", icon: LineChart },
+  { id: "settings", label: "Settings", icon: Settings },
 ];
 
 export default function Sidebar({
@@ -64,6 +68,8 @@ export default function Sidebar({
   onToggle: () => void;
   badges: NavBadges;
 }) {
+  const { data: settings } = useSettings();
+  const avatar = settings?.profile_image_url?.trim() || "/Profile-Picture.png";
   return (
     <aside
       className={`${
@@ -75,12 +81,13 @@ export default function Sidebar({
           <div className="flex items-center gap-3.5 overflow-hidden">
             <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-[#00FFC2]/50 shadow-[0_0_20px_rgba(0,255,194,0.3)] shrink-0">
               <Image
-                src="/Profile-Picture.png"
+                src={avatar}
                 alt="Mamunur Rashid"
                 fill
                 sizes="48px"
                 className="object-cover"
                 priority
+                unoptimized
               />
             </div>
             {!collapsed && (

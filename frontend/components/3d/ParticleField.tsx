@@ -20,13 +20,16 @@ function Particles() {
   const pointsRef = useRef<THREE.Points>(null);
   const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  // Fewer particles on phones for smoother performance (desktop unchanged).
+  const [count, setCount] = useState(500);
 
   // SSR Hydration mismatch এড়াতে mounted স্টেট ট্র্যাক করা
   useEffect(() => {
     setMounted(true);
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setCount(220);
+    }
   }, []);
-
-  const count = 500;
 
   const texture = useMemo(() => {
     if (typeof window === "undefined") return null;
@@ -60,7 +63,7 @@ function Particles() {
       arr[i * 3 + 2] = (Math.random() - 0.5) * 12;
     }
     return arr;
-  }, []);
+  }, [count]);
 
   useFrame((_, delta) => {
     if (pointsRef.current) {
@@ -96,7 +99,7 @@ function Particles() {
   }, [currentTheme]);
 
   return (
-    <points ref={pointsRef}>
+    <points ref={pointsRef} key={count}>
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
@@ -117,11 +120,19 @@ function Particles() {
 }
 
 export default function ParticleField() {
+  // Lower device-pixel-ratio ceiling on phones = far less GPU work, smoother scroll.
+  const [dpr, setDpr] = useState<[number, number]>([1, 1.5]);
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setDpr([1, 1]);
+    }
+  }, []);
+
   return (
     <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
       <Canvas
         camera={{ position: [0, 0, 5], fov: 75 }}
-        dpr={[1, 1.5]}
+        dpr={dpr}
         gl={{
           powerPreference: "high-performance",
           alpha: true,

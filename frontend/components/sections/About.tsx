@@ -49,7 +49,7 @@ export default function About() {
   return (
     <section
       id="about"
-      className="snap-section relative flex items-center justify-center py-24 px-6 sm:px-10 lg:px-16 overflow-hidden bg-[var(--color-background)] select-none"
+      className="snap-section relative flex items-center justify-center py-24 px-6 sm:px-10 lg:px-16 overflow-hidden bg-[var(--sec-bg)] select-none"
     >
       {/* Background Radial Glow */}
       <div
@@ -132,10 +132,11 @@ export default function About() {
                 {activeTab === "photo" && (
                   <div className="relative w-full h-full rounded-2xl overflow-hidden">
                     <Image
-                      src="/Profile-Picture.png"
+                      src={settings?.profile_image_url?.trim() || "/Profile-Picture.png"}
                       alt="Mamunur Rashid"
                       fill
                       priority
+                      unoptimized
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover rounded-2xl grayscale group-hover:grayscale-0 transition-all duration-700"
                     />

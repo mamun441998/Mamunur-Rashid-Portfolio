@@ -36,7 +36,7 @@ function SkillSkeleton() {
       {[...Array(8)].map((_, i) => (
         <div
           key={i}
-          className="h-36 bg-[#111111] border border-white/5 rounded-2xl p-5 animate-pulse flex flex-col justify-between"
+          className="h-36 bg-[var(--input)] border border-white/5 rounded-2xl p-5 animate-pulse flex flex-col justify-between"
         >
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-3">
@@ -82,7 +82,7 @@ export default function Skills() {
   return (
     <section
       id="skills"
-      className="min-h-screen w-full py-24 px-6 sm:px-10 lg:px-16 flex flex-col justify-center items-center bg-[#030303] text-white snap-start relative overflow-hidden select-none"
+      className="min-h-screen w-full py-24 px-6 sm:px-10 lg:px-16 flex flex-col justify-center items-center bg-[var(--sec-bg)] text-[var(--txt)] snap-start relative overflow-hidden select-none"
     >
       {/* Background Ambient Light */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#00ffc2]/5 blur-[160px] rounded-full pointer-events-none" />
@@ -120,7 +120,7 @@ export default function Skills() {
                 className={`px-4 py-2 text-xs md:text-sm font-medium rounded-full transition-all duration-300 border cursor-pointer ${
                   selectedCategory === category
                     ? 'bg-[#00ffc2]/10 border-[#00ffc2] text-[#00ffc2] shadow-[0_0_15px_rgba(0,255,194,0.25)]'
-                    : 'bg-[#0a0a0a] border-white/10 text-gray-400 hover:border-white/20 hover:text-white'
+                    : 'bg-[var(--panel-2)] border-[var(--bd)] text-gray-400 hover:border-white/20 hover:text-[var(--txt)]'
                 }`}
               >
                 {category}
@@ -151,7 +151,7 @@ export default function Skills() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.3 }}
-                    className="bg-[#090909] border border-white/10 hover:border-[#00ffc2]/40 rounded-2xl p-5 transition-all duration-300 group relative overflow-hidden flex flex-col justify-between"
+                    className="bg-[var(--panel)] border border-[var(--bd)] hover:border-[#00ffc2]/40 rounded-2xl p-5 transition-all duration-300 group relative overflow-hidden flex flex-col justify-between"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-[#00ffc2]/0 via-[#00ffc2]/5 to-[#00ffc2]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
@@ -176,7 +176,7 @@ export default function Skills() {
                               </svg>
                             </div>
                           )}
-                          <h3 className="font-semibold text-base sm:text-lg text-white font-space-grotesk group-hover:text-[#00ffc2] transition-colors leading-snug">
+                          <h3 className="font-semibold text-base sm:text-lg text-[var(--txt)] font-space-grotesk group-hover:text-[#00ffc2] transition-colors leading-snug">
                             {skill.name}
                           </h3>
                         </div>

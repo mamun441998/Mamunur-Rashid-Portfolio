@@ -104,6 +104,28 @@ export async function loginRequest(
   return res.json();
 }
 
+export function changePasswordRequest(current_password: string, new_password: string) {
+  return request<{ status: string; message: string }>("/api/auth/change-password", {
+    method: "POST",
+    body: { current_password, new_password },
+    auth: true,
+  });
+}
+
+export function forgotPasswordRequest(username?: string) {
+  return request<{ status: string; message: string }>("/api/auth/forgot-password", {
+    method: "POST",
+    body: { username: username || null },
+  });
+}
+
+export function resetPasswordRequest(code: string, new_password: string) {
+  return request<{ status: string; message: string }>("/api/auth/reset-password", {
+    method: "POST",
+    body: { code, new_password },
+  });
+}
+
 export const api = {
   settings: {
     get: () => request<SiteSetting>("/api/settings"),

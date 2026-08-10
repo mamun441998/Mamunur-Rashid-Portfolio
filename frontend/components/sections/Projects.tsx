@@ -15,7 +15,7 @@ function ProjectsSkeleton() {
       {[...Array(3)].map((_, i) => (
         <div
           key={i}
-          className="h-96 bg-[#0a0a0a] border border-white/5 rounded-2xl p-6 animate-pulse flex flex-col justify-between"
+          className="h-96 bg-[var(--panel-2)] border border-white/5 rounded-2xl p-6 animate-pulse flex flex-col justify-between"
         >
           <div>
             <div className="w-full h-40 bg-white/5 rounded-xl mb-6" />
@@ -63,7 +63,7 @@ export default function Projects() {
   return (
     <section
       id="projects"
-      className="min-h-screen w-full py-24 px-6 sm:px-10 lg:px-16 flex flex-col justify-center items-center bg-[#050505] text-white snap-start relative overflow-hidden select-none"
+      className="min-h-screen w-full py-24 px-6 sm:px-10 lg:px-16 flex flex-col justify-center items-center bg-[var(--sec-bg-2)] text-[var(--txt)] snap-start relative overflow-hidden select-none"
     >
       {/* Background Accent Glow */}
       <div className="absolute top-1/3 right-10 w-[450px] h-[450px] bg-[#00ffc2]/5 blur-[140px] rounded-full pointer-events-none" />
@@ -102,7 +102,7 @@ export default function Projects() {
                 className={`px-5 py-2 text-xs md:text-sm font-medium rounded-full transition-all duration-300 border cursor-pointer ${
                   filter === tab
                     ? 'bg-[#00ffc2]/10 border-[#00ffc2] text-[#00ffc2] shadow-[0_0_15px_rgba(0,255,194,0.2)]'
-                    : 'bg-[#111] border-white/10 text-gray-400 hover:border-white/20 hover:text-white'
+                    : 'bg-[var(--input)] border-[var(--bd)] text-gray-400 hover:border-white/20 hover:text-[var(--txt)]'
                 }`}
               >
                 {tab}
@@ -149,7 +149,7 @@ export default function Projects() {
         >
           <Link
             href="/projects/auto-marketplace-modernization"
-            className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl overflow-hidden font-mono text-sm font-semibold tracking-wide border border-[#00ffc2]/40 bg-white/[0.03] text-white shadow-[0_0_20px_rgba(0,255,194,0.15)] transition-all duration-500 hover:border-[#00ffc2] hover:shadow-[0_0_35px_rgba(0,255,194,0.35)] active:scale-95"
+            className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl overflow-hidden font-mono text-sm font-semibold tracking-wide border border-[#00ffc2]/40 bg-white/[0.03] text-[var(--txt)] shadow-[0_0_20px_rgba(0,255,194,0.15)] transition-all duration-500 hover:border-[#00ffc2] hover:shadow-[0_0_35px_rgba(0,255,194,0.35)] active:scale-95"
           >
             {/* Glass Liquid Water Fill Wave Effect */}
             <span className="absolute inset-0 w-full h-full bg-[#00ffc2] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out z-0 opacity-90 rounded-2xl" />

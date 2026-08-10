@@ -21,6 +21,7 @@ from app.models.visit import Visit
 from app.models.site_setting import SiteSetting
 from app.models.meeting import Meeting
 from app.models.meeting_state import MeetingState
+from app.models.password_reset import PasswordReset
 
 from app.routes import (
     auth, projects, skills, experience, contact,
@@ -33,18 +34,22 @@ logger = logging.getLogger("portfolio")
 
 
 def ensure_admin() -> None:
-    """Create or refresh the admin account from env credentials (idempotent)."""
+    """Create the admin account from env credentials ONLY if it doesn't exist.
+
+    We intentionally do NOT overwrite an existing admin's password on startup so
+    that password changes made from the admin UI (or via email reset) persist
+    across restarts/redeploys.
+    """
     with Session(engine) as session:
         admin = session.exec(
             select(Admin).where(Admin.username == settings.admin_username)
         ).first()
-        hashed = get_password_hash(settings.admin_password)
         if admin is None:
-            session.add(Admin(username=settings.admin_username, hashed_password=hashed))
-        else:
-            admin.hashed_password = hashed
-            session.add(admin)
-        session.commit()
+            session.add(Admin(
+                username=settings.admin_username,
+                hashed_password=get_password_hash(settings.admin_password),
+            ))
+            session.commit()
 
 
 @asynccontextmanager
