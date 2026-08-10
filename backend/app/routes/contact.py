@@ -1,5 +1,7 @@
 import logging
 import smtplib
+import socket
+import ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timezone
@@ -52,8 +54,16 @@ class StatusUpdate(BaseModel):
 # Email helpers (SMTP config from settings, not os.getenv)
 # ------------------------------------------------------------------
 def _smtp_send(to_email: str, subject: str, body: str, from_label: str) -> None:
-    """Send an email via SMTP (STARTTLS). Raises EmailSendError with a clear,
-    admin-facing reason on any failure; logs full details server-side."""
+    """Send an email via SMTP (STARTTLS), forcing an IPv4 connection.
+
+    Render containers often resolve smtp.gmail.com to an IPv6 (AAAA) address but
+    have no IPv6 route, so a plain connect fails with "[Errno 101] Network is
+    unreachable". We resolve the host to IPv4 and connect to that IP, but set the
+    SMTP object's `_host` back to the real hostname before STARTTLS so the TLS
+    certificate is validated against the hostname (not the IP).
+
+    Raises EmailSendError with a clear, admin-facing reason on any failure.
+    """
     sender_email = settings.smtp_email
     sender_password = settings.smtp_password
     if not sender_email or not sender_password:
@@ -62,24 +72,34 @@ def _smtp_send(to_email: str, subject: str, body: str, from_label: str) -> None:
             "in the Render environment)."
         )
 
+    host = settings.smtp_host or "smtp.gmail.com"
+    port = int(settings.smtp_port or 587)
+
     email_msg = MIMEMultipart()
     email_msg["From"] = f"{from_label} <{sender_email}>"
     email_msg["To"] = to_email
     email_msg["Subject"] = subject
-    email_msg.attach(MIMEText(body, "plain"))
+    email_msg.attach(MIMEText(body, "plain", "utf-8"))
 
-    logger.info(
-        "Sending email via %s:%s as %s -> %s",
-        settings.smtp_host, settings.smtp_port, sender_email, to_email,
-    )
+    logger.info("Sending email via %s:%s as %s -> %s", host, port, sender_email, to_email)
 
     try:
-        with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=SMTP_TIMEOUT) as server:
+        # Force IPv4 to avoid "[Errno 101] Network is unreachable" on IPv6-less hosts.
+        ipv4 = socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM)[0][4][0]
+        context = ssl.create_default_context()
+        server = smtplib.SMTP(ipv4, port, timeout=SMTP_TIMEOUT)
+        try:
+            server._host = host  # validate the TLS cert against the hostname, not the IP
             server.ehlo()
-            server.starttls()
+            server.starttls(context=context)
             server.ehlo()
             server.login(sender_email, sender_password)
             server.send_message(email_msg)
+        finally:
+            try:
+                server.quit()
+            except Exception:
+                pass
     except smtplib.SMTPAuthenticationError as exc:
         logger.exception("SMTP authentication failed")
         raise EmailSendError(
@@ -88,7 +108,7 @@ def _smtp_send(to_email: str, subject: str, body: str, from_label: str) -> None:
             "16-character Gmail App Password (no spaces) and that 2-Step Verification "
             "is enabled on that account."
         ) from exc
-    except (smtplib.SMTPException, OSError, TimeoutError) as exc:
+    except Exception as exc:
         logger.exception("SMTP send failed")
         raise EmailSendError(f"Email delivery failed: {exc}") from exc
 
