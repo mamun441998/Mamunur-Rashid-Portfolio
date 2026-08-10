@@ -18,9 +18,12 @@ export default function Contact() {
   const [copied, setCopied] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const { data: settings } = useSettings();
-  // Always have a working scheduling link, even before the CMS value is set.
-  const DEFAULT_CALENDLY = 'https://calendly.com/mamun441998/30min';
-  const calendlyUrl = settings?.calendly_url?.trim() || DEFAULT_CALENDLY;
+  // Google Calendar appointment link (auto-adds a Google Meet per booking).
+  // Editable from admin → Portfolio CMS "Meeting / Booking URL"; falls back to
+  // this default so the button always works even before the CMS value is set.
+  const DEFAULT_MEETING_URL =
+    'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ1BoiiiiIA5Oo22YNFCmFPMHCes4DDo3IATKgLs43xvKX72cWk1MJkpA0Sj-dDwYpJckYI70L-q';
+  const meetingUrl = settings?.calendly_url?.trim() || DEFAULT_MEETING_URL;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -113,9 +116,9 @@ export default function Contact() {
             <span>Available for Worldwide Remote Projects & Contracts</span>
           </motion.div>
 
-          {/* Schedule a Meeting CTA (Calendly) */}
+          {/* Schedule a Meeting — opens the Google booking page (Google Meet) in a new tab */}
           <motion.a
-            href={calendlyUrl}
+            href={meetingUrl}
             target="_blank"
             rel="noopener noreferrer"
             initial={{ opacity: 0, y: 20 }}
@@ -128,6 +131,9 @@ export default function Contact() {
             <span>Schedule a Meeting</span>
             <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100" />
           </motion.a>
+          <p className="text-[11px] font-mono text-gray-500 -mt-2">
+            Book a 30-min call · Google Meet link added automatically
+          </p>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -316,37 +322,6 @@ export default function Contact() {
         </motion.div>
 
       </div>
-
-      {/* Calendly inline scheduling — only shown when an admin sets the URL */}
-      {calendlyUrl && (
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="max-w-7xl w-full z-10 mt-16"
-        >
-          <div className="bg-[#080808] border border-white/10 rounded-3xl p-6 sm:p-8 relative shadow-2xl overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#00ffc2]/40 to-transparent" />
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/5">
-              <div className="flex items-center gap-2 text-xs font-mono text-gray-400">
-                <CalendarClock className="w-4 h-4 text-[#00ffc2]" />
-                <span>SCHEDULE_A_MEETING</span>
-              </div>
-              <span className="text-[10px] font-mono text-gray-500 uppercase">Powered by Calendly</span>
-            </div>
-            <div className="rounded-2xl overflow-hidden border border-white/10 bg-white">
-              <iframe
-                src={calendlyUrl}
-                title="Schedule a meeting with Mamunur Rashid"
-                className="w-full border-0"
-                style={{ height: '680px' }}
-                loading="lazy"
-              />
-            </div>
-          </div>
-        </motion.div>
-      )}
     </section>
   );
 }

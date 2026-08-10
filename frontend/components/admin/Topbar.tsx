@@ -2,20 +2,42 @@
 
 import { RefreshCw, LogOut, ExternalLink } from "lucide-react";
 
+function fmtTime(d: Date): string {
+  return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+}
+
 export default function Topbar({
   onRefresh,
   onLogout,
   refreshing,
+  live = true,
+  lastUpdated = null,
 }: {
   onRefresh: () => void;
   onLogout: () => void;
   refreshing?: boolean;
+  live?: boolean;
+  lastUpdated?: Date | null;
 }) {
   return (
     <header className="h-16 shrink-0 border-b border-white/10 bg-[#080a10]/80 backdrop-blur-xl flex items-center justify-between px-6">
-      <div className="flex items-center gap-2 text-xs font-mono text-gray-400">
-        <span className="w-2 h-2 rounded-full bg-[#00FFC2] animate-pulse" />
-        <span className="uppercase tracking-widest">MRP-OS · Admin Control</span>
+      <div className="flex items-center gap-3">
+        {/* LIVE indicator */}
+        <span
+          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold tracking-widest border ${
+            live
+              ? "bg-[#00FFC2]/10 border-[#00FFC2]/40 text-[#00FFC2]"
+              : "bg-white/5 border-white/10 text-gray-500"
+          }`}
+        >
+          <span
+            className={`w-2 h-2 rounded-full ${live ? "bg-[#00FFC2] animate-pulse" : "bg-gray-500"}`}
+          />
+          {live ? "LIVE" : "PAUSED"}
+        </span>
+        <span className="hidden sm:inline text-[11px] font-mono text-gray-500">
+          {lastUpdated ? `updated ${fmtTime(lastUpdated)}` : "syncing…"}
+        </span>
       </div>
 
       <div className="flex items-center gap-2.5">

@@ -57,14 +57,21 @@ function HudCard({
   );
 }
 
-export default function DashboardCore({ counts }: { counts: Counts }) {
+export default function DashboardCore({
+  counts,
+  refreshSignal = 0,
+}: {
+  counts: Counts;
+  refreshSignal?: number;
+}) {
   const [analytics, setAnalytics] = useState<AnalyticsStats | null>(null);
   const [contact, setContact] = useState<ContactStats | null>(null);
 
+  // Re-fetches on each poll tick (refreshSignal) so cards stay real-time.
   useEffect(() => {
     api.analytics.stats().then(setAnalytics).catch(() => setAnalytics(null));
     api.contact.stats().then(setContact).catch(() => setContact(null));
-  }, []);
+  }, [refreshSignal]);
 
   return (
     <div>

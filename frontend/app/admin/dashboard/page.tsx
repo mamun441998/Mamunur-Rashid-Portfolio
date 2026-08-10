@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { api } from "@/lib/api";
 import Sidebar, { AdminTab, NavBadges } from "@/components/admin/Sidebar";
@@ -16,6 +16,8 @@ import LeadsCRM from "@/components/admin/LeadsCRM";
 import MeetingsPanel from "@/components/admin/MeetingsPanel";
 import AnalyticsCenter from "@/components/admin/AnalyticsCenter";
 
+const POLL_MS = 15000; // re-fetch live data every 15s while the tab is visible
+
 export default function AdminDashboard() {
   const { ready, authenticated, logout } = useAuth();
   const [tab, setTab] = useState<AdminTab>("dashboard");
@@ -23,8 +25,16 @@ export default function AdminDashboard() {
   const [badges, setBadges] = useState<NavBadges>({});
   const [refreshing, setRefreshing] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  // Real-time state: `tick` bumps each poll and is passed to live modules so
+  // they re-fetch without remounting (selection/scroll are preserved).
+  const [tick, setTick] = useState(0);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [live, setLive] = useState(true);
+  const inFlight = useRef(false);
 
   const loadBadges = useCallback(async () => {
+    if (inFlight.current) return;
+    inFlight.current = true;
     setRefreshing(true);
     try {
       const [projects, skills, experience, services, casestudy, unread, meetings] = await Promise.all([
@@ -38,17 +48,41 @@ export default function AdminDashboard() {
       ]);
       // The "Messages & Leads" badge shows the UNREAD count, not the total.
       setBadges({ projects, skills, experience, services, casestudy, crm: unread, meetings });
+      setLastUpdated(new Date());
     } finally {
       setRefreshing(false);
+      inFlight.current = false;
     }
   }, []);
 
+  // Initial load once authenticated.
   useEffect(() => {
     if (authenticated) loadBadges();
   }, [authenticated, loadBadges]);
 
+  // Poll while the tab is visible; pause when hidden to save requests / Render wake-ups.
+  useEffect(() => {
+    if (!authenticated) return;
+    const syncVisibility = () => setLive(document.visibilityState === "visible");
+    syncVisibility();
+    document.addEventListener("visibilitychange", syncVisibility);
+    const id = setInterval(() => {
+      if (document.visibilityState === "visible") setTick((t) => t + 1);
+    }, POLL_MS);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", syncVisibility);
+    };
+  }, [authenticated]);
+
+  // Each poll tick refreshes sidebar badges + counts.
+  useEffect(() => {
+    if (authenticated && tick > 0) loadBadges();
+  }, [tick, authenticated, loadBadges]);
+
   const handleRefresh = () => {
     loadBadges();
+    setTick((t) => t + 1); // nudge live modules to re-fetch immediately
     setRefreshKey((k) => k + 1);
   };
 
@@ -77,20 +111,27 @@ export default function AdminDashboard() {
       />
 
       <div className="flex-1 flex flex-col min-w-0">
-        <Topbar onRefresh={handleRefresh} onLogout={logout} refreshing={refreshing} />
+        <Topbar
+          onRefresh={handleRefresh}
+          onLogout={logout}
+          refreshing={refreshing}
+          live={live}
+          lastUpdated={lastUpdated}
+        />
 
         <main className="flex-1 overflow-y-auto custom-scrollbar p-6">
+          {/* refreshKey remounts only on manual refresh; tick keeps modules live in place */}
           <div key={`${tab}-${refreshKey}`}>
-            {tab === "dashboard" && <DashboardCore counts={counts} />}
+            {tab === "dashboard" && <DashboardCore counts={counts} refreshSignal={tick} />}
             {tab === "cms" && <PortfolioCMS />}
             {tab === "projects" && <ProjectsManager onChanged={loadBadges} />}
             {tab === "skills" && <SkillsStack onChanged={loadBadges} />}
             {tab === "experience" && <ExperienceLog onChanged={loadBadges} />}
             {tab === "services" && <ServicesEngine onChanged={loadBadges} />}
             {tab === "casestudy" && <CaseStudyBuilder onChanged={loadBadges} />}
-            {tab === "crm" && <LeadsCRM onChanged={loadBadges} />}
-            {tab === "meetings" && <MeetingsPanel onChanged={loadBadges} />}
-            {tab === "analytics" && <AnalyticsCenter />}
+            {tab === "crm" && <LeadsCRM onChanged={loadBadges} refreshSignal={tick} />}
+            {tab === "meetings" && <MeetingsPanel onChanged={loadBadges} refreshSignal={tick} />}
+            {tab === "analytics" && <AnalyticsCenter refreshSignal={tick} />}
           </div>
         </main>
       </div>

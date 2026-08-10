@@ -28,7 +28,7 @@ const TEXT_FIELDS: { key: keyof SiteSetting; label: string; placeholder?: string
   { key: "linkedin_url", label: "LinkedIn URL" },
   { key: "twitter_url", label: "Twitter URL" },
   { key: "facebook_url", label: "Facebook URL" },
-  { key: "calendly_url", label: "Calendly URL (inline embed)" },
+  { key: "calendly_url", label: "Meeting / Booking URL (Google Calendar appointment link)" },
 ];
 
 const STAT_FIELDS: { key: keyof SiteSetting; label: string }[] = [

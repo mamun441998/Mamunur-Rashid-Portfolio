@@ -29,7 +29,13 @@ const ORDER: LeadStatus[] = ["new", "contacted", "meeting", "closed"];
 const stageMeta = (s: LeadStatus) => STAGES.find((x) => x.key === s) || STAGES[0];
 
 /** Unified inbox + pipeline: read messages, reply by email, convert status, delete. */
-export default function LeadsCRM({ onChanged }: { onChanged?: () => void }) {
+export default function LeadsCRM({
+  onChanged,
+  refreshSignal = 0,
+}: {
+  onChanged?: () => void;
+  refreshSignal?: number;
+}) {
   const [items, setItems] = useState<ContactMessage[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [filter, setFilter] = useState<LeadStatus | "all">("all");
@@ -55,6 +61,12 @@ export default function LeadsCRM({ onChanged }: { onChanged?: () => void }) {
     load(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Live refresh on each poll tick — new messages appear without losing selection.
+  useEffect(() => {
+    if (refreshSignal > 0) load(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refreshSignal]);
 
   const openLead = async (m: ContactMessage, current?: ContactMessage[]) => {
     setSelectedId(m.id);

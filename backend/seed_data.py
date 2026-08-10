@@ -272,7 +272,7 @@ def seed():
                 projects_completed="3+",
                 happy_clients="3+",
                 satisfaction="100%",
-                calendly_url="https://calendly.com/mamun441998/30min",
+                calendly_url="https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ1BoiiiiIA5Oo22YNFCmFPMHCes4DDo3IATKgLs43xvKX72cWk1MJkpA0Sj-dDwYpJckYI70L-q",
             ))
             session.commit()
             print("✓ SiteSetting: seeded default row.")

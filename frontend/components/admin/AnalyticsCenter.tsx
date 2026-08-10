@@ -6,16 +6,17 @@ import type { AnalyticsStats } from "@/lib/types";
 import { SectionHeader, Panel, EmptyState } from "./ui";
 import VisitorHeatmap from "./VisitorHeatmap";
 
-export default function AnalyticsCenter() {
+export default function AnalyticsCenter({ refreshSignal = 0 }: { refreshSignal?: number }) {
   const [data, setData] = useState<AnalyticsStats | null>(null);
   const [loaded, setLoaded] = useState(false);
 
+  // Re-fetches on each poll tick (refreshSignal) so charts stay real-time.
   useEffect(() => {
     api.analytics.stats()
       .then(setData)
       .catch(() => setData(null))
       .finally(() => setLoaded(true));
-  }, []);
+  }, [refreshSignal]);
 
   const maxDay = data?.by_day.reduce((m, d) => Math.max(m, d.count), 0) || 1;
 

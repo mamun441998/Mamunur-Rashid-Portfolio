@@ -6,11 +6,19 @@ import { api } from "@/lib/api";
 import type { Meeting } from "@/lib/types";
 import { SectionHeader, Panel, GhostButton, EmptyState } from "./ui";
 
-export default function MeetingsPanel({ onChanged }: { onChanged?: () => void }) {
+export default function MeetingsPanel({
+  onChanged,
+  refreshSignal = 0,
+}: {
+  onChanged?: () => void;
+  refreshSignal?: number;
+}) {
   const [items, setItems] = useState<Meeting[]>([]);
 
   const load = () => api.meetings.list().then(setItems).catch(() => setItems([]));
   useEffect(() => { load(); }, []);
+  // Live refresh on each poll tick.
+  useEffect(() => { if (refreshSignal > 0) load(); }, [refreshSignal]);
 
   const remove = async (id: number) => {
     if (!confirm("Delete this meeting record?")) return;
