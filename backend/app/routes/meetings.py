@@ -15,13 +15,26 @@ import urllib.request
 from datetime import datetime, date, timezone
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+from sqlmodel import Session, select
 from icalendar import Calendar
 
 from app.core.security import get_current_admin
+from app.db.session import get_session
 from app.models.admin import Admin
+from app.models.meeting_state import MeetingState, MeetingStatus
 
 router = APIRouter(prefix="/api/meetings", tags=["meetings"])
+
+
+class MeetingStatusUpdate(BaseModel):
+    uid: str
+    status: str
+
+
+class MeetingDismiss(BaseModel):
+    uid: str
 
 _MEET_RE = re.compile(r"https://meet\.google\.com/[a-z0-9\-]+", re.I)
 ICAL_TIMEOUT = 20
@@ -102,10 +115,21 @@ def _parse_events(raw: bytes) -> List[dict]:
     return out
 
 
+def _default_state(start: Optional[datetime], now: datetime) -> str:
+    """Auto status when the admin hasn't set one: future -> pending, past -> completed."""
+    if start and start > now:
+        return MeetingStatus.PENDING
+    return MeetingStatus.COMPLETED
+
+
 @router.get("")
 @router.get("/", include_in_schema=False)
-def list_meetings(admin: Admin = Depends(get_current_admin)):
-    """Return upcoming Google Calendar bookings parsed from the iCal feed."""
+def list_meetings(
+    session: Session = Depends(get_session),
+    admin: Admin = Depends(get_current_admin),
+):
+    """Return upcoming Google Calendar bookings parsed from the iCal feed,
+    merged with the admin's per-meeting status and dismissed flag."""
     url = os.getenv("GOOGLE_CALENDAR_ICAL_URL", "").strip()
     if not url:
         return {"configured": False, "meetings": []}
@@ -120,9 +144,60 @@ def list_meetings(admin: Admin = Depends(get_current_admin)):
             "meetings": [],
         }
 
-    now_ts = datetime.now(timezone.utc).timestamp()
-    upcoming = [e for e in events if e["_start"] and e["_start"].timestamp() >= now_ts - PAST_WINDOW_SECONDS]
-    upcoming.sort(key=lambda e: e["_start"])
-    for e in upcoming:
+    states = {s.uid: s for s in session.exec(select(MeetingState)).all()}
+
+    now = datetime.now(timezone.utc)
+    now_ts = now.timestamp()
+    visible = []
+    for e in events:
+        start = e["_start"]
+        if not start or start.timestamp() < now_ts - PAST_WINDOW_SECONDS:
+            continue
+        st = states.get(e["id"])
+        if st and st.dismissed:
+            continue
+        e["state"] = (st.status if st and st.status else _default_state(start, now))
         e.pop("_start", None)
-    return {"configured": True, "meetings": upcoming[:100]}
+        visible.append((start, e))
+
+    visible.sort(key=lambda t: t[0])
+    return {"configured": True, "meetings": [e for _, e in visible[:100]]}
+
+
+def _get_or_create_state(session: Session, uid: str) -> MeetingState:
+    obj = session.exec(select(MeetingState).where(MeetingState.uid == uid)).first()
+    if not obj:
+        obj = MeetingState(uid=uid)
+        session.add(obj)
+    return obj
+
+
+@router.post("/status")
+def set_status(
+    payload: MeetingStatusUpdate,
+    session: Session = Depends(get_session),
+    admin: Admin = Depends(get_current_admin),
+):
+    if payload.status not in MeetingStatus.ALL:
+        raise HTTPException(400, f"Invalid status. Allowed: {MeetingStatus.ALL}")
+    obj = _get_or_create_state(session, payload.uid)
+    obj.status = payload.status
+    obj.updated_at = datetime.utcnow()
+    session.add(obj)
+    session.commit()
+    return {"uid": payload.uid, "status": payload.status}
+
+
+@router.post("/dismiss")
+def dismiss(
+    payload: MeetingDismiss,
+    session: Session = Depends(get_session),
+    admin: Admin = Depends(get_current_admin),
+):
+    """Hide a booking from the panel (it stays in Google Calendar)."""
+    obj = _get_or_create_state(session, payload.uid)
+    obj.dismissed = True
+    obj.updated_at = datetime.utcnow()
+    session.add(obj)
+    session.commit()
+    return {"uid": payload.uid, "dismissed": True}

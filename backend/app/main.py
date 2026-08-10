@@ -20,6 +20,7 @@ from app.models.case_study import CaseStudy
 from app.models.visit import Visit
 from app.models.site_setting import SiteSetting
 from app.models.meeting import Meeting
+from app.models.meeting_state import MeetingState
 
 from app.routes import (
     auth, projects, skills, experience, contact,

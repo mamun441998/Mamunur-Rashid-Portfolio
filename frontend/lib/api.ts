@@ -187,6 +187,18 @@ export const api = {
   meetings: {
     // Backed by the Google Calendar iCal feed (GOOGLE_CALENDAR_ICAL_URL on the backend).
     list: () => request<MeetingsResponse>("/api/meetings", { auth: true }),
+    setStatus: (uid: string, status: "pending" | "completed" | "closed") =>
+      request<{ uid: string; status: string }>("/api/meetings/status", {
+        method: "POST",
+        body: { uid, status },
+        auth: true,
+      }),
+    dismiss: (uid: string) =>
+      request<{ uid: string; dismissed: boolean }>("/api/meetings/dismiss", {
+        method: "POST",
+        body: { uid },
+        auth: true,
+      }),
   },
   analytics: {
     stats: () => request<AnalyticsStats>("/api/analytics/stats", { auth: true }),

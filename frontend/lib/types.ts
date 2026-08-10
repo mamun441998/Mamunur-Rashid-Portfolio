@@ -129,8 +129,11 @@ export interface GoogleMeeting {
   location: string;
   meet_link: string;
   notes: string;
-  status: string;
+  status: string;        // from iCal: active / canceled
+  state?: string;        // admin pipeline: pending / completed / closed
 }
+
+export type MeetingState = "pending" | "completed" | "closed";
 
 export interface MeetingsResponse {
   configured: boolean;

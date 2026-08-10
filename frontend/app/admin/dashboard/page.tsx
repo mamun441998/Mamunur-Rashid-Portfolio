@@ -17,10 +17,28 @@ import MeetingsPanel from "@/components/admin/MeetingsPanel";
 import AnalyticsCenter from "@/components/admin/AnalyticsCenter";
 
 const POLL_MS = 15000; // re-fetch live data every 15s while the tab is visible
+const TAB_KEY = "mrp_admin_tab";
+const VALID_TABS: AdminTab[] = [
+  "dashboard", "cms", "projects", "skills", "experience",
+  "services", "casestudy", "crm", "meetings", "analytics",
+];
 
 export default function AdminDashboard() {
   const { ready, authenticated, logout } = useAuth();
-  const [tab, setTab] = useState<AdminTab>("dashboard");
+  const [tab, setTabState] = useState<AdminTab>("dashboard");
+
+  // Restore the last-open tab so a browser refresh stays on the same panel.
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(TAB_KEY) as AdminTab | null;
+      if (saved && VALID_TABS.includes(saved)) setTabState(saved);
+    } catch { /* ignore */ }
+  }, []);
+
+  const setTab = (t: AdminTab) => {
+    setTabState(t);
+    try { localStorage.setItem(TAB_KEY, t); } catch { /* ignore */ }
+  };
   const [collapsed, setCollapsed] = useState(false);
   const [badges, setBadges] = useState<NavBadges>({});
   const [refreshing, setRefreshing] = useState(false);
