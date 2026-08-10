@@ -22,11 +22,12 @@ from app.models.site_setting import SiteSetting
 from app.models.meeting import Meeting
 from app.models.meeting_state import MeetingState
 from app.models.password_reset import PasswordReset
+from app.models.blog import Blog, BlogImage
 
 from app.routes import (
     auth, projects, skills, experience, contact,
     services, case_studies, analytics, settings as settings_routes, calendly,
-    meetings,
+    meetings, blogs,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -84,6 +85,7 @@ app.include_router(analytics.router, tags=["Analytics"])
 app.include_router(settings_routes.router, tags=["Site Settings"])
 app.include_router(calendly.router, tags=["Calendly"])
 app.include_router(meetings.router, tags=["Meetings"])
+app.include_router(blogs.router, tags=["Blogs"])
 
 
 @app.get("/", tags=["Health"])

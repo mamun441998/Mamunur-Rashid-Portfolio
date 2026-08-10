@@ -17,6 +17,7 @@ from app.models.project import Project
 from app.models.service import Service
 from app.models.case_study import CaseStudy
 from app.models.site_setting import SiteSetting
+from app.models.blog import Blog
 
 
 def _seed_if_empty(session: Session, model, rows: list) -> None:
@@ -251,6 +252,100 @@ case_studies_data = [
 ]
 
 
+blogs_data = [
+    {
+        "slug": "build-multi-tenant-saas-laravel-nextjs",
+        "title": "How I Build Scalable Multi-Tenant SaaS Platforms with Laravel and Next.js",
+        "excerpt": (
+            "A practical, production-tested walkthrough of the architecture I use to ship "
+            "multi-tenant SaaS products — tenant isolation, subscription billing, and a "
+            "Next.js front end that stays fast as you scale."
+        ),
+        "meta_description": (
+            "Learn how to build a scalable multi-tenant SaaS platform with Laravel and Next.js: "
+            "tenant isolation strategies, subscription billing, role-based access, and performance."
+        ),
+        "tags": "SaaS, Multi-Tenant, Laravel, Next.js, PostgreSQL, System Architecture",
+        "read_time": "7 min read",
+        "hero_image_url": None,
+        "content_html": (
+            "<p>Multi-tenant SaaS is one of the most requested products I build. In this post I break "
+            "down the exact architecture I use to keep each customer's data isolated while sharing a "
+            "single, scalable codebase.</p>"
+            "<h2>1. Choosing a tenant isolation strategy</h2>"
+            "<p>There are three common approaches — separate databases, separate schemas, or a shared "
+            "schema with a <code>tenant_id</code> column. For most early-stage SaaS I use a "
+            "<strong>shared schema with a global tenant scope</strong>, because it is the cheapest to "
+            "operate and the easiest to migrate.</p>"
+            "<pre><code>Model::addGlobalScope('tenant', function ($builder) {\n"
+            "    $builder->where('dealer_id', auth()->user()->dealer_id);\n"
+            "});</code></pre>"
+            "<h2>2. Subscription billing that won't bite you later</h2>"
+            "<ul>"
+            "<li>Model plans and features as data, not hard-coded conditionals.</li>"
+            "<li>Gate features with a single <code>can()</code> check so upgrades are instant.</li>"
+            "<li>Store billing state separately from feature flags for clean audits.</li>"
+            "</ul>"
+            "<h2>3. A Next.js front end that stays fast</h2>"
+            "<p>On the front end I lean on server components for data-heavy dashboards, React Query for "
+            "live admin panels, and aggressive caching for public marketing pages. The result is a UI "
+            "that feels instant even when a tenant has thousands of records.</p>"
+            "<blockquote>The best SaaS architecture is the one your team can still reason about at "
+            "10x the traffic.</blockquote>"
+            "<h2>Key takeaways</h2>"
+            "<p>Start simple, isolate by <code>tenant_id</code>, treat plans and features as data, and "
+            "keep the front end cache-friendly. That foundation has carried every marketplace and CRM "
+            "platform I've shipped.</p>"
+        ),
+        "published": True,
+    },
+    {
+        "slug": "fastapi-vs-laravel-backend-choice-2026",
+        "title": "FastAPI vs Laravel in 2026: How I Choose the Right Backend for Each Project",
+        "excerpt": (
+            "Both are excellent — but they win in different situations. Here is the decision framework "
+            "I actually use when starting a new API or SaaS backend."
+        ),
+        "meta_description": (
+            "FastAPI vs Laravel in 2026: a practical decision framework covering performance, developer "
+            "speed, typing, async workloads, and when to pick each for your API or SaaS backend."
+        ),
+        "tags": "FastAPI, Laravel, Python, PHP, Backend, REST API, System Design",
+        "read_time": "6 min read",
+        "hero_image_url": None,
+        "content_html": (
+            "<p>I ship backends in both <strong>FastAPI</strong> and <strong>Laravel</strong>, and the "
+            "question I get most often is: which one should I use? The honest answer is that it depends "
+            "on the shape of the problem.</p>"
+            "<h2>When I reach for Laravel</h2>"
+            "<ul>"
+            "<li>Rich CRUD products with a lot of admin surface area.</li>"
+            "<li>Teams that value convention, batteries-included tooling, and a mature ecosystem.</li>"
+            "<li>Projects where Eloquent, queues, and first-class auth save real weeks of work.</li>"
+            "</ul>"
+            "<h2>When I reach for FastAPI</h2>"
+            "<ul>"
+            "<li>High-throughput or async-heavy APIs (streaming, webhooks, data pipelines).</li>"
+            "<li>Python-native workloads — ML, scraping, calendar/iCal parsing, automation.</li>"
+            "<li>Strongly-typed contracts with automatic OpenAPI docs out of the box.</li>"
+            "</ul>"
+            "<h2>The framework I actually use to decide</h2>"
+            "<p>I ask three questions: <em>What language does the surrounding system live in? How "
+            "async is the workload? How much admin CRUD do I need on day one?</em> The answers point "
+            "clearly at one stack almost every time.</p>"
+            "<pre><code>@app.get('/health')\n"
+            "def health():\n"
+            "    return {'status': 'ok'}</code></pre>"
+            "<blockquote>Pick the tool that removes the most work for <em>this</em> problem — not the "
+            "one that won the last argument on the internet.</blockquote>"
+            "<p>Used well, both ship production software that scales. The skill is matching the tool to "
+            "the workload — and that is exactly what I do for every client project.</p>"
+        ),
+        "published": True,
+    },
+]
+
+
 def seed():
     create_db_and_tables()
     with Session(engine) as session:
@@ -259,6 +354,7 @@ def seed():
         _seed_if_empty(session, Project, projects_data)
         _seed_if_empty(session, Service, services_data)
         _seed_if_empty(session, CaseStudy, case_studies_data)
+        _seed_if_empty(session, Blog, blogs_data)
 
         # SiteSetting: single default row (id=1) only if none exists.
         if session.get(SiteSetting, 1) is None and session.exec(select(SiteSetting)).first() is None:
