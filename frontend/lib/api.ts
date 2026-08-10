@@ -6,7 +6,7 @@ import type {
   ContactStats,
   Experience,
   LeadStatus,
-  Meeting,
+  MeetingsResponse,
   Project,
   Service,
   SiteSetting,
@@ -185,9 +185,8 @@ export const api = {
       }),
   },
   meetings: {
-    list: () => request<Meeting[]>("/api/calendly/meetings", { auth: true }),
-    remove: (id: number) =>
-      request<{ message: string }>(`/api/calendly/meetings/${id}`, { method: "DELETE", auth: true }),
+    // Backed by the Google Calendar iCal feed (GOOGLE_CALENDAR_ICAL_URL on the backend).
+    list: () => request<MeetingsResponse>("/api/meetings", { auth: true }),
   },
   analytics: {
     stats: () => request<AnalyticsStats>("/api/analytics/stats", { auth: true }),

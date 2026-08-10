@@ -119,6 +119,25 @@ export interface Meeting {
   created_at: string;
 }
 
+export interface GoogleMeeting {
+  id: string;
+  event_name: string;
+  invitee_name: string;
+  invitee_email: string;
+  scheduled_at?: string | null;
+  end_at?: string | null;
+  location: string;
+  meet_link: string;
+  notes: string;
+  status: string;
+}
+
+export interface MeetingsResponse {
+  configured: boolean;
+  error?: string;
+  meetings: GoogleMeeting[];
+}
+
 export interface CountryCount {
   country: string;
   country_code: string;

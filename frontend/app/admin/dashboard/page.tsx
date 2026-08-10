@@ -44,7 +44,7 @@ export default function AdminDashboard() {
         api.services.list().then((r) => r.length).catch(() => 0),
         api.caseStudies.list().then((r) => r.length).catch(() => 0),
         api.contact.stats().then((s) => s.unread).catch(() => 0),
-        api.meetings.list().then((r) => r.length).catch(() => 0),
+        api.meetings.list().then((r) => r.meetings.length).catch(() => 0),
       ]);
       // The "Messages & Leads" badge shows the UNREAD count, not the total.
       setBadges({ projects, skills, experience, services, casestudy, crm: unread, meetings });

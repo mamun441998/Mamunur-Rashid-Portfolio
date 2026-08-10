@@ -24,6 +24,7 @@ from app.models.meeting import Meeting
 from app.routes import (
     auth, projects, skills, experience, contact,
     services, case_studies, analytics, settings as settings_routes, calendly,
+    meetings,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -76,6 +77,7 @@ app.include_router(case_studies.router, tags=["Case Studies"])
 app.include_router(analytics.router, tags=["Analytics"])
 app.include_router(settings_routes.router, tags=["Site Settings"])
 app.include_router(calendly.router, tags=["Calendly"])
+app.include_router(meetings.router, tags=["Meetings"])
 
 
 @app.get("/", tags=["Health"])
