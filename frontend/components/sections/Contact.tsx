@@ -131,16 +131,11 @@ export default function Contact() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.25 }}
-            className="group relative inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl border border-[var(--color-accent)]/40 bg-transparent overflow-hidden transition-all duration-300 hover:border-[var(--color-accent)] hover:shadow-[0_0_20px_rgba(0,255,194,0.3)] w-fit cursor-pointer"
+            className="group inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-[var(--color-accent)] text-black text-sm font-semibold font-space-grotesk transition-all duration-300 hover:shadow-[0_0_25px_rgba(0,255,194,0.4)] hover:scale-[1.02] w-fit"
           >
-            {/* Water Fill Effect from Bottom */}
-            <span className="absolute inset-0 w-full h-full bg-[var(--color-accent)] pointer-events-none transition-transform duration-500 ease-out translate-y-[102%] group-hover:translate-y-0" />
-
-            <CalendarClock className="relative z-10 w-4 h-4 text-[var(--color-accent)] group-hover:text-black transition-colors duration-300" />
-            <span className="relative z-10 text-sm font-semibold font-space-grotesk text-[var(--color-accent)] group-hover:text-black transition-colors duration-300">
-              Schedule a Meeting
-            </span>
-            <ExternalLink className="relative z-10 w-3.5 h-3.5 text-[var(--color-accent)] opacity-70 group-hover:opacity-100 group-hover:text-black transition-all duration-300" />
+            <CalendarClock className="w-4 h-4" />
+            <span>Schedule a Meeting</span>
+            <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100" />
           </motion.a>
           <p className="text-[11px] font-mono text-[var(--txt-2)] -mt-2">
             Book a 30-min call · Google Meet link added automatically

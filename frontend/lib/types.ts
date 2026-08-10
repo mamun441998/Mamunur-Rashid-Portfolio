@@ -105,6 +105,22 @@ export interface SiteSetting {
   calendly_url: string;
 }
 
+export interface Blog {
+  id: number;
+  slug: string;
+  title: string;
+  excerpt: string;
+  content_html: string;
+  hero_image_url?: string | null;
+  tags: string;              // comma-separated
+  meta_description: string;
+  author: string;
+  read_time: string;
+  published: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface Meeting {
   id: number;
   invitee_name: string;

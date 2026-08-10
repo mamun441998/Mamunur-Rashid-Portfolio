@@ -162,3 +162,97 @@ main > section + section {
   background: var(--color-accent);
   color: #000000;
 }
+
+/* 📝 Admin-authored blog HTML — readable typography on the dark blog theme */
+.blog-content {
+  color: var(--color-text-secondary, #9FB4B2);
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 1.02rem;
+  line-height: 1.8;
+}
+.blog-content > *:first-child { margin-top: 0; }
+.blog-content h1,
+.blog-content h2,
+.blog-content h3,
+.blog-content h4 {
+  color: var(--color-text-primary, #F1F5F4);
+  font-family: var(--font-heading), system-ui, sans-serif;
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 1.8em 0 0.7em;
+}
+.blog-content h1 { font-size: 1.9rem; }
+.blog-content h2 { font-size: 1.5rem; }
+.blog-content h3 { font-size: 1.25rem; }
+.blog-content p { margin: 0 0 1.15em; }
+.blog-content a {
+  color: var(--color-accent, #2DD4BF);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.blog-content a:hover { opacity: 0.85; }
+.blog-content strong { color: var(--color-text-primary, #F1F5F4); font-weight: 700; }
+.blog-content em { font-style: italic; }
+.blog-content ul,
+.blog-content ol { margin: 0 0 1.15em; padding-left: 1.4em; }
+.blog-content ul { list-style: disc; }
+.blog-content ol { list-style: decimal; }
+.blog-content li { margin: 0.4em 0; }
+.blog-content li::marker { color: var(--color-accent, #2DD4BF); }
+.blog-content blockquote {
+  margin: 1.4em 0;
+  padding: 0.6em 1.2em;
+  border-left: 3px solid var(--color-accent, #2DD4BF);
+  background: color-mix(in srgb, var(--color-accent, #2DD4BF) 8%, transparent);
+  border-radius: 0 8px 8px 0;
+  color: var(--color-text-primary, #F1F5F4);
+  font-style: italic;
+}
+.blog-content code {
+  font-family: var(--font-mono, ui-monospace, "SF Mono", Menlo, monospace);
+  font-size: 0.88em;
+  background: color-mix(in srgb, var(--color-accent, #2DD4BF) 12%, transparent);
+  color: var(--color-accent, #2DD4BF);
+  padding: 0.15em 0.4em;
+  border-radius: 5px;
+}
+.blog-content pre {
+  background: #06121a;
+  border: 1px solid var(--color-border, #1E3339);
+  border-radius: 12px;
+  padding: 1.1em 1.3em;
+  overflow-x: auto;
+  margin: 1.4em 0;
+}
+.blog-content pre code {
+  background: transparent;
+  color: #C9E7E2;
+  padding: 0;
+  font-size: 0.86rem;
+  line-height: 1.65;
+}
+.blog-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  margin: 1.4em 0;
+  border: 1px solid var(--color-border, #1E3339);
+}
+.blog-content hr {
+  border: none;
+  border-top: 1px solid var(--color-border, #1E3339);
+  margin: 2em 0;
+}
+.blog-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.4em 0;
+  font-size: 0.92rem;
+}
+.blog-content th,
+.blog-content td {
+  border: 1px solid var(--color-border, #1E3339);
+  padding: 0.6em 0.9em;
+  text-align: left;
+}
+.blog-content th { color: var(--color-text-primary, #F1F5F4); background: color-mix(in srgb, var(--color-accent, #2DD4BF) 6%, transparent); }

@@ -308,7 +308,7 @@ export default function ResumePage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="print-resume-card w-full bg-[#0a0a0a] border border-white/10 rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] relative flex flex-col justify-between"
+            className="print-resume-card w-full bg-[#0a0a0a] border-2 border-[#081419] rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.8)] relative flex flex-col justify-between"
           >
             {/* Background Glow */}
             <div className="absolute top-0 right-0 w-[350px] h-[350px] bg-[#00ffc2]/5 blur-[120px] rounded-full pointer-events-none print-hide" />

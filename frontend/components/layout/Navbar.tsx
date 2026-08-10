@@ -49,6 +49,14 @@ export default function Navbar() {
 
         {/* Right CTA Actions */}
         <div className="hidden md:flex items-center gap-4 z-10">
+          {/* Blog Link */}
+          <Link
+            href="/blog"
+            className="text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors duration-200 font-medium"
+          >
+            Blog
+          </Link>
+
           {/* Dynamic Resume Link Button */}
           <Link
             href="/resume"
@@ -102,6 +110,14 @@ export default function Navbar() {
                   {link.label}
                 </button>
               ))}
+
+              <Link
+                href="/blog"
+                onClick={() => setMobileOpen(false)}
+                className="text-left text-base text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors duration-200"
+              >
+                Blog
+              </Link>
 
               <div className="pt-2 flex items-center gap-3">
                 <Link

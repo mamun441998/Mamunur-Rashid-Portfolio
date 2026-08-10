@@ -20,7 +20,12 @@ const inter = Inter({
   display: "swap",
 });
 
+const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL || "https://mamunur-rashid-portfolio-wine.vercel.app"
+).replace(/\/$/, "");
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Mamunur Rashid | Software Engineer & Tech Lead",
   description:
     "Full-stack software engineer specializing in scalable web applications, microservices, and system architecture.",

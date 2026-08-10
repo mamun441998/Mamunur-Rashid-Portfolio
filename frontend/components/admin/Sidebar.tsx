@@ -11,6 +11,7 @@ import {
   Briefcase,
   Layers,
   FileText,
+  Newspaper,
   Mail,
   CalendarClock,
   LineChart,
@@ -26,6 +27,7 @@ export type AdminTab =
   | "experience"
   | "services"
   | "casestudy"
+  | "blog"
   | "crm"
   | "meetings"
   | "analytics"
@@ -37,6 +39,7 @@ export interface NavBadges {
   experience?: number;
   services?: number;
   casestudy?: number;
+  blog?: number;
   crm?: number;
   meetings?: number;
 }
@@ -49,6 +52,7 @@ const NAV: { id: AdminTab; label: string; icon: any; badgeKey?: keyof NavBadges 
   { id: "experience", label: "Experience Log", icon: Briefcase, badgeKey: "experience" },
   { id: "services", label: "Services Engine", icon: Layers, badgeKey: "services" },
   { id: "casestudy", label: "Case Study Builder", icon: FileText, badgeKey: "casestudy" },
+  { id: "blog", label: "Blog Studio", icon: Newspaper, badgeKey: "blog" },
   { id: "crm", label: "Messages & Leads", icon: Mail, badgeKey: "crm" },
   { id: "meetings", label: "Meetings Panel", icon: CalendarClock, badgeKey: "meetings" },
   { id: "analytics", label: "Analytics Center", icon: LineChart },

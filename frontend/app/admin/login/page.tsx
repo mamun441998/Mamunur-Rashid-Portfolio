@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { loginRequest, forgotPasswordRequest, resetPasswordRequest } from "@/lib/api";
 import { setToken } from "@/lib/auth";
@@ -17,6 +17,13 @@ export default function AdminLogin() {
   const [info, setInfo] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  // Show a friendly notice when redirected here by an expired session.
+  useEffect(() => {
+    if (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("expired")) {
+      setInfo("Your session expired. Please log in again to continue.");
+    }
+  }, []);
 
   const inputCls =
     "w-full px-4 py-2.5 bg-[#1a1a1a] border border-gray-800 rounded-lg focus:outline-none focus:border-emerald-500 text-white text-sm";
@@ -80,8 +87,8 @@ export default function AdminLogin() {
         {mode === "login" && (
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Username</label>
-              <input type="text" required value={username} onChange={(e) => setUsername(e.target.value)} placeholder="e.g. admin" className={inputCls} />
+              <label className="block text-sm font-medium text-gray-400 mb-1">Email</label>
+              <input type="email" required value={username} onChange={(e) => setUsername(e.target.value)} placeholder="you@example.com" className={inputCls} />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-1">Password</label>
@@ -98,10 +105,10 @@ export default function AdminLogin() {
 
         {mode === "forgot" && (
           <form onSubmit={handleForgot} className="space-y-4">
-            <p className="text-xs text-gray-400">A 6-digit verification code will be emailed to the site owner’s address.</p>
+            <p className="text-xs text-gray-400">Enter your account email. A 6-digit verification code will be emailed to the owner’s address.</p>
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">Username</label>
-              <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="admin" className={inputCls} />
+              <label className="block text-sm font-medium text-gray-400 mb-1">Email</label>
+              <input type="email" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="you@example.com" className={inputCls} />
             </div>
             <button type="submit" disabled={loading} className="w-full py-2.5 px-4 bg-emerald-500 hover:bg-emerald-600 text-black font-bold rounded-lg transition duration-200 disabled:opacity-50 text-sm">
               {loading ? "Sending..." : "Send Code"}

@@ -17,6 +17,16 @@ export function useAuth() {
     }
     setAuthenticated(true);
     setReady(true);
+
+    // Re-check periodically so a long-open tab whose token expires gets bounced
+    // to login BEFORE the user tries to save (avoids a dead-end 401 on write).
+    const id = setInterval(() => {
+      if (!isAuthenticated()) {
+        setAuthenticated(false);
+        router.replace("/admin/login?expired=1");
+      }
+    }, 30_000);
+    return () => clearInterval(id);
   }, [router]);
 
   return {

@@ -1,6 +1,7 @@
-import { getToken } from "@/lib/auth";
+import { getToken, removeToken } from "@/lib/auth";
 import type {
   AnalyticsStats,
+  Blog,
   CaseStudy,
   ContactMessage,
   ContactStats,
@@ -64,6 +65,14 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
     } catch {
       /* non-JSON error body */
     }
+    // Session expired / invalid on an authenticated call: clear the stale token
+    // and bounce to login so a fresh token can be issued (re-login then Save works).
+    if (res.status === 401 && auth && typeof window !== "undefined") {
+      removeToken();
+      if (!window.location.pathname.startsWith("/admin/login")) {
+        window.location.href = "/admin/login?expired=1";
+      }
+    }
     throw new ApiError(typeof detail === "string" ? detail : JSON.stringify(detail), res.status);
   }
 
@@ -124,6 +133,34 @@ export function resetPasswordRequest(code: string, new_password: string) {
     method: "POST",
     body: { code, new_password },
   });
+}
+
+/** Multipart image upload for blog hero images. Returns the hosted image URL. */
+export async function uploadBlogImage(file: File): Promise<{ url: string; id: number }> {
+  const form = new FormData();
+  form.append("file", file);
+  const headers: Record<string, string> = {};
+  const token = getToken();
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const res = await fetch(`${API_URL}/api/blogs/upload-image`, {
+    method: "POST",
+    headers, // no Content-Type — the browser sets the multipart boundary
+    body: form,
+  });
+  if (!res.ok) {
+    let detail = `${res.status} ${res.statusText}`;
+    try {
+      const data = await res.json();
+      detail = data.detail || data.message || detail;
+    } catch { /* ignore */ }
+    if (res.status === 401 && typeof window !== "undefined") {
+      removeToken();
+      window.location.href = "/admin/login?expired=1";
+    }
+    throw new ApiError(typeof detail === "string" ? detail : JSON.stringify(detail), res.status);
+  }
+  return res.json();
 }
 
 export const api = {
@@ -221,6 +258,18 @@ export const api = {
         body: { uid },
         auth: true,
       }),
+  },
+  blogs: {
+    list: () => request<Blog[]>("/api/blogs/"),
+    listAll: () => request<Blog[]>("/api/blogs/all", { auth: true }),
+    bySlug: (slug: string) => request<Blog>(`/api/blogs/slug/${slug}`),
+    create: (data: Partial<Blog>) =>
+      request<Blog>("/api/blogs/", { method: "POST", body: data, auth: true }),
+    update: (id: number, data: Partial<Blog>) =>
+      request<Blog>(`/api/blogs/${id}`, { method: "PUT", body: data, auth: true }),
+    remove: (id: number) =>
+      request<{ message: string }>(`/api/blogs/${id}`, { method: "DELETE", auth: true }),
+    uploadImage: (file: File) => uploadBlogImage(file),
   },
   analytics: {
     stats: () => request<AnalyticsStats>("/api/analytics/stats", { auth: true }),
