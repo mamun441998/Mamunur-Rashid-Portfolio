@@ -21,10 +21,10 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.4 }}
-      className="bg-[var(--panel)] border border-[var(--bd)] hover:border-[#00ffc2]/50 rounded-2xl overflow-hidden flex flex-col justify-between group transition-all duration-300 relative shadow-lg hover:shadow-[0_0_25px_rgba(0,255,194,0.15)]"
+      className="bg-[var(--panel)] border border-[var(--bd)] hover:border-[var(--color-accent)]/50 rounded-2xl overflow-hidden flex flex-col justify-between group transition-all duration-300 relative shadow-[var(--card-shadow)] hover:shadow-[0_0_25px_var(--color-accent-glow)]"
     >
       {/* Top Background Glow Effect */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#00ffc2]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[var(--color-accent)]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
       {/* Card Header / Image Mockup */}
       <div className="relative w-full h-48 bg-[#111111] overflow-hidden flex items-center justify-center border-b border-white/5">
@@ -58,7 +58,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       {/* Content Area */}
       <div className="p-6 flex flex-col flex-grow justify-between z-10">
         <div>
-          <h3 className="text-xl font-bold text-[var(--txt)] font-space-grotesk group-hover:text-[#00ffc2] transition-colors line-clamp-1">
+          <h3 className="text-xl font-bold text-[var(--txt)] font-space-grotesk group-hover:text-[var(--color-accent)] transition-colors line-clamp-1">
             {project.title}
           </h3>
 
@@ -74,7 +74,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             {techList.map((tech) => (
               <span
                 key={tech}
-                className="px-2.5 py-1 text-[11px] font-mono rounded-md bg-[var(--panel-2)] text-[var(--color-accent)] border border-[#00ffc2]/20"
+                className="px-2.5 py-1 text-[11px] font-mono rounded-md bg-[var(--tag-bg)] text-[var(--tag-text)] border border-[var(--tag-border)]"
               >
                 {tech}
               </span>

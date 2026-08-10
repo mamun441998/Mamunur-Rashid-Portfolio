@@ -111,7 +111,7 @@ export default function ExperienceSection() {
 
   return (
     <section
-      id="experience"
+      id="experience" data-theme="light"
       className="min-h-screen w-full py-24 px-6 sm:px-10 lg:px-16 flex flex-col justify-center items-center bg-[var(--sec-bg)] text-[var(--txt)] snap-start relative overflow-hidden select-none"
     >
       {/* Glow Effects */}

@@ -81,11 +81,11 @@ export default function Skills() {
 
   return (
     <section
-      id="skills"
+      id="skills" data-theme="dark"
       className="min-h-screen w-full py-24 px-6 sm:px-10 lg:px-16 flex flex-col justify-center items-center bg-[var(--sec-bg)] text-[var(--txt)] snap-start relative overflow-hidden select-none"
     >
       {/* Background Ambient Light */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#00ffc2]/5 blur-[160px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[var(--color-accent)]/5 blur-[160px] rounded-full pointer-events-none" />
 
       {/* Main Wide Container */}
       <div className="max-w-7xl w-full z-10">
@@ -97,14 +97,14 @@ export default function Skills() {
             transition={{ duration: 0.5 }}
             className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight font-space-grotesk"
           >
-            Technical <span className="text-[#00ffc2] text-glow">Expertise</span>
+            Technical <span className="text-[var(--color-accent)] text-glow">Expertise</span>
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-gray-400 mt-3 max-w-xl text-sm md:text-base font-inter"
+            className="text-[var(--txt-2)] mt-3 max-w-xl text-sm md:text-base font-inter"
           >
             My production-tested tech stack and core engineering capabilities.
           </motion.p>
@@ -119,8 +119,8 @@ export default function Skills() {
                 onClick={() => setSelectedCategory(category)}
                 className={`px-4 py-2 text-xs md:text-sm font-medium rounded-full transition-all duration-300 border cursor-pointer ${
                   selectedCategory === category
-                    ? 'bg-[#00ffc2]/10 border-[#00ffc2] text-[#00ffc2] shadow-[0_0_15px_rgba(0,255,194,0.25)]'
-                    : 'bg-[var(--panel-2)] border-[var(--bd)] text-gray-400 hover:border-white/20 hover:text-[var(--txt)]'
+                    ? 'bg-[var(--color-accent)]/10 border-[var(--color-accent)] text-[var(--color-accent)] shadow-[0_0_15px_rgba(0,255,194,0.25)]'
+                    : 'bg-[var(--panel-2)] border-[var(--bd)] text-[var(--txt-2)] hover:border-[var(--color-border-hover)] hover:text-[var(--txt)]'
                 }`}
               >
                 {category}
@@ -151,9 +151,9 @@ export default function Skills() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.3 }}
-                    className="bg-[var(--panel)] border border-[var(--bd)] hover:border-[#00ffc2]/40 rounded-2xl p-5 transition-all duration-300 group relative overflow-hidden flex flex-col justify-between"
+                    className="bg-[var(--panel)] border border-[var(--bd)] hover:border-[var(--color-accent)]/40 rounded-2xl p-5 transition-all duration-300 group relative overflow-hidden flex flex-col justify-between"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#00ffc2]/0 via-[#00ffc2]/5 to-[#00ffc2]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-accent)]/0 via-[var(--color-accent)]/5 to-[var(--color-accent)]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
                     <div>
                       <div className="flex justify-between items-center mb-4">
@@ -170,24 +170,24 @@ export default function Skills() {
                               />
                             </div>
                           ) : (
-                            <div className="w-8 h-8 rounded-xl bg-[#00ffc2]/10 border border-[#00ffc2]/30 flex items-center justify-center shrink-0 text-[#00ffc2]">
+                            <div className="w-8 h-8 rounded-xl bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/30 flex items-center justify-center shrink-0 text-[var(--color-accent)]">
                               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                               </svg>
                             </div>
                           )}
-                          <h3 className="font-semibold text-base sm:text-lg text-[var(--txt)] font-space-grotesk group-hover:text-[#00ffc2] transition-colors leading-snug">
+                          <h3 className="font-semibold text-base sm:text-lg text-[var(--txt)] font-space-grotesk group-hover:text-[var(--color-accent)] transition-colors leading-snug">
                             {skill.name}
                           </h3>
                         </div>
-                        <span className="text-xs font-mono text-gray-400">{skill.proficiency}%</span>
+                        <span className="text-xs font-mono text-[var(--txt-2)]">{skill.proficiency}%</span>
                       </div>
                     </div>
 
                     <div>
                       <div className="w-full bg-white/5 rounded-full h-1.5 overflow-hidden mt-2">
                         <motion.div
-                          className="bg-[#00ffc2] h-full rounded-full shadow-[0_0_8px_#00ffc2]"
+                          className="bg-[var(--color-accent)] h-full rounded-full shadow-[0_0_8px_var(--color-accent)]"
                           initial={{ width: 0 }}
                           whileInView={{ width: `${skill.proficiency}%` }}
                           viewport={{ once: true }}
@@ -195,7 +195,7 @@ export default function Skills() {
                         />
                       </div>
 
-                      <div className="mt-3 text-[10px] font-mono text-gray-500 uppercase tracking-wider">
+                      <div className="mt-3 text-[10px] font-mono text-[var(--txt-2)] uppercase tracking-wider">
                         {skill.category}
                       </div>
                     </div>

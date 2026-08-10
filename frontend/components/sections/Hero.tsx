@@ -72,7 +72,7 @@ export default function Hero() {
 
   return (
     <section
-      id="home"
+      id="home" data-theme="dark"
       className="relative min-h-screen w-full flex items-center justify-center overflow-hidden px-6 sm:px-10 lg:px-16 py-24 bg-[var(--color-background)] select-none"
     >
       {/* 3D Canvas Background Layer */}

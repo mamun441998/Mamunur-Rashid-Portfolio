@@ -44,32 +44,32 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative w-full bg-black text-gray-200 border-t-2 border-[#00ffc2]/30 pt-16 pb-8 overflow-hidden select-none">
+    <footer data-theme="dark" className="relative w-full bg-[var(--color-background)] text-[var(--color-text-secondary)] border-t-2 border-[var(--color-accent)]/30 pt-16 pb-8 overflow-hidden select-none">
       {/* Background Ambient Glow Effect */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-28 bg-[#00ffc2]/15 blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-28 bg-[var(--color-accent)]/15 blur-[120px] pointer-events-none" />
 
       {/* Main Wide Container Aligned with Navbar */}
       <div className="max-w-[1536px] w-full mx-auto px-6 sm:px-10 lg:px-12 relative z-10">
         
         {/* Top Grid: Brand & Call to Action */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pb-12 border-b border-white/15">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pb-12 border-b border-[var(--color-border)]">
           
           {/* Col 1: Brand & Status (6 cols) */}
           <div className="md:col-span-6 flex flex-col justify-between gap-6">
             <div>
-              <h2 className="text-3xl font-extrabold tracking-tight text-white font-space-grotesk">
-                Mamunur <span className="text-[#00ffc2]">Rashid</span>
+              <h2 className="text-3xl font-extrabold tracking-tight text-[var(--color-text-primary)] font-space-grotesk">
+                Mamunur <span className="text-[var(--color-accent)]">Rashid</span>
               </h2>
-              <p className="mt-3 text-sm font-medium text-gray-300 max-w-md leading-relaxed">
+              <p className="mt-3 text-sm font-medium text-[var(--color-text-secondary)] max-w-md leading-relaxed">
                 Full-Stack Software Engineer specializing in building scalable multi-tenant SaaS platforms, REST APIs, and automated business systems.
               </p>
             </div>
 
             {/* Live Status Indicator */}
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#00ffc2]/10 border border-[#00ffc2]/40 text-[#00ffc2] text-xs font-bold font-mono w-fit">
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/40 text-[var(--color-accent)] text-xs font-bold font-mono w-fit">
               <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00ffc2] opacity-80"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#00ffc2]"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--color-accent)] opacity-80"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[var(--color-accent)]"></span>
               </span>
               Available for full-time roles & high-impact projects
             </div>
@@ -80,13 +80,13 @@ export default function Footer() {
             
             {/* Navigation Section */}
             <div>
-              <h4 className="text-xs font-mono font-bold text-white uppercase tracking-wider mb-4">Navigation</h4>
+              <h4 className="text-xs font-mono font-bold text-[var(--color-text-primary)] uppercase tracking-wider mb-4">Navigation</h4>
               <ul className="space-y-3 text-sm font-semibold">
                 {["About", "Skills", "Projects", "Experience", "Contact"].map((item) => (
                   <li key={item}>
                     <a
                       href={`#${item.toLowerCase()}`}
-                      className="text-gray-300 hover:text-[#00ffc2] transition-colors duration-200"
+                      className="text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors duration-200"
                     >
                       {item}
                     </a>
@@ -97,14 +97,14 @@ export default function Footer() {
 
             {/* Connect Section */}
             <div>
-              <h4 className="text-xs font-mono font-bold text-white uppercase tracking-wider mb-4">Connect</h4>
+              <h4 className="text-xs font-mono font-bold text-[var(--color-text-primary)] uppercase tracking-wider mb-4">Connect</h4>
               <ul className="space-y-3 text-sm font-semibold">
                 <li>
                   <a
                     href="https://github.com/mamun441998"
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-2 text-gray-300 hover:text-[#00ffc2] transition-colors duration-200"
+                    className="flex items-center gap-2 text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors duration-200"
                   >
                     <GithubIcon size={16} /> GitHub <ArrowUpRight size={14} className="stroke-[2.5]" />
                   </a>
@@ -114,7 +114,7 @@ export default function Footer() {
                     href="https://linkedin.com"
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-2 text-gray-300 hover:text-[#00ffc2] transition-colors duration-200"
+                    className="flex items-center gap-2 text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors duration-200"
                   >
                     <LinkedinIcon size={16} /> LinkedIn <ArrowUpRight size={14} className="stroke-[2.5]" />
                   </a>
@@ -122,7 +122,7 @@ export default function Footer() {
                 <li>
                   <a
                     href="mailto:mamun441998@gmail.com"
-                    className="flex items-center gap-2 text-gray-300 hover:text-[#00ffc2] transition-colors duration-200"
+                    className="flex items-center gap-2 text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors duration-200"
                   >
                     <Mail size={16} className="stroke-[2.5]" /> Email
                   </a>
@@ -134,29 +134,29 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar: Copyright, Tech Stack (Centering Alignment) & Scroll Top */}
-        <div className="pt-8 relative flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono font-semibold text-gray-400">
+        <div className="pt-8 relative flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono font-semibold text-[var(--color-text-secondary)]">
           
           {/* Copyright (Left Alignment) */}
-          <div className="text-gray-300">
+          <div className="text-[var(--color-text-secondary)]">
             © {new Date().getFullYear()} Mamunur Rashid. Built with precision and care.
           </div>
 
           {/* Architecture Badge (Perfectly Centered on Desktop) */}
-          <div className="sm:absolute sm:left-1/2 sm:-translate-x-1/2 flex items-center gap-2 bg-white/10 border border-white/15 px-3.5 py-1.5 rounded-full text-white font-medium">
-            <Code2 size={14} className="text-[#00ffc2] stroke-[2.5]" />
+          <div className="sm:absolute sm:left-1/2 sm:-translate-x-1/2 flex items-center gap-2 bg-[var(--color-surface-elevated)] border border-[var(--color-border)] px-3.5 py-1.5 rounded-full text-[var(--color-text-primary)] font-medium">
+            <Code2 size={14} className="text-[var(--color-accent)] stroke-[2.5]" />
             <span>Next.js</span>
-            <span className="text-gray-500">•</span>
-            <Server size={14} className="text-[#00ffc2] stroke-[2.5]" />
+            <span className="text-[var(--color-text-muted)]">•</span>
+            <Server size={14} className="text-[var(--color-accent)] stroke-[2.5]" />
             <span>FastAPI</span>
           </div>
 
           {/* Back to Top (Right Alignment) */}
           <button
             onClick={scrollToTop}
-            className="flex items-center gap-2 text-gray-300 hover:text-[#00ffc2] font-bold transition-colors duration-200 cursor-pointer group"
+            className="flex items-center gap-2 text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] font-bold transition-colors duration-200 cursor-pointer group"
           >
             <span>Back to top</span>
-            <div className="p-1.5 rounded-full bg-white/10 border border-white/15 group-hover:border-[#00ffc2] group-hover:bg-[#00ffc2]/10 transition-colors">
+            <div className="p-1.5 rounded-full bg-[var(--color-surface-elevated)] border border-[var(--color-border)] group-hover:border-[var(--color-accent)] group-hover:bg-[var(--color-accent)]/10 transition-colors">
               <ArrowUp size={13} className="stroke-[2.5]" />
             </div>
           </button>

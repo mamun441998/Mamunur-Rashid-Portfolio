@@ -48,7 +48,7 @@ export default function About() {
 
   return (
     <section
-      id="about"
+      id="about" data-theme="light"
       className="snap-section relative flex items-center justify-center py-24 px-6 sm:px-10 lg:px-16 overflow-hidden bg-[var(--sec-bg)] select-none"
     >
       {/* Background Radial Glow */}

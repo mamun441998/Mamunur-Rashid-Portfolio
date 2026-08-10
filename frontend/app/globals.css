@@ -33,70 +33,71 @@
   --bd: rgba(255, 255, 255, 0.1);
 }
 
-/* ☀️ Light Theme (cream sections + navy text; Hero & Skills stay dark, below) */
-.light,
+/* ===== Per-section HYBRID theme (bookended dark) =====
+   Each public <section> carries data-theme="dark" | "light". These tokens are
+   the source of truth; the aliases below keep existing var(--sec-bg)/--panel/
+   --txt/--color-* class usages resolving to the correct per-section values.
+   The admin panel has no data-theme, so it keeps the :root dark palette. */
+[data-theme="dark"] {
+  --bg: #081419;
+  --surface: #0F1E24;
+  --border: #1E3339;
+  --text-primary: #F1F5F4;
+  --text-secondary: #9FB4B2;
+  --accent: #2DD4BF;              /* bright mint on dark */
+  --btn-primary-bg: #2DD4BF;
+  --btn-primary-text: #06211C;
+  --tag-bg: #142B31;
+  --tag-text: #5EEAD4;
+  --tag-border: #1E3339;
+  --card-shadow: none;
+}
+
 [data-theme="light"] {
-  --color-background: #efe6d4;   /* cream page / gap color */
-  --color-surface: #fffdf8;
-  --color-surface-elevated: #f5eede;
-
-  /* Readable teal-emerald accent for light backgrounds (dark keeps bright #00ffc2) */
-  --color-accent: #0d9488;
-  --color-accent-dim: #0d94881a;
-  --color-accent-glow: #0d948833;
-
-  --color-text-primary: #0f172a;   /* near-black */
-  --color-text-secondary: #1e3a5f; /* navy blue */
-  --color-text-muted: #475569;
-
-  --color-border: #d9cdb4;
-  --color-border-hover: #b8a888;
-
-  /* Section tokens — LIGHT: cream sections, cream/white cards, black+navy text */
-  --sec-bg: #f7efdf;
-  --sec-bg-2: #f2e9d6;
-  --panel: #fffdf8;
-  --panel-2: #f5eede;
-  --panel-3: #fffdf8;
-  --panel-4: #fffdf8;
-  --input: #ffffff;
-  --input-focus: #f5eede;
-  --txt: #0f172a;      /* card headings: black */
-  --txt-2: #1e3a5f;    /* card body: navy blue */
-  --bd: rgba(15, 23, 42, 0.14);
+  --bg: #F7F9F9;
+  --surface: #FFFFFF;
+  --border: #D8DEDD;
+  --text-primary: #10201F;        /* dark navy, not pure black */
+  --text-secondary: #4C5C5F;
+  --accent: #0E9E85;              /* deepened mint for contrast on white */
+  --btn-primary-bg: #10201F;      /* navy fill on light — ties the theme together */
+  --btn-primary-text: #5EEAD4;
+  --tag-bg: #DFF5F0;
+  --tag-text: #0E7D6A;
+  --tag-border: transparent;
+  --card-shadow: 0 4px 16px rgba(16, 32, 31, 0.04);
 }
 
-/* Hero (#home) and Skills (#skills) always keep the dark palette, even in light mode */
-.light #home, [data-theme="light"] #home,
-.light #skills, [data-theme="light"] #skills {
-  --color-background: #030303;
-  --color-surface: #0a0a0f;
-  --color-surface-elevated: #111117;
-  --color-accent: #00ffc2;
-  --color-accent-dim: #00ffc233;
-  --color-accent-glow: #00ffc255;
-  --color-text-primary: #f5f5f7;
-  --color-text-secondary: #8b8b93;
-  --color-text-muted: #56565e;
-  --color-border: #1c1c22;
-  --color-border-hover: #2a2a33;
-  --sec-bg: #030303;
-  --sec-bg-2: #050505;
-  --panel: #090909;
-  --panel-2: #0a0a0a;
-  --panel-3: #070707;
-  --panel-4: #080808;
-  --input: #111111;
-  --input-focus: #151515;
-  --txt: #ffffff;
-  --txt-2: #9ca3af;
-  --bd: rgba(255, 255, 255, 0.1);
+/* Aliases so existing utility classes map onto the per-section tokens */
+[data-theme="dark"],
+[data-theme="light"] {
+  --sec-bg: var(--bg);
+  --sec-bg-2: var(--bg);
+  --panel: var(--surface);
+  --panel-2: var(--surface);
+  --panel-3: var(--surface);
+  --panel-4: var(--surface);
+  --input: var(--surface);
+  --input-focus: var(--surface);
+  --txt: var(--text-primary);
+  --txt-2: var(--text-secondary);
+  --bd: var(--border);
+  --color-background: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface);
+  --color-accent: var(--accent);
+  --color-accent-dim: color-mix(in srgb, var(--accent) 12%, transparent);
+  --color-accent-glow: color-mix(in srgb, var(--accent) 32%, transparent);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-secondary);
+  --color-border: var(--border);
+  --color-border-hover: var(--accent);
 }
 
-/* Light mode: visible gaps between the cream sections */
-.light main > section + section,
-[data-theme="light"] main > section + section {
-  margin-top: 0.85rem;
+/* Soft 1px seam so adjacent dark/light sections don't hard-clash */
+main > section + section {
+  border-top: 1px solid var(--border, #1E3339);
 }
 
 /* 🎨 Tailwind v4 Theme Variables Mapping */

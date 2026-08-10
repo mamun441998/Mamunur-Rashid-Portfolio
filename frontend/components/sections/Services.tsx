@@ -120,7 +120,7 @@ export default function Services() {
 
   return (
     <section
-      id="services"
+      id="services" data-theme="light"
       className="py-24 px-6 sm:px-10 lg:px-16 bg-[var(--sec-bg)] text-[var(--color-text-primary)] relative overflow-hidden select-none"
     >
       <div className="max-w-7xl mx-auto space-y-16">
@@ -211,7 +211,7 @@ export default function Services() {
                     {service.techStack.map((tech, tIdx) => (
                       <span
                         key={tIdx}
-                        className="px-2.5 py-1 text-[11px] font-mono rounded-md bg-[var(--color-surface-elevated)] border border-[var(--color-border)] text-[var(--color-text-secondary)]"
+                        className="px-2.5 py-1 text-[11px] font-mono rounded-md bg-[var(--tag-bg)] border border-[var(--tag-border)] text-[var(--tag-text)]"
                       >
                         {tech}
                       </span>
@@ -250,7 +250,7 @@ export default function Services() {
 
           <a
             href="#contact"
-            className="z-10 shrink-0 px-6 py-3 rounded-xl bg-[var(--color-accent)] text-black font-semibold font-space-grotesk text-sm"
+            className="z-10 shrink-0 px-6 py-3 rounded-xl bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] font-semibold font-space-grotesk text-sm"
           >
             Start a Conversation
           </a>

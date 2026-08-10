@@ -71,10 +71,10 @@ export default function Contact() {
 
   return (
     <section
-      id="contact"
+      id="contact" data-theme="dark"
       className="min-h-screen w-full py-24 px-6 sm:px-10 lg:px-16 flex flex-col justify-center items-center bg-[var(--sec-bg)] text-[var(--txt)] snap-start relative overflow-hidden select-none"
     >
-      <div className="absolute top-1/3 left-1/4 w-[450px] h-[450px] bg-[#00ffc2]/5 blur-[160px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/3 left-1/4 w-[450px] h-[450px] bg-[var(--color-accent)]/5 blur-[160px] rounded-full pointer-events-none" />
       <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-cyan-500/5 blur-[150px] rounded-full pointer-events-none" />
 
       <div className="max-w-7xl w-full z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -85,11 +85,11 @@ export default function Contact() {
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="flex w-fit mx-auto lg:mx-0 items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#00ffc2]/10 border border-[#00ffc2]/20 text-[var(--color-accent)] text-xs font-mono"
+            className="flex w-fit mx-auto lg:mx-0 items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/20 text-[var(--color-accent)] text-xs font-mono"
           >
             <Terminal className="w-3.5 h-3.5" />
             <span>INITIATE_COMMUNICATION.LOG</span>
-            <span className="w-2 h-2 rounded-full bg-[#00ffc2] animate-pulse ml-1" />
+            <span className="w-2 h-2 rounded-full bg-[var(--color-accent)] animate-pulse ml-1" />
           </motion.div>
 
           <motion.div
@@ -116,8 +116,8 @@ export default function Contact() {
             className="p-3.5 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-3 text-xs font-mono text-[var(--txt-2)] w-fit"
           >
             <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00ffc2] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#00ffc2]"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--color-accent)] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[var(--color-accent)]"></span>
             </span>
             <span>Available for Worldwide Remote Projects & Contracts</span>
           </motion.div>
@@ -131,13 +131,13 @@ export default function Contact() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.25 }}
-            className="group inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-[#00ffc2] text-black text-sm font-semibold font-space-grotesk transition-all duration-300 hover:shadow-[0_0_25px_rgba(0,255,194,0.4)] hover:scale-[1.02] w-fit"
+            className="group inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-[var(--color-accent)] text-black text-sm font-semibold font-space-grotesk transition-all duration-300 hover:shadow-[0_0_25px_rgba(0,255,194,0.4)] hover:scale-[1.02] w-fit"
           >
             <CalendarClock className="w-4 h-4" />
             <span>Schedule a Meeting</span>
             <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100" />
           </motion.a>
-          <p className="text-[11px] font-mono text-gray-500 -mt-2">
+          <p className="text-[11px] font-mono text-[var(--txt-2)] -mt-2">
             Book a 30-min call · Google Meet link added automatically
           </p>
 
@@ -148,9 +148,9 @@ export default function Contact() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="space-y-4 font-inter"
           >
-            <div className="group relative p-4 rounded-2xl bg-[var(--panel)] border border-[var(--bd)] hover:border-[#00ffc2]/40 transition-all duration-300 flex items-center justify-between">
+            <div className="group relative p-4 rounded-2xl bg-[var(--panel)] border border-[var(--bd)] hover:border-[var(--color-accent)]/40 transition-all duration-300 flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-[#00ffc2]/10 border border-[#00ffc2]/20 flex items-center justify-center text-[var(--color-accent)] group-hover:scale-105 transition-transform duration-300">
+                <div className="w-12 h-12 rounded-xl bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/20 flex items-center justify-center text-[var(--color-accent)] group-hover:scale-105 transition-transform duration-300">
                   <Mail className="w-5 h-5" />
                 </div>
                 <div>
@@ -167,7 +167,7 @@ export default function Contact() {
               <button
                 onClick={handleCopyEmail}
                 type="button"
-                className="p-2.5 rounded-xl bg-white/5 border border-[var(--bd)] hover:border-[#00ffc2]/50 text-[var(--txt-2)] hover:text-[var(--color-accent)] transition-all cursor-pointer"
+                className="p-2.5 rounded-xl bg-white/5 border border-[var(--bd)] hover:border-[var(--color-accent)]/50 text-[var(--txt-2)] hover:text-[var(--color-accent)] transition-all cursor-pointer"
                 title="Copy Email"
               >
                 {copied ? <Check className="w-4 h-4 text-[var(--color-accent)]" /> : <Copy className="w-4 h-4" />}
@@ -178,10 +178,10 @@ export default function Contact() {
               href={`https://wa.me/${whatsappNumber}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="group p-4 rounded-2xl bg-[var(--panel)] border border-[var(--bd)] hover:border-[#00ffc2]/40 transition-all duration-300 flex items-center justify-between cursor-pointer block"
+              className="group p-4 rounded-2xl bg-[var(--panel)] border border-[var(--bd)] hover:border-[var(--color-accent)]/40 transition-all duration-300 flex items-center justify-between cursor-pointer block"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-[#00ffc2]/10 border border-[#00ffc2]/20 flex items-center justify-center text-[var(--color-accent)] group-hover:scale-105 transition-transform duration-300">
+                <div className="w-12 h-12 rounded-xl bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/20 flex items-center justify-center text-[var(--color-accent)] group-hover:scale-105 transition-transform duration-300">
                   <MessageSquare className="w-5 h-5" />
                 </div>
                 <div>
@@ -191,7 +191,7 @@ export default function Contact() {
                   </p>
                 </div>
               </div>
-              <div className="p-2.5 rounded-xl bg-white/5 border border-[var(--bd)] group-hover:border-[#00ffc2]/50 text-[var(--txt-2)] group-hover:text-[var(--color-accent)] transition-all">
+              <div className="p-2.5 rounded-xl bg-white/5 border border-[var(--bd)] group-hover:border-[var(--color-accent)]/50 text-[var(--txt-2)] group-hover:text-[var(--color-accent)] transition-all">
                 <ExternalLink className="w-4 h-4" />
               </div>
             </a>
@@ -218,14 +218,14 @@ export default function Contact() {
           transition={{ duration: 0.5 }}
           className="lg:col-span-6 bg-[var(--panel-4)] border border-[var(--bd)] rounded-3xl p-6 sm:p-8 relative shadow-2xl overflow-hidden group"
         >
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#00ffc2]/40 to-transparent" />
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[var(--color-accent)]/40 to-transparent" />
 
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/5">
             <div className="flex items-center gap-2 text-xs font-mono text-[var(--txt-2)]">
               <Sparkles className="w-4 h-4 text-[var(--color-accent)]" />
               <span>SEND_DIRECT_DISPATCH</span>
             </div>
-            <span className="text-[10px] font-mono text-gray-500 uppercase">Global Endpoint</span>
+            <span className="text-[10px] font-mono text-[var(--txt-2)] uppercase">Global Endpoint</span>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -238,7 +238,7 @@ export default function Contact() {
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="John Doe"
-                className="w-full bg-[var(--input)] border border-[var(--bd)] focus:border-[#00ffc2] focus:bg-[var(--input-focus)] rounded-xl px-4 py-3 text-sm text-[var(--txt)] focus:outline-none transition-all placeholder:text-gray-600 font-inter"
+                className="w-full bg-[var(--input)] border border-[var(--bd)] focus:border-[var(--color-accent)] focus:bg-[var(--input-focus)] rounded-xl px-4 py-3 text-sm text-[var(--txt)] focus:outline-none transition-all placeholder:text-[var(--txt-2)] font-inter"
               />
             </div>
 
@@ -251,7 +251,7 @@ export default function Contact() {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="john@example.com"
-                className="w-full bg-[var(--input)] border border-[var(--bd)] focus:border-[#00ffc2] focus:bg-[var(--input-focus)] rounded-xl px-4 py-3 text-sm text-[var(--txt)] focus:outline-none transition-all placeholder:text-gray-600 font-inter"
+                className="w-full bg-[var(--input)] border border-[var(--bd)] focus:border-[var(--color-accent)] focus:bg-[var(--input-focus)] rounded-xl px-4 py-3 text-sm text-[var(--txt)] focus:outline-none transition-all placeholder:text-[var(--txt-2)] font-inter"
               />
             </div>
 
@@ -264,7 +264,7 @@ export default function Contact() {
                 value={formData.subject}
                 onChange={handleChange}
                 placeholder="SaaS Platform Architecture / Work Inquiry"
-                className="w-full bg-[var(--input)] border border-[var(--bd)] focus:border-[#00ffc2] focus:bg-[var(--input-focus)] rounded-xl px-4 py-3 text-sm text-[var(--txt)] focus:outline-none transition-all placeholder:text-gray-600 font-inter"
+                className="w-full bg-[var(--input)] border border-[var(--bd)] focus:border-[var(--color-accent)] focus:bg-[var(--input-focus)] rounded-xl px-4 py-3 text-sm text-[var(--txt)] focus:outline-none transition-all placeholder:text-[var(--txt-2)] font-inter"
               />
             </div>
 
@@ -277,7 +277,7 @@ export default function Contact() {
                 value={formData.message}
                 onChange={handleChange}
                 placeholder="Details about your system scope, timeline, or position..."
-                className="w-full bg-[var(--input)] border border-[var(--bd)] focus:border-[#00ffc2] focus:bg-[var(--input-focus)] rounded-xl px-4 py-3 text-sm text-[var(--txt)] focus:outline-none transition-all resize-none placeholder:text-gray-600 font-inter"
+                className="w-full bg-[var(--input)] border border-[var(--bd)] focus:border-[var(--color-accent)] focus:bg-[var(--input-focus)] rounded-xl px-4 py-3 text-sm text-[var(--txt)] focus:outline-none transition-all resize-none placeholder:text-[var(--txt-2)] font-inter"
               />
             </div>
 
@@ -287,7 +287,7 @@ export default function Contact() {
                 animate={{ opacity: 1, y: 0 }}
                 className={`p-3.5 rounded-xl text-xs font-mono ${
                   status.type === 'success'
-                    ? 'bg-[#00ffc2]/10 text-[var(--color-accent)] border border-[#00ffc2]/30'
+                    ? 'bg-[var(--color-accent)]/10 text-[var(--color-accent)] border border-[var(--color-accent)]/30'
                     : 'bg-red-500/10 text-red-400 border border-red-500/30'
                 }`}
               >
@@ -298,10 +298,10 @@ export default function Contact() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full h-12 rounded-xl border border-[#00ffc2]/40 bg-transparent overflow-hidden transition-all duration-300 hover:border-[#00ffc2] hover:shadow-[0_0_20px_rgba(0,255,194,0.3)] disabled:opacity-50 disabled:cursor-not-allowed mt-2 cursor-pointer"
+              className="group relative w-full h-12 rounded-xl border border-[var(--color-accent)]/40 bg-transparent overflow-hidden transition-all duration-300 hover:border-[var(--color-accent)] hover:shadow-[0_0_20px_rgba(0,255,194,0.3)] disabled:opacity-50 disabled:cursor-not-allowed mt-2 cursor-pointer"
             >
               <span
-                className={`absolute inset-0 w-full h-full bg-[#00ffc2] pointer-events-none transition-transform duration-500 ease-out ${
+                className={`absolute inset-0 w-full h-full bg-[var(--color-accent)] pointer-events-none transition-transform duration-500 ease-out ${
                   loading ? 'translate-y-0' : 'translate-y-[102%] group-hover:translate-y-0'
                 }`}
               />

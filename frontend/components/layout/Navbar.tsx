@@ -6,7 +6,6 @@ import { Menu, X, FileText } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_LINKS, SITE_CONFIG } from "@/lib/constants";
-import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -22,7 +21,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-[var(--color-background)]/90 backdrop-blur-md border-b border-[var(--color-border)] select-none transition-colors duration-200">
+    <header data-theme="dark" className="fixed top-0 left-0 right-0 z-50 bg-[var(--color-background)]/90 backdrop-blur-md border-b border-[var(--color-border)] select-none transition-colors duration-200">
       {/* Container max-width with full screen edge spacing */}
       <nav className="max-w-[1536px] w-full mx-auto flex items-center justify-between px-6 sm:px-10 lg:px-12 py-4 relative">
         
@@ -48,11 +47,8 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* Right CTA Actions & Theme Switcher */}
+        {/* Right CTA Actions */}
         <div className="hidden md:flex items-center gap-4 z-10">
-          {/* Theme Toggle Button */}
-          <ThemeToggle />
-
           {/* Dynamic Resume Link Button */}
           <Link
             href="/resume"
@@ -74,9 +70,8 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Mobile Right Wrapper (Theme Switcher + Menu Toggle) */}
+        {/* Mobile Right Wrapper (Menu Toggle) */}
         <div className="flex md:hidden items-center gap-3 z-10">
-          <ThemeToggle />
           <button
             onClick={() => setMobileOpen((prev) => !prev)}
             className="text-[var(--color-text-primary)] p-1 focus:outline-none"
