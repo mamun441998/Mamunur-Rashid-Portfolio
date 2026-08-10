@@ -5,6 +5,7 @@ import { CalendarClock, Mail, Video, AlertTriangle, Info, Trash2, Check } from "
 import { api } from "@/lib/api";
 import type { GoogleMeeting, MeetingState } from "@/lib/types";
 import { SectionHeader, Panel, EmptyState } from "./ui";
+import { useConfirm } from "./ConfirmDialog";
 
 const STATES: { key: MeetingState; label: string; color: string }[] = [
   { key: "pending", label: "Pending", color: "#38bdf8" },
@@ -20,6 +21,7 @@ export default function MeetingsPanel({
   onChanged?: () => void;
   refreshSignal?: number;
 }) {
+  const confirm = useConfirm();
   const [items, setItems] = useState<GoogleMeeting[]>([]);
   const [configured, setConfigured] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -52,7 +54,7 @@ export default function MeetingsPanel({
   };
 
   const dismiss = async (m: GoogleMeeting) => {
-    if (!confirm("Remove this meeting from the panel? (It stays in your Google Calendar.)")) return;
+    if (!(await confirm({ title: "Remove meeting?", message: "It will be hidden from the panel but stays in your Google Calendar." }))) return;
     setItems((prev) => prev.filter((x) => x.id !== m.id));
     try {
       await api.meetings.dismiss(m.id);

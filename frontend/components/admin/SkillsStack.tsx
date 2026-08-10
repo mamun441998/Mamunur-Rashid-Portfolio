@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import Image from "next/image";
+import { Plus, Pencil, Trash2, Cpu } from "lucide-react";
 import { api } from "@/lib/api";
+import { getSkillIcon } from "@/lib/skillIcons";
 import type { Skill } from "@/lib/types";
 import {
   SectionHeader,
@@ -14,11 +16,13 @@ import {
   Modal,
   EmptyState,
 } from "./ui";
+import { useConfirm } from "./ConfirmDialog";
 
 const CATEGORIES = ["Backend", "Frontend", "Database", "Architecture", "Tools"];
 const EMPTY: Partial<Skill> = { name: "", category: "Backend", proficiency: 80 };
 
 export default function SkillsStack({ onChanged }: { onChanged?: () => void }) {
+  const confirm = useConfirm();
   const [items, setItems] = useState<Skill[]>([]);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Skill | null>(null);
@@ -45,7 +49,8 @@ export default function SkillsStack({ onChanged }: { onChanged?: () => void }) {
   };
 
   const remove = async (id?: number) => {
-    if (!id || !confirm("Delete this skill?")) return;
+    if (!id) return;
+    if (!(await confirm({ title: "Delete skill?", message: "This skill will be permanently removed." }))) return;
     await api.skills.remove(id);
     await load();
     onChanged?.();
@@ -75,8 +80,17 @@ export default function SkillsStack({ onChanged }: { onChanged?: () => void }) {
                 {g.list.map((s) => (
                   <Panel key={s.id} className="!p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-white font-semibold text-sm">{s.name}</span>
-                      <span className="text-xs font-mono text-gray-500">{s.proficiency}%</span>
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        {getSkillIcon(s.name) ? (
+                          <Image src={getSkillIcon(s.name)!} alt={s.name} width={22} height={22} unoptimized className="object-contain shrink-0" />
+                        ) : (
+                          <span className="w-[22px] h-[22px] rounded-md bg-[#00FFC2]/10 border border-[#00FFC2]/30 flex items-center justify-center text-[#00FFC2] shrink-0">
+                            <Cpu className="w-3 h-3" />
+                          </span>
+                        )}
+                        <span className="text-white font-semibold text-sm truncate">{s.name}</span>
+                      </div>
+                      <span className="text-xs font-mono text-gray-500 shrink-0">{s.proficiency}%</span>
                     </div>
                     <div className="w-full h-1.5 rounded-full bg-white/5 overflow-hidden mb-3">
                       <div className="h-full bg-[#00FFC2] rounded-full" style={{ width: `${s.proficiency}%` }} />

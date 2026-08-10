@@ -15,6 +15,7 @@ import {
   Modal,
   EmptyState,
 } from "./ui";
+import { useConfirm } from "./ConfirmDialog";
 
 const EMPTY: Partial<Experience> = {
   role: "",
@@ -26,6 +27,7 @@ const EMPTY: Partial<Experience> = {
 };
 
 export default function ExperienceLog({ onChanged }: { onChanged?: () => void }) {
+  const confirm = useConfirm();
   const [items, setItems] = useState<Experience[]>([]);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Experience | null>(null);
@@ -55,7 +57,8 @@ export default function ExperienceLog({ onChanged }: { onChanged?: () => void })
   };
 
   const remove = async (id?: number) => {
-    if (!id || !confirm("Delete this experience?")) return;
+    if (!id) return;
+    if (!(await confirm({ title: "Delete experience?", message: "This experience entry will be permanently removed." }))) return;
     await api.experiences.remove(id);
     await load();
     onChanged?.();

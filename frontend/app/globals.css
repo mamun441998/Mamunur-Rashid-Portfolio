@@ -29,44 +29,46 @@
   --input: #111111;
   --input-focus: #151515;
   --txt: #ffffff;
+  --txt-2: #9ca3af;
   --bd: rgba(255, 255, 255, 0.1);
 }
 
-/* ☀️ Light Theme (soft-gray sections with gaps; Hero stays dark, handled below) */
+/* ☀️ Light Theme (cream sections + navy text; Hero & Skills stay dark, below) */
 .light,
 [data-theme="light"] {
-  --color-background: #ffffff;   /* page / gap color */
-  --color-surface: #ffffff;
-  --color-surface-elevated: #f1f5f9;
+  --color-background: #efe6d4;   /* cream page / gap color */
+  --color-surface: #fffdf8;
+  --color-surface-elevated: #f5eede;
 
-  /* Accent stays emerald in light mode (as requested) */
-  --color-accent: #00ffc2;
-  --color-accent-dim: #00ffc21a;
-  --color-accent-glow: #00ffc233;
+  /* Readable teal-emerald accent for light backgrounds (dark keeps bright #00ffc2) */
+  --color-accent: #0d9488;
+  --color-accent-dim: #0d94881a;
+  --color-accent-glow: #0d948833;
 
-  --color-text-primary: #0f172a;
-  --color-text-secondary: #334155;
-  --color-text-muted: #64748b;
+  --color-text-primary: #0f172a;   /* near-black */
+  --color-text-secondary: #1e3a5f; /* navy blue */
+  --color-text-muted: #475569;
 
-  --color-border: #cbd5e1;
-  --color-border-hover: #94a3b8;
+  --color-border: #d9cdb4;
+  --color-border-hover: #b8a888;
 
-  /* Section tokens — LIGHT: soft-gray sections, white panels, dark text */
-  --sec-bg: #eef2f7;
-  --sec-bg-2: #e7ecf2;
-  --panel: #ffffff;
-  --panel-2: #f8fafc;
-  --panel-3: #ffffff;
-  --panel-4: #ffffff;
+  /* Section tokens — LIGHT: cream sections, cream/white cards, black+navy text */
+  --sec-bg: #f7efdf;
+  --sec-bg-2: #f2e9d6;
+  --panel: #fffdf8;
+  --panel-2: #f5eede;
+  --panel-3: #fffdf8;
+  --panel-4: #fffdf8;
   --input: #ffffff;
-  --input-focus: #eef2f7;
-  --txt: #0f172a;
-  --bd: rgba(15, 23, 42, 0.12);
+  --input-focus: #f5eede;
+  --txt: #0f172a;      /* card headings: black */
+  --txt-2: #1e3a5f;    /* card body: navy blue */
+  --bd: rgba(15, 23, 42, 0.14);
 }
 
-/* Hero (#home) always keeps the dark palette, even in light mode */
-.light #home,
-[data-theme="light"] #home {
+/* Hero (#home) and Skills (#skills) always keep the dark palette, even in light mode */
+.light #home, [data-theme="light"] #home,
+.light #skills, [data-theme="light"] #skills {
   --color-background: #030303;
   --color-surface: #0a0a0f;
   --color-surface-elevated: #111117;
@@ -78,9 +80,20 @@
   --color-text-muted: #56565e;
   --color-border: #1c1c22;
   --color-border-hover: #2a2a33;
+  --sec-bg: #030303;
+  --sec-bg-2: #050505;
+  --panel: #090909;
+  --panel-2: #0a0a0a;
+  --panel-3: #070707;
+  --panel-4: #080808;
+  --input: #111111;
+  --input-focus: #151515;
+  --txt: #ffffff;
+  --txt-2: #9ca3af;
+  --bd: rgba(255, 255, 255, 0.1);
 }
 
-/* Light mode: visible gaps between the soft-gray sections */
+/* Light mode: visible gaps between the cream sections */
 .light main > section + section,
 [data-theme="light"] main > section + section {
   margin-top: 0.85rem;

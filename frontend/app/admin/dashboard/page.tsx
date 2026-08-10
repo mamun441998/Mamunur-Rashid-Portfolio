@@ -16,6 +16,7 @@ import LeadsCRM from "@/components/admin/LeadsCRM";
 import MeetingsPanel from "@/components/admin/MeetingsPanel";
 import AnalyticsCenter from "@/components/admin/AnalyticsCenter";
 import SettingsPanel from "@/components/admin/SettingsPanel";
+import { ConfirmProvider } from "@/components/admin/ConfirmDialog";
 
 const POLL_MS = 15000; // re-fetch live data every 15s while the tab is visible
 const TAB_KEY = "mrp_admin_tab";
@@ -120,6 +121,7 @@ export default function AdminDashboard() {
   };
 
   return (
+    <ConfirmProvider>
     <div className="flex h-screen w-screen bg-[#050505] text-gray-100 font-sans overflow-hidden">
       <Sidebar
         active={tab}
@@ -156,5 +158,6 @@ export default function AdminDashboard() {
         </main>
       </div>
     </div>
+    </ConfirmProvider>
   );
 }

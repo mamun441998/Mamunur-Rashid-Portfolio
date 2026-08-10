@@ -15,6 +15,7 @@ import {
   Modal,
   EmptyState,
 } from "./ui";
+import { useConfirm } from "./ConfirmDialog";
 
 const EMPTY: Partial<Project> = {
   title: "",
@@ -26,6 +27,7 @@ const EMPTY: Partial<Project> = {
 };
 
 export default function ProjectsManager({ onChanged }: { onChanged?: () => void }) {
+  const confirm = useConfirm();
   const [items, setItems] = useState<Project[]>([]);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Project | null>(null);
@@ -51,7 +53,8 @@ export default function ProjectsManager({ onChanged }: { onChanged?: () => void 
   };
 
   const remove = async (id?: number) => {
-    if (!id || !confirm("Delete this project?")) return;
+    if (!id) return;
+    if (!(await confirm({ title: "Delete project?", message: "This project will be permanently removed from your portfolio." }))) return;
     await api.projects.remove(id);
     await load();
     onChanged?.();

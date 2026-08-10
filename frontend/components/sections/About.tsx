@@ -101,7 +101,7 @@ export default function About() {
                 className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-mono font-medium transition-all duration-300 cursor-pointer ${
                   activeTab === "photo"
                     ? "bg-[var(--color-accent)] text-black font-semibold shadow-[0_0_15px_rgba(0,255,194,0.4)]"
-                    : "text-gray-400 hover:text-white"
+                    : "text-[var(--txt-2)] hover:text-white"
                 }`}
               >
                 <Camera className="w-3.5 h-3.5" />
@@ -114,7 +114,7 @@ export default function About() {
                 className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-mono font-medium transition-all duration-300 cursor-pointer ${
                   activeTab === "video"
                     ? "bg-[var(--color-accent)] text-black font-semibold shadow-[0_0_15px_rgba(0,255,194,0.4)]"
-                    : "text-gray-400 hover:text-white"
+                    : "text-[var(--txt-2)] hover:text-white"
                 }`}
               >
                 <Video className="w-3.5 h-3.5" />
@@ -209,7 +209,7 @@ export default function About() {
                 <span className="text-gray-500 text-xs">engineer.config.ts</span>
               </div>
 
-              <pre className="text-gray-300 whitespace-pre-wrap leading-relaxed overflow-x-auto">
+              <pre className="text-[var(--txt-2)] whitespace-pre-wrap leading-relaxed overflow-x-auto">
 {`const engineer = {
   name: "Mamunur Rashid",
   role: "Full Stack Engineer",

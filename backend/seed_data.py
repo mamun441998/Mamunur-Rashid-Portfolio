@@ -59,17 +59,30 @@ skills_data = [
 
 experience_data = [
     {
-        "role": "Web Developer",
-        "company": "Ecommerized IT Institute",
+        "role": "Senior Software Engineer / Tech Lead",
+        "company": "MotoHave (Auto Marketplace)",
         "description": (
-            "Building SaaS platforms, CRM systems, marketplace applications, and "
-            "business automation software using Laravel, Next.js, and PostgreSQL. "
-            "Designing multi-tenant architectures and scalable backend systems for "
-            "growing businesses. Working remotely with an Abu Dhabi-based team."
+            "Engineered and modernized a high-throughput multi-tenant automobile "
+            "marketplace system. Architected event-driven services using FastAPI, "
+            "PostgreSQL, and Next.js to handle large-scale vehicle listings, automated "
+            "dealer workflows, and real-time inventory synchronization."
         ),
-        "start_date": date(2025, 12, 1),
+        "start_date": date(2026, 6, 1),
         "end_date": None,
         "is_current": True,
+    },
+    {
+        "role": "Full Stack Engineer",
+        "company": "Ecommerized IT Institute",
+        "description": (
+            "Architected and deployed production-grade enterprise e-commerce and "
+            "institutional platforms. Implemented secure payment gateway integrations, "
+            "automated inventory indexing, and optimized server-side performance using "
+            "Laravel, React, and PostgreSQL."
+        ),
+        "start_date": date(2026, 4, 1),
+        "end_date": date(2026, 7, 1),
+        "is_current": False,
     },
 ]
 

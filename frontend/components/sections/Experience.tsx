@@ -30,34 +30,6 @@ interface ExtendedExperience extends ExperienceType {
   repo_url?: string;
 }
 
-// Experience Data with Exact Real GitHub Repository Links and Corrected Dates
-const MOCK_EXPERIENCES: ExtendedExperience[] = [
-  {
-    id: 1,
-    role: "Senior Software Engineer / Tech Lead",
-    company: "MotoHave (Auto Marketplace)",
-    period: "June 2026 - Present",
-    start_date: "2026-06-01",
-    is_current: true,
-    description:
-      "Engineered & modernized a high-throughput multi-tenant automobile marketplace system. Architected event-driven microservices using FastAPI, Redis, PostgreSQL, and Next.js 14 to handle large-scale vehicle listings, automated dealer workflows, and real-time inventory synchronization.",
-    tech_stack: ["FastAPI", "Next.js 14", "PostgreSQL", "Redis", "Docker", "TailwindCSS"],
-    repo_url: "https://github.com/mamun441998/Auto-Marketplace-Modernization.git",
-  },
-  {
-    id: 2,
-    role: "Full Stack Engineer",
-    company: "Ecommerized IT Institute (Saleh Basahel Project)",
-    period: "April 2026 - July 2026",
-    start_date: "2026-04-01",
-    is_current: false,
-    description:
-      "Architected and deployed a production-grade enterprise e-commerce and institutional platform. Implemented secure multi-currency payment gateway integrations, automated inventory indexing, and optimized server-side performance for seamless user experiences.",
-    tech_stack: ["Laravel", "React", "MySQL", "REST APIs", "TailwindCSS", "Payment Gateways"],
-    repo_url: "https://github.com/freedomwithdxn2026/Saleh-Basahel.git",
-  },
-] as unknown as ExtendedExperience[];
-
 function ExperienceSkeleton() {
   return (
     <div className="w-full space-y-8">
@@ -108,7 +80,7 @@ function TechnicalMotionCard({
             target="_blank"
             rel="noopener noreferrer"
             title="View Repository on GitHub"
-            className="flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded-full bg-white/5 border border-[var(--bd)] text-gray-300 hover:text-[#00ffc2] hover:border-[#00ffc2]/40 hover:bg-[#00ffc2]/10 transition-all duration-300 group/link"
+            className="flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded-full bg-white/5 border border-[var(--bd)] text-[var(--txt-2)] hover:text-[var(--color-accent)] hover:border-[#00ffc2]/40 hover:bg-[#00ffc2]/10 transition-all duration-300 group/link"
           >
             <GithubIcon className="w-3.5 h-3.5 transition-transform group-hover/link:scale-110" />
             <span className="hidden sm:inline">Repo</span>
@@ -116,7 +88,7 @@ function TechnicalMotionCard({
           </a>
         )}
         <div className="p-1 opacity-30 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-          <Cpu className="w-4 h-4 text-[#00ffc2] animate-pulse" />
+          <Cpu className="w-4 h-4 text-[var(--color-accent)] animate-pulse" />
         </div>
       </div>
 
@@ -133,8 +105,9 @@ export default function ExperienceSection() {
     queryFn: () => fetcher<ExtendedExperience[]>('/api/experiences/'),
   });
 
-  // Merge API experiences with Mock ones if API returns incomplete records
-  const experiences = apiExperiences.length >= 2 ? apiExperiences : MOCK_EXPERIENCES;
+  // 100% admin-controlled: show exactly what the API returns (no mock fallback),
+  // so the frontend and the admin Experience Log always match.
+  const experiences = apiExperiences;
 
   return (
     <section
@@ -152,7 +125,7 @@ export default function ExperienceSection() {
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#00ffc2]/10 border border-[#00ffc2]/20 text-[#00ffc2] text-xs font-mono mb-4"
+            className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#00ffc2]/10 border border-[#00ffc2]/20 text-[var(--color-accent)] text-xs font-mono mb-4"
           >
             <Terminal className="w-3.5 h-3.5" />
             <span>CAREER_TIMELINE.LOG</span>
@@ -165,14 +138,14 @@ export default function ExperienceSection() {
             transition={{ duration: 0.5 }}
             className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight font-space-grotesk"
           >
-            Work <span className="text-[#00ffc2] text-glow">Experience</span>
+            Work <span className="text-[var(--color-accent)] text-glow">Experience</span>
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-gray-400 mt-3 max-w-xl text-sm md:text-base font-inter"
+            className="text-[var(--txt-2)] mt-3 max-w-xl text-sm md:text-base font-inter"
           >
             My professional software engineering roadmap, production platforms, and scalable architecture implementations.
           </motion.p>

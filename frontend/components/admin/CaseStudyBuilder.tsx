@@ -15,6 +15,7 @@ import {
   Modal,
   EmptyState,
 } from "./ui";
+import { useConfirm } from "./ConfirmDialog";
 
 interface Form {
   slug: string;
@@ -50,6 +51,7 @@ function parseMetrics(raw: string): CaseStudyMetric[] {
 }
 
 export default function CaseStudyBuilder({ onChanged }: { onChanged?: () => void }) {
+  const confirm = useConfirm();
   const [items, setItems] = useState<CaseStudy[]>([]);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<CaseStudy | null>(null);
@@ -93,7 +95,8 @@ export default function CaseStudyBuilder({ onChanged }: { onChanged?: () => void
   };
 
   const remove = async (id?: number) => {
-    if (!id || !confirm("Delete this case study?")) return;
+    if (!id) return;
+    if (!(await confirm({ title: "Delete case study?", message: "This case study will be permanently removed." }))) return;
     await api.caseStudies.remove(id);
     await load();
     onChanged?.();

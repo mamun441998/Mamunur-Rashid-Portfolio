@@ -15,6 +15,7 @@ import {
   Modal,
   EmptyState,
 } from "./ui";
+import { useConfirm } from "./ConfirmDialog";
 
 const ICONS = ["Layers", "Code2", "Cpu", "Zap", "Globe2", "ShieldCheck"];
 const EMPTY: Partial<Service> = {
@@ -32,6 +33,7 @@ const EMPTY: Partial<Service> = {
 const slugify = (s: string) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 export default function ServicesEngine({ onChanged }: { onChanged?: () => void }) {
+  const confirm = useConfirm();
   const [items, setItems] = useState<Service[]>([]);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Service | null>(null);
@@ -62,7 +64,8 @@ export default function ServicesEngine({ onChanged }: { onChanged?: () => void }
   };
 
   const remove = async (id?: number) => {
-    if (!id || !confirm("Delete this service?")) return;
+    if (!id) return;
+    if (!(await confirm({ title: "Delete service?", message: "This service card will be permanently removed." }))) return;
     await api.services.remove(id);
     await load();
     onChanged?.();

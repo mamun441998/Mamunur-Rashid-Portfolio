@@ -15,6 +15,7 @@ import {
   EmptyState,
   StatusToast,
 } from "./ui";
+import { useConfirm } from "./ConfirmDialog";
 
 type Status = { type: "success" | "error"; message: string } | null;
 
@@ -36,6 +37,7 @@ export default function LeadsCRM({
   onChanged?: () => void;
   refreshSignal?: number;
 }) {
+  const confirm = useConfirm();
   const [items, setItems] = useState<ContactMessage[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [filter, setFilter] = useState<LeadStatus | "all">("all");
@@ -98,7 +100,7 @@ export default function LeadsCRM({
   };
 
   const remove = async (id: number) => {
-    if (!confirm("Delete this message?")) return;
+    if (!(await confirm({ title: "Delete message?", message: "This message will be permanently deleted." }))) return;
     await api.contact.remove(id);
     const remaining = items.filter((m) => m.id !== id);
     setItems(remaining);

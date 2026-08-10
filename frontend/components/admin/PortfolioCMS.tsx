@@ -24,7 +24,6 @@ const TEXT_FIELDS: { key: keyof SiteSetting; label: string; placeholder?: string
   { key: "phone", label: "Phone" },
   { key: "location", label: "Location" },
   { key: "profile_image_url", label: "Profile Image URL" },
-  { key: "resume_url", label: "Resume URL" },
   { key: "github_url", label: "GitHub URL" },
   { key: "linkedin_url", label: "LinkedIn URL" },
   { key: "twitter_url", label: "Twitter URL" },
