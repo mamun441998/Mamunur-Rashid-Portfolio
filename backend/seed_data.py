@@ -18,6 +18,7 @@ from app.models.service import Service
 from app.models.case_study import CaseStudy
 from app.models.site_setting import SiteSetting
 from app.models.blog import Blog
+from app.models.testimonial import Testimonial
 
 
 def _seed_if_empty(session: Session, model, rows: list) -> None:
@@ -346,6 +347,52 @@ blogs_data = [
 ]
 
 
+testimonials_data = [
+    {
+        "name": "Ariful Islam",
+        "role": "Founder & CEO",
+        "company": "Ecommerized",
+        "avatar_url": None,
+        "quote": (
+            "Mamunur rebuilt our platform from the ground up and it just works. Clean "
+            "architecture, fast delivery, and he thinks about scale before you even ask. "
+            "One of the most reliable engineers I've worked with."
+        ),
+        "rating": 5,
+        "featured": True,
+        "order": 1,
+    },
+    {
+        "name": "Sarah Chen",
+        "role": "Product Manager",
+        "company": "MotoHave",
+        "avatar_url": None,
+        "quote": (
+            "He took a messy legacy system and turned it into a clean multi-tenant SaaS "
+            "without missing a deadline. Communication was clear the entire way through. "
+            "Highly recommended for anything full-stack."
+        ),
+        "rating": 5,
+        "featured": False,
+        "order": 2,
+    },
+    {
+        "name": "Rifat Hossain",
+        "role": "CTO",
+        "company": "Saleh Basahel Group",
+        "avatar_url": None,
+        "quote": (
+            "Delivered a polished, high-performance web application with real attention to "
+            "detail. Great UI, solid backend, and everything was documented. We'll "
+            "definitely work with him again."
+        ),
+        "rating": 5,
+        "featured": False,
+        "order": 3,
+    },
+]
+
+
 def seed():
     create_db_and_tables()
     with Session(engine) as session:
@@ -355,6 +402,7 @@ def seed():
         _seed_if_empty(session, Service, services_data)
         _seed_if_empty(session, CaseStudy, case_studies_data)
         _seed_if_empty(session, Blog, blogs_data)
+        _seed_if_empty(session, Testimonial, testimonials_data)
 
         # SiteSetting: single default row (id=1) only if none exists.
         if session.get(SiteSetting, 1) is None and session.exec(select(SiteSetting)).first() is None:

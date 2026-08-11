@@ -12,6 +12,7 @@ import type {
   Service,
   SiteSetting,
   Skill,
+  Testimonial,
 } from "@/lib/types";
 
 export const API_URL = (
@@ -269,6 +270,17 @@ export const api = {
       request<Blog>(`/api/blogs/${id}`, { method: "PUT", body: data, auth: true }),
     remove: (id: number) =>
       request<{ message: string }>(`/api/blogs/${id}`, { method: "DELETE", auth: true }),
+    uploadImage: (file: File) => uploadBlogImage(file),
+  },
+  testimonials: {
+    list: () => request<Testimonial[]>("/api/testimonials/"),
+    create: (data: Partial<Testimonial>) =>
+      request<Testimonial>("/api/testimonials/", { method: "POST", body: data, auth: true }),
+    update: (id: number, data: Partial<Testimonial>) =>
+      request<Testimonial>(`/api/testimonials/${id}`, { method: "PUT", body: data, auth: true }),
+    remove: (id: number) =>
+      request<{ message: string }>(`/api/testimonials/${id}`, { method: "DELETE", auth: true }),
+    // Avatars reuse the blog image store (persists on Postgres across redeploys).
     uploadImage: (file: File) => uploadBlogImage(file),
   },
   analytics: {

@@ -121,6 +121,19 @@ export interface Blog {
   updated_at?: string;
 }
 
+export interface Testimonial {
+  id: number;
+  name: string;
+  role: string;
+  company: string;
+  avatar_url?: string | null;
+  quote: string;
+  rating: number;
+  featured: boolean;
+  order: number;
+  created_at?: string;
+}
+
 export interface Meeting {
   id: number;
   invitee_name: string;

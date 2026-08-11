@@ -163,6 +163,29 @@ main > section + section {
   color: #000000;
 }
 
+/* 💬 Testimonials — dual-row infinite marquee (smooth, GPU-accelerated) */
+@keyframes mrp-marquee-left {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+@keyframes mrp-marquee-right {
+  from { transform: translate3d(-50%, 0, 0); }
+  to { transform: translate3d(0, 0, 0); }
+}
+.mrp-marquee { position: relative; overflow: hidden; }
+.mrp-marquee-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+.mrp-marquee-track.to-left { animation: mrp-marquee-left var(--dur, 46s) linear infinite; }
+.mrp-marquee-track.to-right { animation: mrp-marquee-right var(--dur, 60s) linear infinite; }
+/* Pause both rows when hovering anywhere in the marquee band */
+.mrp-marquee:hover .mrp-marquee-track { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .mrp-marquee-track { animation: none !important; }
+}
+
 /* 📝 Admin-authored blog HTML — readable typography on the dark blog theme */
 .blog-content {
   color: var(--color-text-secondary, #9FB4B2);
