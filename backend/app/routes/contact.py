@@ -236,7 +236,15 @@ def _welcome_email(visitor_name: str, s: Optional[SiteSetting]) -> tuple[str, st
     site = _site_url()
     name = (getattr(s, "full_name", None) or "Mamunur Rashid").strip()
     role = (getattr(s, "role_title", None) or "Full Stack Software Engineer").strip()
-    avatar = _abs_url(getattr(s, "profile_image_url", None), site, "/Profile-Picture.png")
+    # Use a reliably-hosted avatar. Prefer a CMS URL only when it's an absolute
+    # https link on a stable host (NOT the Render backend, which sleeps and would
+    # make Gmail's image proxy show a broken image). Otherwise use the Vercel
+    # CDN static photo, which is always up.
+    cms_img = (getattr(s, "profile_image_url", None) or "").strip()
+    if cms_img.startswith("https://") and "onrender.com" not in cms_img:
+        avatar = cms_img
+    else:
+        avatar = f"{site}/Profile-Picture.png"
     first = (visitor_name or "there").strip().split(" ")[0]
 
     email_addr = getattr(s, "email", None) or settings.smtp_email or ""
@@ -244,26 +252,26 @@ def _welcome_email(visitor_name: str, s: Optional[SiteSetting]) -> tuple[str, st
     wa = "".join(ch for ch in phone if ch.isdigit())
     calendly = (getattr(s, "calendly_url", None) or "").strip() or DEFAULT_MEETING_URL
 
-    # Social circles — only those that are configured.
+    # Social links as brand-colored text pills. We deliberately avoid hotlinked
+    # icon images (Gmail/Outlook often block or fail to proxy them, leaving broken
+    # icons) — coloured text pills render identically in every email client.
     socials = []
     gh = (getattr(s, "github_url", None) or "").strip()
     li = (getattr(s, "linkedin_url", None) or "").strip()
     fb = (getattr(s, "facebook_url", None) or "").strip()
     tw = (getattr(s, "twitter_url", None) or "").strip()
-    if gh: socials.append(("#24292F", "https://img.icons8.com/ios-filled/50/ffffff/github.png", gh, "GitHub"))
-    if li: socials.append(("#0A66C2", "https://img.icons8.com/ios-filled/50/ffffff/linkedin.png", li, "LinkedIn"))
-    if fb: socials.append(("#1877F2", "https://img.icons8.com/ios-filled/50/ffffff/facebook-new.png", fb, "Facebook"))
-    if tw: socials.append(("#000000", "https://img.icons8.com/ios-filled/50/ffffff/twitterx.png", tw, "Twitter"))
-    if wa: socials.append(("#25D366", "https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png", f"https://wa.me/{wa}", "WhatsApp"))
-    if email_addr: socials.append(("#0E9E85", "https://img.icons8.com/ios-filled/50/ffffff/new-post.png", f"mailto:{email_addr}", "Email"))
+    if gh: socials.append(("#24292F", gh, "GitHub"))
+    if li: socials.append(("#0A66C2", li, "LinkedIn"))
+    if fb: socials.append(("#1877F2", fb, "Facebook"))
+    if tw: socials.append(("#1D9BF0", tw, "Twitter"))
+    if wa: socials.append(("#25D366", f"https://wa.me/{wa}", "WhatsApp"))
+    if email_addr: socials.append(("#0E9E85", f"mailto:{email_addr}", "Email"))
 
-    social_cells = "".join(
-        f'<td style="padding:0 6px;">'
-        f'<a href="{url}" target="_blank" style="display:inline-block;width:44px;height:44px;'
-        f'background:{color};border-radius:50%;text-align:center;line-height:44px;text-decoration:none;">'
-        f'<img src="{icon}" alt="{label}" width="20" height="20" style="vertical-align:middle;border:0;" />'
-        f'</a></td>'
-        for color, icon, url, label in socials
+    social_pills = "".join(
+        f'<a href="{url}" target="_blank" style="display:inline-block;background:{color};'
+        f'color:#ffffff;font-size:12px;font-weight:700;text-decoration:none;padding:9px 18px;'
+        f'margin:4px;border-radius:22px;font-family:Segoe UI,Helvetica,Arial,sans-serif;">{label}</a>'
+        for color, url, label in socials
     )
 
     # CTA buttons
@@ -290,7 +298,9 @@ def _welcome_email(visitor_name: str, s: Optional[SiteSetting]) -> tuple[str, st
         <tr><td style="height:5px;background:#2DD4BF;line-height:5px;font-size:0;">&nbsp;</td></tr>
         <!-- header -->
         <tr><td align="center" style="padding:34px 30px 10px;">
-          <img src="{avatar}" alt="{name}" width="88" height="88" style="width:88px;height:88px;border-radius:50%;border:3px solid #2DD4BF;object-fit:cover;" />
+          <table role="presentation" cellpadding="0" cellspacing="0" align="center"><tr><td style="width:92px;height:92px;background:#0b2a2a;border:3px solid #2DD4BF;border-radius:50%;text-align:center;vertical-align:middle;overflow:hidden;">
+            <img src="{avatar}" alt="{name}" width="92" height="92" style="width:92px;height:92px;border-radius:50%;object-fit:cover;display:block;" />
+          </td></tr></table>
           <div style="color:#F1F5F4;font-size:21px;font-weight:700;margin-top:14px;">{name}</div>
           <div style="color:#2DD4BF;font-size:13px;font-family:monospace;margin-top:4px;">{role}</div>
         </td></tr>
@@ -313,8 +323,8 @@ def _welcome_email(visitor_name: str, s: Optional[SiteSetting]) -> tuple[str, st
           <div style="text-align:center;margin:6px 0 22px;">{ctas}</div>
         </td></tr>
         <!-- socials -->
-        <tr><td align="center" style="padding:4px 30px 8px;">
-          <table role="presentation" cellpadding="0" cellspacing="0"><tr>{social_cells}</tr></table>
+        <tr><td align="center" style="padding:6px 26px 10px;">
+          <div style="text-align:center;line-height:2.2;">{social_pills}</div>
         </td></tr>
         <!-- footer -->
         <tr><td style="padding:22px 30px 30px;border-top:1px solid #1E3339;margin-top:10px;">
