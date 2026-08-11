@@ -33,6 +33,9 @@ import {
   Crosshair,
 } from "lucide-react";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+import { externalHref } from "@/lib/url";
 
 // ----------------------------------------------------------------------
 // TYPES & DATA STRUCTURES
@@ -419,6 +422,23 @@ export default function ProjectCaseStudyPage() {
   const [selectedNode, setSelectedNode] = useState<NodeDetail>(SYSTEM_NODES[0]);
   const [copied, setCopied] = useState(false);
 
+  // Live case-study content from the admin Case Study Builder (falls back to the
+  // rich defaults below when the slug has no DB entry yet).
+  const { data: cs } = useQuery({
+    queryKey: ["case-study", slug],
+    queryFn: async () => {
+      try {
+        return await api.caseStudies.bySlug(slug);
+      } catch {
+        // Slug not found (e.g. the CTA link and DB slug differ) — fall back to the
+        // first case study so admin edits to the single case study always show.
+        const all = await api.caseStudies.list();
+        return all[0] || null;
+      }
+    },
+    retry: false,
+  });
+
   // GitHub Repo Link
   const GITHUB_REPO_URL = "https://github.com/mamun441998/Auto-Marketplace-Modernization.git";
 
@@ -448,6 +468,27 @@ for message in consumer:
     # Broadcast to Redis Event Stream for Webhook Notification
     publish_valuation_event(vehicle_data['id'], float(predicted_fair_price))
   `.trim();
+
+  // ---- Admin-editable content with safe fallbacks ----
+  const DEFAULT_METRICS = [
+    { label: "Search Latency", value: "< 15ms", sub: "Distributed OpenSearch Cluster" },
+    { label: "Throughput", value: "12,000 req/s", sub: "Async Ingestion Engine" },
+    { label: "ML Accuracy", value: "98.4%", sub: "Automated Valuation Inference" },
+    { label: "System Availability", value: "99.99%", sub: "Decoupled Event Streaming" },
+  ];
+  let csMetrics: { label: string; value: string; sub?: string }[] = DEFAULT_METRICS;
+  if (cs?.metrics) {
+    try {
+      const parsed = JSON.parse(cs.metrics);
+      if (Array.isArray(parsed) && parsed.length) csMetrics = parsed;
+    } catch { /* keep defaults */ }
+  }
+  const csTitle = cs?.title?.trim() || "Auto Marketplace Modernization System";
+  const csSubtitle = cs?.subtitle?.trim() || "Data Science & Distributed System Architecture";
+  const csChallenge = cs?.challenge?.trim() ||
+    "Deconstruct a monolithic legacy automotive platform into an event-driven microservices architecture. Integrated a real-time ML-powered car valuation pipeline and distributed search cluster to reduce listing processing time from minutes to sub-100ms globally.";
+  const csCode = cs?.code_snippet?.trim() || sampleMLPipelineCode;
+  const csGithub = externalHref(cs?.github_repo_url) || GITHUB_REPO_URL;
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-text-primary)] font-sans selection:bg-[var(--color-accent)] selection:text-black pt-24 pb-20 px-6 sm:px-10 lg:px-16 relative overflow-hidden select-none transition-colors duration-200">
@@ -482,7 +523,7 @@ for message in consumer:
         <section className="space-y-6 border-b border-[var(--color-border)] pb-12">
           <div className="flex flex-wrap items-center gap-3 font-mono text-xs text-[var(--color-accent)]">
             <span className="px-3 py-1 rounded-full bg-[var(--color-accent-dim)] border border-[var(--color-accent)]/30 flex items-center gap-1.5 font-semibold">
-              <Activity className="w-3.5 h-3.5" /> Data Science & Distributed System Architecture
+              <Activity className="w-3.5 h-3.5" /> {csSubtitle}
             </span>
             <span className="text-[var(--color-text-muted)]">•</span>
             <span className="text-[var(--color-text-secondary)]">Event-Driven Modernization</span>
@@ -491,29 +532,21 @@ for message in consumer:
           </div>
 
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-[var(--color-text-primary)] leading-tight font-space-grotesk">
-            Auto Marketplace <br className="hidden md:block" />
-            <span className="text-[var(--color-accent)]">
-              Modernization System
-            </span>
+            {csTitle}
           </h1>
 
           <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl p-5 md:p-6 backdrop-blur-md relative overflow-hidden shadow-sm">
             <h3 className="text-xs font-mono uppercase tracking-widest text-[var(--color-accent)] mb-2 flex items-center gap-2 font-semibold">
               <AlertTriangle className="w-4 h-4" /> Architectural Challenge & Vision
             </h3>
-            <p className="text-sm md:text-base text-[var(--color-text-secondary)] leading-relaxed font-inter">
-              &quot;Deconstruct a monolithic legacy automotive platform into an event-driven microservices architecture. Integrated a real-time ML-powered car valuation pipeline and distributed search cluster to reduce listing processing time from minutes to sub-100ms globally.&quot;
+            <p className="text-sm md:text-base text-[var(--color-text-secondary)] leading-relaxed font-inter whitespace-pre-line">
+              {csChallenge}
             </p>
           </div>
 
           {/* Key Engineering Metrics */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
-            {[
-              { label: "Search Latency", value: "< 15ms", sub: "Distributed OpenSearch Cluster" },
-              { label: "Throughput", value: "12,000 req/s", sub: "Async Ingestion Engine" },
-              { label: "ML Accuracy", value: "98.4%", sub: "Automated Valuation Inference" },
-              { label: "System Availability", value: "99.99%", sub: "Decoupled Event Streaming" },
-            ].map((metric, idx) => (
+            {csMetrics.map((metric, idx) => (
               <div key={idx} className="bg-[var(--color-surface)] border border-[var(--color-border)] p-5 rounded-2xl relative overflow-hidden group hover:border-[var(--color-accent)] transition-all backdrop-blur-md shadow-sm">
                 <div className="text-xl md:text-3xl font-extrabold text-[var(--color-accent)] font-mono">{metric.value}</div>
                 <div className="text-xs font-semibold text-[var(--color-text-primary)] mt-1">{metric.label}</div>
@@ -709,7 +742,7 @@ for message in consumer:
             </h2>
             <button
               onClick={() => {
-                navigator.clipboard.writeText(sampleMLPipelineCode);
+                navigator.clipboard.writeText(csCode);
                 setCopied(true);
                 setTimeout(() => setCopied(false), 2000);
               }}
@@ -720,7 +753,7 @@ for message in consumer:
           </div>
 
           <div className="bg-[#0d1117] border border-[var(--color-border)] rounded-3xl p-5 overflow-x-auto font-mono text-xs md:text-sm text-emerald-400 leading-relaxed shadow-lg">
-            <pre><code>{sampleMLPipelineCode}</code></pre>
+            <pre><code>{csCode}</code></pre>
           </div>
         </section>
 
@@ -733,7 +766,7 @@ for message in consumer:
 
           <div className="flex flex-wrap items-center gap-4">
             <Link
-              href={GITHUB_REPO_URL}
+              href={csGithub}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-accent)] text-[var(--color-text-primary)] font-mono text-xs hover:bg-[var(--color-accent)] hover:text-black transition-all shadow-md font-bold uppercase tracking-wider"

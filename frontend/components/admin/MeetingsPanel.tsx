@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CalendarClock, Mail, Video, AlertTriangle, Info, Trash2, Check } from "lucide-react";
+import { CalendarClock, Mail, Video, AlertTriangle, Info, Trash2, Check, MapPin, Clock, ChevronRight } from "lucide-react";
 import { api } from "@/lib/api";
 import type { GoogleMeeting, MeetingState } from "@/lib/types";
-import { SectionHeader, Panel, EmptyState } from "./ui";
+import { SectionHeader, Panel, EmptyState, Modal } from "./ui";
 import { useConfirm } from "./ConfirmDialog";
 
 const STATES: { key: MeetingState; label: string; color: string }[] = [
@@ -26,6 +26,9 @@ export default function MeetingsPanel({
   const [configured, setConfigured] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [detailId, setDetailId] = useState<string | null>(null);
+  // Read the live item so status changes made inside the modal reflect instantly.
+  const detail = detailId ? items.find((x) => x.id === detailId) || null : null;
 
   const load = () =>
     api.meetings
@@ -56,6 +59,7 @@ export default function MeetingsPanel({
   const dismiss = async (m: GoogleMeeting) => {
     if (!(await confirm({ title: "Remove meeting?", message: "It will be hidden from the panel but stays in your Google Calendar." }))) return;
     setItems((prev) => prev.filter((x) => x.id !== m.id));
+    setDetailId((cur) => (cur === m.id ? null : cur));
     try {
       await api.meetings.dismiss(m.id);
       onChanged?.();
@@ -116,7 +120,12 @@ export default function MeetingsPanel({
             return (
               <Panel key={m.id}>
                 <div className="flex items-start justify-between gap-4">
-                  <div className="flex gap-4 min-w-0">
+                  <button
+                    type="button"
+                    onClick={() => setDetailId(m.id)}
+                    title="Open details"
+                    className="flex gap-4 min-w-0 text-left group/detail cursor-pointer"
+                  >
                     <div className={`p-2.5 rounded-xl border h-fit ${
                       canceled
                         ? "bg-red-500/10 border-red-500/20 text-red-400"
@@ -151,8 +160,11 @@ export default function MeetingsPanel({
                       {m.notes && (
                         <p className="text-xs text-gray-500 mt-2 line-clamp-2 max-w-2xl whitespace-pre-wrap">{m.notes}</p>
                       )}
+                      <span className="inline-flex items-center gap-1 text-[10px] font-mono text-gray-600 group-hover/detail:text-[#00FFC2] mt-2 transition-colors">
+                        View details <ChevronRight className="w-3 h-3" />
+                      </span>
                     </div>
-                  </div>
+                  </button>
                   <div className="flex items-center gap-2 shrink-0">
                     {m.meet_link && !canceled && (
                       <a
@@ -202,6 +214,88 @@ export default function MeetingsPanel({
           })}
         </div>
       )}
+
+      {/* Meeting detail modal — full info + all controls */}
+      <Modal open={!!detail} onClose={() => setDetailId(null)} title={detail?.event_name || "Meeting details"} wide>
+        {detail && (() => {
+          const canceled = detail.status === "canceled";
+          const meta = stateMeta(detail.state);
+          const row = (icon: React.ReactNode, label: string, value: React.ReactNode) => (
+            <div className="flex items-start gap-3 py-2.5 border-b border-white/5">
+              <span className="text-gray-500 mt-0.5">{icon}</span>
+              <div className="min-w-0">
+                <div className="text-[10px] font-mono uppercase tracking-wider text-gray-500">{label}</div>
+                <div className="text-sm text-white break-words">{value}</div>
+              </div>
+            </div>
+          );
+          return (
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 mb-3">
+                {canceled ? (
+                  <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-red-500/10 text-red-400">canceled</span>
+                ) : (
+                  <span className="text-[11px] font-mono px-2.5 py-1 rounded-full inline-flex items-center gap-1.5" style={{ background: `${meta.color}1a`, color: meta.color }}>
+                    <span className="w-1.5 h-1.5 rounded-full" style={{ background: meta.color }} />{meta.label}
+                  </span>
+                )}
+              </div>
+
+              {detail.invitee_name && row(<CalendarClock className="w-4 h-4" />, "Invitee", detail.invitee_name)}
+              {detail.invitee_email && row(<Mail className="w-4 h-4" />, "Email",
+                <a href={`mailto:${detail.invitee_email}`} className="text-[#00FFC2] hover:underline">{detail.invitee_email}</a>)}
+              {detail.scheduled_at && row(<Clock className="w-4 h-4" />, "Starts", new Date(detail.scheduled_at).toLocaleString())}
+              {detail.end_at && row(<Clock className="w-4 h-4" />, "Ends", new Date(detail.end_at).toLocaleString())}
+              {detail.location && row(<MapPin className="w-4 h-4" />, "Location", detail.location)}
+              {detail.notes && row(<Info className="w-4 h-4" />, "Notes", <span className="whitespace-pre-wrap">{detail.notes}</span>)}
+
+              {/* Controls */}
+              <div className="pt-5 space-y-4">
+                {detail.meet_link && !canceled && (
+                  <a
+                    href={detail.meet_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#00FFC2] text-black text-sm font-semibold hover:shadow-[0_0_20px_rgba(0,255,194,0.35)] transition"
+                  >
+                    <Video className="w-4 h-4" /> Join Google Meet
+                  </a>
+                )}
+
+                {!canceled && (
+                  <div>
+                    <div className="text-[10px] font-mono uppercase tracking-wider text-gray-500 mb-2">Set status</div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {STATES.map((s) => {
+                        const active = (detail.state || "pending") === s.key;
+                        return (
+                          <button
+                            key={s.key}
+                            onClick={() => setState(detail, s.key)}
+                            className={`px-3.5 py-1.5 text-xs font-medium rounded-lg border transition inline-flex items-center gap-1.5 ${
+                              active ? "text-black" : "text-gray-300 hover:text-white border-white/10"
+                            }`}
+                            style={active ? { background: s.color, borderColor: s.color } : undefined}
+                          >
+                            {active && <Check className="w-3 h-3" />}{s.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                <button
+                  onClick={() => dismiss(detail)}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-gray-300 text-sm hover:border-red-500/50 hover:text-red-400 transition"
+                >
+                  <Trash2 className="w-4 h-4" /> Remove from panel
+                </button>
+              </div>
+            </div>
+          );
+        })()}
+      </Modal>
     </div>
   );
 }

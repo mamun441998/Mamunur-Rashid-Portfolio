@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Project } from '@/types';
+import { externalHref } from '@/lib/url';
 
 interface ProjectCardProps {
   project: Project;
@@ -85,7 +86,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           <div className="flex items-center gap-4 pt-2">
             {project.github_url && (
               <a
-                href={project.github_url}
+                href={externalHref(project.github_url)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-xs font-mono text-[var(--txt-2)] hover:text-[var(--color-accent)] transition-colors"
@@ -99,7 +100,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
             {project.project_url && (
               <a
-                href={project.project_url}
+                href={externalHref(project.project_url)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-xs font-mono text-[var(--color-accent)] hover:underline transition-all ml-auto"
