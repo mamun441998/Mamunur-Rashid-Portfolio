@@ -236,15 +236,21 @@ export default function ClientsManager({ onChanged }: { onChanged?: () => void }
             </div>
             {detail.updates.length > 0 && (
               <ul className="space-y-2 pt-2">
-                {detail.updates.map((u) => (
-                  <li key={u.id} className="flex items-start justify-between gap-2 bg-white/[0.02] border border-white/5 rounded-lg px-3 py-2">
-                    <div className="min-w-0">
-                      {u.title && <p className="text-sm font-semibold text-white">{u.title}</p>}
-                      {u.body && <p className="text-sm text-gray-400">{u.body}</p>}
-                    </div>
-                    <button onClick={() => delUpdate(u)} className="text-gray-500 hover:text-red-400 shrink-0"><Trash2 className="w-4 h-4" /></button>
-                  </li>
-                ))}
+                {detail.updates.map((u) => {
+                  const fromClient = u.author === "client";
+                  return (
+                    <li key={u.id} className={`flex items-start justify-between gap-2 rounded-lg px-3 py-2 border ${fromClient ? "bg-[#00FFC2]/5 border-[#00FFC2]/30" : "bg-white/[0.02] border-white/5"}`}>
+                      <div className="min-w-0">
+                        <span className={`text-[10px] font-mono uppercase tracking-wider ${fromClient ? "text-[#00FFC2]" : "text-gray-500"}`}>
+                          {fromClient ? "↩ Client reply" : "You"}
+                        </span>
+                        {u.title && <p className="text-sm font-semibold text-white">{u.title}</p>}
+                        {u.body && <p className="text-sm text-gray-400">{u.body}</p>}
+                      </div>
+                      <button onClick={() => delUpdate(u)} className="text-gray-500 hover:text-red-400 shrink-0"><Trash2 className="w-4 h-4" /></button>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </Panel>

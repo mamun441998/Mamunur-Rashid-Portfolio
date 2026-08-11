@@ -46,7 +46,7 @@ def create_client(client: Client, session: Session = Depends(get_session), admin
 def client_detail(cid: int, session: Session = Depends(get_session), admin: Admin = Depends(get_current_admin)):
     client = _require_client(session, cid)
     milestones = session.exec(select(Milestone).where(Milestone.client_id == cid)).all()
-    updates = session.exec(select(ClientUpdate).where(ClientUpdate.client_id == cid).order_by(ClientUpdate.id.desc())).all()
+    updates = session.exec(select(ClientUpdate).where(ClientUpdate.client_id == cid).order_by(ClientUpdate.id.asc())).all()
     files = session.exec(select(PortalFile).where(PortalFile.client_id == cid)).all()
     invoices = session.exec(select(Invoice).where(Invoice.client_id == cid)).all()
     return {
@@ -144,6 +144,7 @@ def add_update(cid: int, update: ClientUpdate, session: Session = Depends(get_se
     _require_client(session, cid)
     update.id = None
     update.client_id = cid
+    update.author = "owner"
     session.add(update)
     session.commit()
     session.refresh(update)

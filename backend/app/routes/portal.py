@@ -26,6 +26,10 @@ class TokenReq(BaseModel):
     token: str
 
 
+class ReplyReq(BaseModel):
+    body: str
+
+
 def _magic_email(name: str, link: str) -> tuple[str, str]:
     first = (name or "there").strip().split(" ")[0]
     html = f"""\
@@ -110,7 +114,7 @@ def me(client: Client = Depends(get_current_client), session: Session = Depends(
     cid = client.id
     milestones = session.exec(select(Milestone).where(Milestone.client_id == cid)).all()
     updates = session.exec(
-        select(ClientUpdate).where(ClientUpdate.client_id == cid).order_by(ClientUpdate.id.desc())
+        select(ClientUpdate).where(ClientUpdate.client_id == cid).order_by(ClientUpdate.id.asc())
     ).all()
     files = session.exec(select(PortalFile).where(PortalFile.client_id == cid)).all()
     invoices = session.exec(select(Invoice).where(Invoice.client_id == cid)).all()
@@ -140,6 +144,20 @@ def me(client: Client = Depends(get_current_client), session: Session = Depends(
         ],
         "invoices": [i.model_dump() for i in invoices],
     }
+
+
+@router.post("/updates")
+def post_reply(payload: ReplyReq, client: Client = Depends(get_current_client),
+               session: Session = Depends(get_session)):
+    """Let the signed-in client reply to the project thread."""
+    body = (payload.body or "").strip()
+    if not body:
+        raise HTTPException(status_code=400, detail="Message cannot be empty.")
+    upd = ClientUpdate(client_id=client.id, title="", body=body, author="client")
+    session.add(upd)
+    session.commit()
+    session.refresh(upd)
+    return upd.model_dump()
 
 
 @router.get("/files/{file_id}")

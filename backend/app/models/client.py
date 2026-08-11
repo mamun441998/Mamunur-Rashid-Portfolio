@@ -33,6 +33,7 @@ class ClientUpdate(SQLModel, table=True):
     client_id: int = Field(index=True, foreign_key="client.id")
     title: str = ""
     body: str = ""
+    author: str = "owner"           # "owner" (Mamunur) | "client" (their reply)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 

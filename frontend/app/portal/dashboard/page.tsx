@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   LogOut, CheckCircle2, Circle, Clock, FileText, Download, CalendarClock,
-  Receipt, ListChecks, MessageSquare, Loader2, Sparkles,
+  Receipt, ListChecks, MessageSquare, Loader2, Sparkles, Send,
 } from "lucide-react";
 import { api, downloadPortalFile } from "@/lib/api";
 import { isPortalAuthenticated, portalLogout } from "@/lib/portalAuth";
@@ -41,11 +41,23 @@ export default function PortalDashboardPage() {
   const [data, setData] = useState<PortalDashboard | null>(null);
   const [error, setError] = useState("");
   const [busyFile, setBusyFile] = useState<number | null>(null);
+  const [reply, setReply] = useState("");
+  const [sending, setSending] = useState(false);
+
+  const load = () => api.portal.me().then(setData).catch((e) => setError(e?.message || "Could not load your portal."));
 
   useEffect(() => {
     if (!isPortalAuthenticated()) { router.replace("/portal"); return; }
-    api.portal.me().then(setData).catch((e) => setError(e?.message || "Could not load your portal."));
+    load();
   }, [router]);
+
+  const sendReply = async () => {
+    if (!reply.trim()) return;
+    setSending(true);
+    try { await api.portal.postUpdate(reply.trim()); setReply(""); await load(); }
+    catch (e: any) { setError(e?.message || "Could not send your message."); }
+    finally { setSending(false); }
+  };
 
   if (error) {
     return (
@@ -199,23 +211,52 @@ export default function PortalDashboardPage() {
           </div>
         )}
 
-        {/* Updates feed */}
+        {/* Updates thread (two-way) */}
         <div className="mt-6">
-          <Card title="Project updates" icon={<MessageSquare className="w-5 h-5" />}>
+          <Card title="Project conversation" icon={<MessageSquare className="w-5 h-5" />}>
             {updates.length === 0 ? (
-              <p className="text-sm text-[var(--color-text-muted)] font-mono">No updates yet — check back soon.</p>
+              <p className="text-sm text-[var(--color-text-muted)] font-mono mb-4">No messages yet — start the conversation below.</p>
             ) : (
-              <ul className="space-y-4">
-                {updates.map((u) => (
-                  <li key={u.id} className="relative pl-5 border-l border-[var(--color-border)]">
-                    <span className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-[var(--color-accent)]" />
-                    {u.title && <p className="text-sm font-semibold text-[var(--color-text-primary)]">{u.title}</p>}
-                    {u.body && <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed mt-0.5 whitespace-pre-line">{u.body}</p>}
-                    <p className="text-[11px] font-mono text-[var(--color-text-muted)] mt-1">{fmtDate(u.created_at)}</p>
-                  </li>
-                ))}
+              <ul className="space-y-3 mb-5">
+                {updates.map((u) => {
+                  const mine = u.author === "client";
+                  return (
+                    <li key={u.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
+                      <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 border ${
+                        mine
+                          ? "bg-[var(--color-accent)]/10 border-[var(--color-accent)]/30"
+                          : "bg-[var(--color-surface-elevated)] border-[var(--color-border)]"}`}>
+                        <div className="text-[10px] font-mono uppercase tracking-wider text-[var(--color-text-muted)] mb-1">
+                          {mine ? "You" : "Mamunur"} · {fmtDate(u.created_at)}
+                        </div>
+                        {u.title && <p className="text-sm font-semibold text-[var(--color-text-primary)]">{u.title}</p>}
+                        {u.body && <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed whitespace-pre-line">{u.body}</p>}
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             )}
+
+            {/* Reply box */}
+            <div className="flex items-end gap-2 pt-2 border-t border-[var(--color-border)]">
+              <textarea
+                value={reply}
+                onChange={(e) => setReply(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) sendReply(); }}
+                rows={2}
+                placeholder="Write a reply…"
+                className="flex-1 resize-none rounded-xl bg-[var(--color-surface-elevated)] border border-[var(--color-border)] focus:border-[var(--color-accent)] text-[var(--color-text-primary)] text-sm px-3.5 py-2.5 focus:outline-none"
+              />
+              <button
+                onClick={sendReply}
+                disabled={sending || !reply.trim()}
+                className="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--color-accent)] text-black text-sm font-semibold disabled:opacity-50 transition-transform hover:scale-[1.02]"
+              >
+                {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                <span className="hidden sm:inline">Send</span>
+              </button>
+            </div>
           </Card>
         </div>
       </div>

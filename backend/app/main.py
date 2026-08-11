@@ -55,9 +55,29 @@ def ensure_admin() -> None:
             session.commit()
 
 
+def ensure_schema() -> None:
+    """Idempotent, additive column migrations for tables that already exist
+    (create_all only creates missing tables, it never adds new columns).
+    Each statement is safe to run repeatedly and on a fresh DB."""
+    from sqlalchemy import text
+    migrations = [
+        "ALTER TABLE clientupdate ADD COLUMN IF NOT EXISTS author VARCHAR NOT NULL DEFAULT 'owner'",
+    ]
+    with engine.begin() as conn:
+        for stmt in migrations:
+            try:
+                conn.execute(text(stmt))
+            except Exception as exc:  # e.g. SQLite lacks IF NOT EXISTS — safe to skip
+                logger.info("Skipping migration (%s): %s", stmt.split(' ADD')[0], exc)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     create_db_and_tables()  # only creates missing tables; NEVER drops data
+    try:
+        ensure_schema()
+    except Exception as exc:
+        logger.exception("Schema migration failed: %s", exc)
     try:
         ensure_admin()
     except Exception as exc:

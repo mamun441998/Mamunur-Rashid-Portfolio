@@ -358,6 +358,8 @@ export const api = {
     verify: (token: string) =>
       request<{ access_token: string; token_type: string }>("/api/portal/verify", { method: "POST", body: { token } }),
     me: () => portalRequest<PortalDashboard>("/api/portal/me"),
+    postUpdate: (body: string) =>
+      portalRequest<ClientUpdate>("/api/portal/updates", { method: "POST", body: { body } }),
   },
   // Admin management of clients + their portal content (uses the admin token)
   clients: {

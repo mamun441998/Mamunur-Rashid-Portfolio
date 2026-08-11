@@ -163,6 +163,7 @@ export interface ClientUpdate {
   client_id: number;
   title: string;
   body: string;
+  author: string;        // "owner" | "client"
   created_at: string;
 }
 
