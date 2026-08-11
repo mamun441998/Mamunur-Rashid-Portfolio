@@ -163,6 +163,35 @@ main > section + section {
   color: #000000;
 }
 
+/* 🎚️ Value Calculator range sliders */
+.mrp-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 6px;
+  outline: none;
+  cursor: pointer;
+}
+.mrp-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 3px solid var(--color-background);
+  box-shadow: 0 0 0 1px var(--color-accent);
+  cursor: pointer;
+}
+.mrp-range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 3px solid var(--color-background);
+  cursor: pointer;
+}
+
 /* 💬 Testimonials — dual-row infinite marquee (smooth, GPU-accelerated) */
 @keyframes mrp-marquee-left {
   from { transform: translate3d(0, 0, 0); }

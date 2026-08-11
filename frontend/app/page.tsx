@@ -2,6 +2,7 @@ import Hero from "@/components/sections/Hero";
 import About from "@/components/sections/About";
 import Skills from "@/components/sections/Skills";
 import Services from "@/components/sections/Services";
+import ValueCalculator from "@/components/sections/ValueCalculator";
 import Projects from "@/components/sections/Projects";
 import Experience from "@/components/sections/Experience";
 import Testimonials from "@/components/sections/Testimonials";
@@ -23,6 +24,7 @@ export default function Home() {
       <section id="services">
         <Services />
       </section>
+      <ValueCalculator />
       <section id="projects">
         <Projects />
       </section>
