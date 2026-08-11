@@ -1,3 +1,4 @@
+import base64
 import json
 import logging
 import os
@@ -8,6 +9,7 @@ import urllib.error
 import urllib.request
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.image import MIMEImage
 from datetime import datetime, timezone
 from typing import List, Optional
 
@@ -28,6 +30,11 @@ router = APIRouter(prefix="/api/contact", tags=["contact"])
 
 # Fail fast rather than hang the request if the SMTP server is unreachable.
 SMTP_TIMEOUT = 20
+
+# Bundled avatar embedded inline (CID) in the welcome email — guarantees the
+# photo renders in every client without depending on an external image URL.
+AVATAR_PATH = os.path.join(os.path.dirname(__file__), "..", "assets", "avatar.png")
+AVATAR_CID = "avatar.png"
 
 
 # Owner's Google appointment/Meet scheduling link — used for the welcome-email
@@ -77,10 +84,11 @@ class StatusUpdate(BaseModel):
 # ------------------------------------------------------------------
 # Email helpers (SMTP config from settings, not os.getenv)
 # ------------------------------------------------------------------
-def _send_via_brevo(to_email: str, subject: str, body: str, from_label: str, html_body: Optional[str] = None) -> None:
+def _send_via_brevo(to_email: str, subject: str, body: str, from_label: str,
+                    html_body: Optional[str] = None, inline_image: Optional[tuple] = None) -> None:
     """Send an email through Brevo's HTTP API (works from Render, which
     blocks outbound SMTP). Requires BREVO_API_KEY in the environment and a
-    Brevo-verified sender (SMTP_EMAIL)."""
+    Brevo-verified sender (SMTP_EMAIL). `inline_image` = (cid, bytes, mime)."""
     api_key = os.getenv("BREVO_API_KEY")
     sender_email = settings.smtp_email
     if not sender_email:
@@ -95,6 +103,14 @@ def _send_via_brevo(to_email: str, subject: str, body: str, from_label: str, htm
     }
     if html_body:
         body_payload["htmlContent"] = html_body
+    if inline_image:
+        # Brevo renders inline images referenced as cid:<name> in the HTML when
+        # the matching attachment name is provided.
+        cid, data, _mime = inline_image
+        body_payload["attachment"] = [{
+            "content": base64.b64encode(data).decode("ascii"),
+            "name": cid,
+        }]
     payload = json.dumps(body_payload).encode("utf-8")
 
     req = urllib.request.Request(
@@ -125,7 +141,8 @@ def _send_via_brevo(to_email: str, subject: str, body: str, from_label: str, htm
         raise EmailSendError(f"Email delivery failed: {exc}") from exc
 
 
-def _smtp_send(to_email: str, subject: str, body: str, from_label: str, html_body: Optional[str] = None) -> None:
+def _smtp_send(to_email: str, subject: str, body: str, from_label: str,
+               html_body: Optional[str] = None, inline_image: Optional[tuple] = None) -> None:
     """Send an email. Prefers the Brevo HTTP API when BREVO_API_KEY is set (required
     on Render, which blocks SMTP); otherwise falls back to direct SMTP for local dev.
 
@@ -141,7 +158,7 @@ def _smtp_send(to_email: str, subject: str, body: str, from_label: str, html_bod
     """
     # Prefer Brevo HTTP API when configured (Render blocks outbound SMTP).
     if os.getenv("BREVO_API_KEY"):
-        _send_via_brevo(to_email, subject, body, from_label, html_body=html_body)
+        _send_via_brevo(to_email, subject, body, from_label, html_body=html_body, inline_image=inline_image)
         return
 
     sender_email = settings.smtp_email
@@ -155,14 +172,27 @@ def _smtp_send(to_email: str, subject: str, body: str, from_label: str, html_bod
     host = settings.smtp_host or "smtp.gmail.com"
     port = int(settings.smtp_port or 587)
 
-    email_msg = MIMEMultipart("alternative")
+    alt = MIMEMultipart("alternative")
+    alt.attach(MIMEText(body, "plain", "utf-8"))
+    if html_body:
+        # The HTML part is attached last so clients that support it prefer it.
+        alt.attach(MIMEText(html_body, "html", "utf-8"))
+
+    if inline_image:
+        # Wrap the alternative part + the inline image in a multipart/related
+        # container so the CID-referenced image renders inside the HTML.
+        email_msg = MIMEMultipart("related")
+        email_msg.attach(alt)
+        cid, data, mime = inline_image
+        img = MIMEImage(data, _subtype=(mime.split("/")[-1] if "/" in mime else "png"))
+        img.add_header("Content-ID", f"<{cid}>")
+        img.add_header("Content-Disposition", "inline", filename=cid)
+        email_msg.attach(img)
+    else:
+        email_msg = alt
     email_msg["From"] = f"{from_label} <{sender_email}>"
     email_msg["To"] = to_email
     email_msg["Subject"] = subject
-    email_msg.attach(MIMEText(body, "plain", "utf-8"))
-    if html_body:
-        # The HTML part is attached last so clients that support it prefer it.
-        email_msg.attach(MIMEText(html_body, "html", "utf-8"))
 
     logger.info("Sending email via %s:%s as %s -> %s", host, port, sender_email, to_email)
 
@@ -242,9 +272,11 @@ def _welcome_email(visitor_name: str, s: Optional[SiteSetting]) -> tuple[str, st
     # CDN static photo, which is always up.
     cms_img = (getattr(s, "profile_image_url", None) or "").strip()
     if cms_img.startswith("https://") and "onrender.com" not in cms_img:
-        avatar = cms_img
+        avatar = cms_img          # trust a stable, absolute CMS image URL
+        use_cid = False
     else:
-        avatar = f"{site}/Profile-Picture.png"
+        avatar = f"cid:{AVATAR_CID}"   # embed the bundled photo inline (always renders)
+        use_cid = True
     first = (visitor_name or "there").strip().split(" ")[0]
 
     email_addr = getattr(s, "email", None) or settings.smtp_email or ""
@@ -346,13 +378,20 @@ def _welcome_email(visitor_name: str, s: Optional[SiteSetting]) -> tuple[str, st
         + (f"Schedule a Meeting: {calendly}\n" if calendly else "")
         + f"\n— {name}, {role}\n"
     )
-    return html, text
+    return html, text, use_cid
 
 
-def send_welcome_email(to_email: str, subject: str, html: str, text: str) -> None:
+def send_welcome_email(to_email: str, subject: str, html: str, text: str, use_cid: bool = False) -> None:
     """Best-effort auto welcome email to the visitor. Never blocks the request."""
+    inline_image = None
+    if use_cid:
+        try:
+            with open(AVATAR_PATH, "rb") as f:
+                inline_image = (AVATAR_CID, f.read(), "image/png")
+        except Exception as e:
+            print(f"[Welcome Email] avatar not embedded: {e}")
     try:
-        _smtp_send(to_email, subject, text, "Mamunur Rashid", html_body=html)
+        _smtp_send(to_email, subject, text, "Mamunur Rashid", html_body=html, inline_image=inline_image)
         print(f"[Welcome Email Sent] -> {to_email}")
     except Exception as e:
         print(f"[Welcome Email Failed] {e}")
@@ -387,9 +426,9 @@ def create_message(
 
     # Auto welcome email to the visitor (built now while the session is open).
     site_setting = session.get(SiteSetting, 1)
-    html, text = _welcome_email(msg.name, site_setting)
+    html, text, use_cid = _welcome_email(msg.name, site_setting)
     welcome_subject = f"Thanks for reaching out, {msg.name.split(' ')[0]}! 👋"
-    background_tasks.add_task(send_welcome_email, msg.email, welcome_subject, html, text)
+    background_tasks.add_task(send_welcome_email, msg.email, welcome_subject, html, text, use_cid)
 
     return msg
 
