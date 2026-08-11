@@ -33,8 +33,8 @@ SMTP_TIMEOUT = 20
 
 # Bundled avatar embedded inline (CID) in the welcome email — guarantees the
 # photo renders in every client without depending on an external image URL.
-AVATAR_PATH = os.path.join(os.path.dirname(__file__), "..", "assets", "avatar.png")
-AVATAR_CID = "avatar.png"
+AVATAR_PATH = os.path.join(os.path.dirname(__file__), "..", "assets", "Mamunur.png")
+AVATAR_CID = "Mamunur.png"
 
 
 # Owner's Google appointment/Meet scheduling link — used for the welcome-email
