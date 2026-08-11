@@ -24,11 +24,12 @@ from app.models.meeting_state import MeetingState
 from app.models.password_reset import PasswordReset
 from app.models.blog import Blog, BlogImage
 from app.models.testimonial import Testimonial
+from app.models.client import Client, Milestone, ClientUpdate, PortalFile, Invoice
 
 from app.routes import (
     auth, projects, skills, experience, contact,
     services, case_studies, analytics, settings as settings_routes, calendly,
-    meetings, blogs, testimonials,
+    meetings, blogs, testimonials, portal, clients,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -88,6 +89,8 @@ app.include_router(calendly.router, tags=["Calendly"])
 app.include_router(meetings.router, tags=["Meetings"])
 app.include_router(blogs.router, tags=["Blogs"])
 app.include_router(testimonials.router, tags=["Testimonials"])
+app.include_router(portal.router, tags=["Client Portal"])
+app.include_router(clients.router, tags=["Clients Admin"])
 
 
 @app.get("/", tags=["Health"])

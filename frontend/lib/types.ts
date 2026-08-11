@@ -134,6 +134,65 @@ export interface Testimonial {
   created_at?: string;
 }
 
+// ---- Client Portal ----
+export interface PortalClient {
+  id: number;
+  name: string;
+  email: string;
+  company: string;
+  project_title: string;
+  project_description: string;
+  status: string;        // active | on_hold | completed
+  progress: number;      // 0..100
+  meeting_url: string;
+  proposal_text: string;
+  next_steps: string;
+  created_at?: string;
+}
+
+export interface Milestone {
+  id: number;
+  client_id: number;
+  title: string;
+  status: string;        // pending | in_progress | done
+  order: number;
+}
+
+export interface ClientUpdate {
+  id: number;
+  client_id: number;
+  title: string;
+  body: string;
+  created_at: string;
+}
+
+export interface PortalFileMeta {
+  id: number;
+  filename: string;
+  content_type: string;
+  size: number;
+  created_at: string;
+}
+
+export interface Invoice {
+  id: number;
+  client_id: number;
+  title: string;
+  amount: number;
+  currency: string;
+  status: string;        // due | paid
+  due_date?: string | null;
+  created_at?: string;
+}
+
+export interface PortalDashboard {
+  client: PortalClient;
+  milestones: Milestone[];
+  updates: ClientUpdate[];
+  files: PortalFileMeta[];
+  invoices: Invoice[];
+}
+
 export interface Meeting {
   id: number;
   invitee_name: string;

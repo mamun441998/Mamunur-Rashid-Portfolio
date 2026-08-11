@@ -14,6 +14,7 @@ import ServicesEngine from "@/components/admin/ServicesEngine";
 import CaseStudyBuilder from "@/components/admin/CaseStudyBuilder";
 import BlogManager from "@/components/admin/BlogManager";
 import TestimonialsManager from "@/components/admin/TestimonialsManager";
+import ClientsManager from "@/components/admin/ClientsManager";
 import LeadsCRM from "@/components/admin/LeadsCRM";
 import MeetingsPanel from "@/components/admin/MeetingsPanel";
 import AnalyticsCenter from "@/components/admin/AnalyticsCenter";
@@ -24,7 +25,7 @@ const POLL_MS = 15000; // re-fetch live data every 15s while the tab is visible
 const TAB_KEY = "mrp_admin_tab";
 const VALID_TABS: AdminTab[] = [
   "dashboard", "cms", "projects", "skills", "experience",
-  "services", "casestudy", "blog", "testimonials", "crm", "meetings", "analytics", "settings",
+  "services", "casestudy", "blog", "testimonials", "clients", "crm", "meetings", "analytics", "settings",
 ];
 
 export default function AdminDashboard() {
@@ -59,7 +60,7 @@ export default function AdminDashboard() {
     inFlight.current = true;
     setRefreshing(true);
     try {
-      const [projects, skills, experience, services, casestudy, blog, testimonials, unread, meetings] = await Promise.all([
+      const [projects, skills, experience, services, casestudy, blog, testimonials, clients, unread, meetings] = await Promise.all([
         api.projects.list().then((r) => r.length).catch(() => 0),
         api.skills.list().then((r) => r.length).catch(() => 0),
         api.experiences.list().then((r) => r.length).catch(() => 0),
@@ -67,13 +68,14 @@ export default function AdminDashboard() {
         api.caseStudies.list().then((r) => r.length).catch(() => 0),
         api.blogs.listAll().then((r) => r.length).catch(() => 0),
         api.testimonials.list().then((r) => r.length).catch(() => 0),
+        api.clients.list().then((r) => r.length).catch(() => 0),
         api.contact.stats().then((s) => s.unread).catch(() => 0),
         api.meetings.list().then((r) =>
           r.meetings.filter((m) => m.status !== "canceled" && (m.state || "pending") === "pending").length
         ).catch(() => 0),
       ]);
       // The "Messages & Leads" badge shows the UNREAD count, not the total.
-      setBadges({ projects, skills, experience, services, casestudy, blog, testimonials, crm: unread, meetings });
+      setBadges({ projects, skills, experience, services, casestudy, blog, testimonials, clients, crm: unread, meetings });
       setLastUpdated(new Date());
     } finally {
       setRefreshing(false);
@@ -158,6 +160,7 @@ export default function AdminDashboard() {
             {tab === "casestudy" && <CaseStudyBuilder onChanged={loadBadges} />}
             {tab === "blog" && <BlogManager onChanged={loadBadges} />}
             {tab === "testimonials" && <TestimonialsManager onChanged={loadBadges} />}
+            {tab === "clients" && <ClientsManager onChanged={loadBadges} />}
             {tab === "crm" && <LeadsCRM onChanged={loadBadges} refreshSignal={tick} />}
             {tab === "meetings" && <MeetingsPanel onChanged={loadBadges} refreshSignal={tick} />}
             {tab === "analytics" && <AnalyticsCenter refreshSignal={tick} />}

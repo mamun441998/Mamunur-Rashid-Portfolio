@@ -13,7 +13,13 @@ import type {
   SiteSetting,
   Skill,
   Testimonial,
+  PortalDashboard,
+  PortalClient,
+  Milestone,
+  ClientUpdate,
+  Invoice,
 } from "@/lib/types";
+import { getPortalToken, removePortalToken } from "@/lib/portalAuth";
 
 export const API_URL = (
   process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000"
@@ -164,6 +170,68 @@ export async function uploadBlogImage(file: File): Promise<{ url: string; id: nu
   return res.json();
 }
 
+/** Authenticated request using the CLIENT PORTAL token (separate from admin). */
+async function portalRequest<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
+  const { method = "GET", body } = options;
+  const headers: Record<string, string> = {};
+  if (body !== undefined) headers["Content-Type"] = "application/json";
+  const token = getPortalToken();
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}${endpoint}`, {
+      method,
+      headers,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+      cache: "no-store",
+    });
+  } catch (err) {
+    throw new ApiError(`Network error: ${(err as Error).message}`, 0);
+  }
+  if (!res.ok) {
+    let detail = `${res.status} ${res.statusText}`;
+    try { const d = await res.json(); detail = d.detail || d.message || detail; } catch { /* */ }
+    if (res.status === 401 && typeof window !== "undefined") {
+      removePortalToken();
+      if (!window.location.pathname.startsWith("/portal")) window.location.href = "/portal";
+    }
+    throw new ApiError(typeof detail === "string" ? detail : JSON.stringify(detail), res.status);
+  }
+  if (res.status === 204) return undefined as T;
+  return res.json() as Promise<T>;
+}
+
+/** Fetch a portal file with the client token and trigger a browser download. */
+export async function downloadPortalFile(id: number, filename: string): Promise<void> {
+  const token = getPortalToken();
+  const res = await fetch(`${API_URL}/api/portal/files/${id}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  if (!res.ok) throw new ApiError("Download failed", res.status);
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+  a.remove(); URL.revokeObjectURL(url);
+}
+
+/** Admin multipart upload of a client deliverable file. */
+export async function uploadClientFile(clientId: number, file: File): Promise<{ id: number; filename: string; size: number }> {
+  const form = new FormData();
+  form.append("file", file);
+  const headers: Record<string, string> = {};
+  const token = getToken();
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  const res = await fetch(`${API_URL}/api/clients/${clientId}/files`, { method: "POST", headers, body: form });
+  if (!res.ok) {
+    let detail = `${res.status}`;
+    try { const d = await res.json(); detail = d.detail || detail; } catch { /* */ }
+    throw new ApiError(typeof detail === "string" ? detail : JSON.stringify(detail), res.status);
+  }
+  return res.json();
+}
+
 export const api = {
   settings: {
     get: () => request<SiteSetting>("/api/settings"),
@@ -282,6 +350,33 @@ export const api = {
       request<{ message: string }>(`/api/testimonials/${id}`, { method: "DELETE", auth: true }),
     // Avatars reuse the blog image store (persists on Postgres across redeploys).
     uploadImage: (file: File) => uploadBlogImage(file),
+  },
+  // Client-facing portal (uses the portal token)
+  portal: {
+    requestLink: (email: string) =>
+      request<{ status: string; message: string }>("/api/portal/request-link", { method: "POST", body: { email } }),
+    verify: (token: string) =>
+      request<{ access_token: string; token_type: string }>("/api/portal/verify", { method: "POST", body: { token } }),
+    me: () => portalRequest<PortalDashboard>("/api/portal/me"),
+  },
+  // Admin management of clients + their portal content (uses the admin token)
+  clients: {
+    list: () => request<PortalClient[]>("/api/clients/", { auth: true }),
+    detail: (id: number) => request<PortalDashboard>(`/api/clients/${id}`, { auth: true }),
+    create: (data: Partial<PortalClient>) => request<PortalClient>("/api/clients/", { method: "POST", body: data, auth: true }),
+    update: (id: number, data: Partial<PortalClient>) => request<PortalClient>(`/api/clients/${id}`, { method: "PUT", body: data, auth: true }),
+    remove: (id: number) => request<{ message: string }>(`/api/clients/${id}`, { method: "DELETE", auth: true }),
+    sendLink: (id: number) => request<{ status: string; message: string }>(`/api/clients/${id}/send-link`, { method: "POST", auth: true }),
+    addMilestone: (id: number, data: Partial<Milestone>) => request<Milestone>(`/api/clients/${id}/milestones`, { method: "POST", body: data, auth: true }),
+    updateMilestone: (id: number, mid: number, data: Partial<Milestone>) => request<Milestone>(`/api/clients/${id}/milestones/${mid}`, { method: "PUT", body: data, auth: true }),
+    deleteMilestone: (id: number, mid: number) => request<{ message: string }>(`/api/clients/${id}/milestones/${mid}`, { method: "DELETE", auth: true }),
+    addUpdate: (id: number, data: Partial<ClientUpdate>) => request<ClientUpdate>(`/api/clients/${id}/updates`, { method: "POST", body: data, auth: true }),
+    deleteUpdate: (id: number, uid: number) => request<{ message: string }>(`/api/clients/${id}/updates/${uid}`, { method: "DELETE", auth: true }),
+    addInvoice: (id: number, data: Partial<Invoice>) => request<Invoice>(`/api/clients/${id}/invoices`, { method: "POST", body: data, auth: true }),
+    updateInvoice: (id: number, iid: number, data: Partial<Invoice>) => request<Invoice>(`/api/clients/${id}/invoices/${iid}`, { method: "PUT", body: data, auth: true }),
+    deleteInvoice: (id: number, iid: number) => request<{ message: string }>(`/api/clients/${id}/invoices/${iid}`, { method: "DELETE", auth: true }),
+    uploadFile: (id: number, file: File) => uploadClientFile(id, file),
+    deleteFile: (id: number, fid: number) => request<{ message: string }>(`/api/clients/${id}/files/${fid}`, { method: "DELETE", auth: true }),
   },
   analytics: {
     stats: () => request<AnalyticsStats>("/api/analytics/stats", { auth: true }),

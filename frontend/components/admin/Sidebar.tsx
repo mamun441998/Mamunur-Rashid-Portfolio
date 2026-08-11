@@ -13,6 +13,7 @@ import {
   FileText,
   Newspaper,
   Quote,
+  Users,
   Mail,
   CalendarClock,
   LineChart,
@@ -30,6 +31,7 @@ export type AdminTab =
   | "casestudy"
   | "blog"
   | "testimonials"
+  | "clients"
   | "crm"
   | "meetings"
   | "analytics"
@@ -43,6 +45,7 @@ export interface NavBadges {
   casestudy?: number;
   blog?: number;
   testimonials?: number;
+  clients?: number;
   crm?: number;
   meetings?: number;
 }
@@ -57,6 +60,7 @@ const NAV: { id: AdminTab; label: string; icon: any; badgeKey?: keyof NavBadges 
   { id: "casestudy", label: "Case Study Builder", icon: FileText, badgeKey: "casestudy" },
   { id: "blog", label: "Blog Studio", icon: Newspaper, badgeKey: "blog" },
   { id: "testimonials", label: "Testimonials", icon: Quote, badgeKey: "testimonials" },
+  { id: "clients", label: "Client Portal", icon: Users, badgeKey: "clients" },
   { id: "crm", label: "Messages & Leads", icon: Mail, badgeKey: "crm" },
   { id: "meetings", label: "Meetings Panel", icon: CalendarClock, badgeKey: "meetings" },
   { id: "analytics", label: "Analytics Center", icon: LineChart },

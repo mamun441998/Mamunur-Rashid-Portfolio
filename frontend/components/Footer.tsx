@@ -92,6 +92,14 @@ export default function Footer() {
                     </a>
                   </li>
                 ))}
+                <li>
+                  <a
+                    href="/portal"
+                    className="flex items-center gap-1.5 text-[var(--color-accent)] hover:opacity-80 transition-opacity duration-200"
+                  >
+                    Client Portal <ArrowUpRight size={13} className="stroke-[2.5]" />
+                  </a>
+                </li>
               </ul>
             </div>
 
