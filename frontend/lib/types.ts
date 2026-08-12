@@ -186,6 +186,18 @@ export interface Invoice {
   created_at?: string;
 }
 
+export interface AdminNotification {
+  id: string;
+  type: string;          // lead | reply | meeting
+  title: string;
+  subtitle: string;
+  target: string;        // crm | clients | meetings
+  entity_id?: number;
+  created_at: string;
+  ts: number;
+  unread: boolean;
+}
+
 export interface PortalDashboard {
   client: PortalClient;
   milestones: Milestone[];

@@ -143,6 +143,8 @@ export default function AdminDashboard() {
         <Topbar
           onRefresh={handleRefresh}
           onLogout={logout}
+          onNavigate={setTab}
+          notifSignal={tick}
           refreshing={refreshing}
           live={live}
           lastUpdated={lastUpdated}

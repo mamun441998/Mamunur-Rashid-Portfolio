@@ -29,7 +29,7 @@ from app.models.client import Client, Milestone, ClientUpdate, PortalFile, Invoi
 from app.routes import (
     auth, projects, skills, experience, contact,
     services, case_studies, analytics, settings as settings_routes, calendly,
-    meetings, blogs, testimonials, portal, clients,
+    meetings, blogs, testimonials, portal, clients, notifications,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -111,6 +111,7 @@ app.include_router(blogs.router, tags=["Blogs"])
 app.include_router(testimonials.router, tags=["Testimonials"])
 app.include_router(portal.router, tags=["Client Portal"])
 app.include_router(clients.router, tags=["Clients Admin"])
+app.include_router(notifications.router, tags=["Notifications"])
 
 
 @app.get("/", tags=["Health"])

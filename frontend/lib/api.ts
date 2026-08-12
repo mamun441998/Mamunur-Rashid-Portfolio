@@ -18,6 +18,7 @@ import type {
   Milestone,
   ClientUpdate,
   Invoice,
+  AdminNotification,
 } from "@/lib/types";
 import { getPortalToken, removePortalToken } from "@/lib/portalAuth";
 
@@ -379,6 +380,9 @@ export const api = {
     deleteInvoice: (id: number, iid: number) => request<{ message: string }>(`/api/clients/${id}/invoices/${iid}`, { method: "DELETE", auth: true }),
     uploadFile: (id: number, file: File) => uploadClientFile(id, file),
     deleteFile: (id: number, fid: number) => request<{ message: string }>(`/api/clients/${id}/files/${fid}`, { method: "DELETE", auth: true }),
+  },
+  notifications: {
+    list: () => request<{ items: AdminNotification[]; server_time: number }>("/api/notifications", { auth: true }),
   },
   analytics: {
     stats: () => request<AnalyticsStats>("/api/analytics/stats", { auth: true }),

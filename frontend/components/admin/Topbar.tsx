@@ -1,6 +1,8 @@
 "use client";
 
 import { RefreshCw, LogOut, ExternalLink } from "lucide-react";
+import NotificationBell from "./NotificationBell";
+import type { AdminTab } from "./Sidebar";
 
 function fmtTime(d: Date): string {
   return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
@@ -9,12 +11,16 @@ function fmtTime(d: Date): string {
 export default function Topbar({
   onRefresh,
   onLogout,
+  onNavigate,
+  notifSignal,
   refreshing,
   live = true,
   lastUpdated = null,
 }: {
   onRefresh: () => void;
   onLogout: () => void;
+  onNavigate: (tab: AdminTab) => void;
+  notifSignal?: number;
   refreshing?: boolean;
   live?: boolean;
   lastUpdated?: Date | null;
@@ -22,6 +28,8 @@ export default function Topbar({
   return (
     <header className="h-16 shrink-0 border-b border-white/10 bg-[#080a10]/80 backdrop-blur-xl flex items-center justify-between px-6">
       <div className="flex items-center gap-3">
+        {/* Notification center */}
+        <NotificationBell onNavigate={onNavigate} refreshSignal={notifSignal} />
         {/* LIVE indicator */}
         <span
           className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold tracking-widest border ${
