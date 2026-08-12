@@ -29,18 +29,17 @@ export default function About() {
   const { data: settings } = useSettings();
 
   // Scroll-linked photo reveal: as the image scrolls up from the hero into
-  // view, it eases from faded/desaturated to full original color, reaching
-  // 100% colour exactly when it settles into place.
+  // view it eases from a soft desaturated state to the 100% original image —
+  // clean, crisp, no blur or contrast shift. Only grayscale + a gentle opacity
+  // animate, so the end state (grayscale 0, opacity 1) is the untouched photo.
   const photoRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: photoRef,
     offset: ["start end", "center center"],
   });
-  const grayscale = useTransform(scrollYProgress, [0, 1], [1, 0]);
-  const brightness = useTransform(scrollYProgress, [0, 1], [0.55, 1]);
-  const saturate = useTransform(scrollYProgress, [0, 1], [0.6, 1]);
-  const photoOpacity = useTransform(scrollYProgress, [0, 1], [0.55, 1]);
-  const photoFilter = useMotionTemplate`grayscale(${grayscale}) brightness(${brightness}) saturate(${saturate})`;
+  const grayscale = useTransform(scrollYProgress, [0, 0.9, 1], [1, 0, 0]);
+  const photoOpacity = useTransform(scrollYProgress, [0, 1], [0.7, 1]);
+  const photoFilter = useMotionTemplate`grayscale(${grayscale})`;
 
   // Live bio paragraphs from admin settings; fall back to static copy.
   const paragraphs =
