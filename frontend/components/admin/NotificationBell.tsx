@@ -108,10 +108,10 @@ export default function NotificationBell({
           >
             {/* Solid, non-animated background layer so it always paints opaque */}
             <div
-              style={{ backgroundColor: "#0b0e14" }}
-              className="rounded-2xl border border-white/10 shadow-2xl shadow-black/60 overflow-hidden"
+              style={{ backgroundColor: "#0d1720" }}
+              className="rounded-2xl border border-[#00FFC2]/25 shadow-2xl shadow-black/70 overflow-hidden"
             >
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/10" style={{ backgroundColor: "#0b0e14" }}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/10" style={{ backgroundColor: "#0d1720" }}>
                 <div className="flex items-center gap-2">
                   <Bell className="w-4 h-4 text-[#00FFC2]" />
                   <span className="text-sm font-semibold text-white font-space-grotesk">Notifications</span>
@@ -124,7 +124,7 @@ export default function NotificationBell({
                 )}
               </div>
 
-              <div className="max-h-[70vh] lg:max-h-[420px] overflow-y-auto custom-scrollbar" style={{ backgroundColor: "#0b0e14" }}>
+              <div className="max-h-[70vh] lg:max-h-[420px] overflow-y-auto custom-scrollbar" style={{ backgroundColor: "#0d1720" }}>
                 {items.length === 0 ? (
                   <div className="px-4 py-10 text-center">
                     <Bell className="w-7 h-7 text-gray-600 mx-auto mb-2" />
@@ -139,7 +139,7 @@ export default function NotificationBell({
                         <li key={n.id}>
                           <button
                             onClick={() => openItem(n)}
-                            className={`w-full text-left flex gap-3 px-4 py-3 border-b border-white/5 transition hover:bg-white/[0.06] ${isNew ? "bg-[#00FFC2]/[0.06]" : ""}`}
+                            className={`w-full text-left flex gap-3 px-4 py-3 border-b border-white/5 transition-colors hover:bg-[#00FFC2]/10 ${isNew ? "bg-[#00FFC2]/[0.08]" : ""}`}
                           >
                             <span className={`shrink-0 w-9 h-9 rounded-lg border flex items-center justify-center ${TONE[n.type] || "text-gray-400 bg-white/5 border-white/10"}`}>
                               <Icon className="w-4 h-4" />
