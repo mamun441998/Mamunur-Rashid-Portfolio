@@ -1,6 +1,6 @@
 "use client";
 
-import { RefreshCw, LogOut, ExternalLink } from "lucide-react";
+import { RefreshCw, LogOut, ExternalLink, Menu } from "lucide-react";
 import NotificationBell from "./NotificationBell";
 import type { AdminTab } from "./Sidebar";
 
@@ -12,6 +12,7 @@ export default function Topbar({
   onRefresh,
   onLogout,
   onNavigate,
+  onMenuClick,
   notifSignal,
   refreshing,
   live = true,
@@ -20,14 +21,23 @@ export default function Topbar({
   onRefresh: () => void;
   onLogout: () => void;
   onNavigate: (tab: AdminTab, entityId?: number) => void;
+  onMenuClick?: () => void;
   notifSignal?: number;
   refreshing?: boolean;
   live?: boolean;
   lastUpdated?: Date | null;
 }) {
   return (
-    <header className="h-16 shrink-0 border-b border-white/10 bg-[#080a10]/80 backdrop-blur-xl flex items-center justify-between px-6">
-      <div className="flex items-center gap-3">
+    <header className="h-16 shrink-0 border-b border-white/10 bg-[#080a10]/80 backdrop-blur-xl flex items-center justify-between px-4 sm:px-6">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        {/* Mobile menu (hamburger) */}
+        <button
+          onClick={onMenuClick}
+          className="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:border-[#00FFC2]/50 hover:text-[#00FFC2] transition shrink-0"
+          title="Open menu"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
         {/* Notification center */}
         <NotificationBell onNavigate={onNavigate} refreshSignal={notifSignal} />
         {/* LIVE indicator */}

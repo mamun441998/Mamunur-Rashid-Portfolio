@@ -55,6 +55,7 @@ export default function AdminDashboard() {
     }
   };
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileNav, setMobileNav] = useState(false); // mobile slide-in sidebar
   const [badges, setBadges] = useState<NavBadges>({});
   const [refreshing, setRefreshing] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -147,6 +148,8 @@ export default function AdminDashboard() {
         collapsed={collapsed}
         onToggle={() => setCollapsed((c) => !c)}
         badges={badges}
+        mobileOpen={mobileNav}
+        onMobileClose={() => setMobileNav(false)}
       />
 
       <div className="flex-1 flex flex-col min-w-0">
@@ -154,13 +157,14 @@ export default function AdminDashboard() {
           onRefresh={handleRefresh}
           onLogout={logout}
           onNavigate={handleNavigate}
+          onMenuClick={() => setMobileNav(true)}
           notifSignal={tick}
           refreshing={refreshing}
           live={live}
           lastUpdated={lastUpdated}
         />
 
-        <main className="flex-1 overflow-y-auto custom-scrollbar p-6">
+        <main className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6">
           {/* refreshKey remounts only on manual refresh; tick keeps modules live in place */}
           <div key={`${tab}-${refreshKey}`}>
             {tab === "dashboard" && <DashboardCore counts={counts} refreshSignal={tick} />}

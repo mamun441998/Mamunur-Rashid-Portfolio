@@ -19,6 +19,7 @@ import {
   LineChart,
   Settings,
   Activity,
+  X,
 } from "lucide-react";
 
 export type AdminTab =
@@ -73,20 +74,35 @@ export default function Sidebar({
   collapsed,
   onToggle,
   badges,
+  mobileOpen = false,
+  onMobileClose,
 }: {
   active: AdminTab;
   onSelect: (tab: AdminTab) => void;
   collapsed: boolean;
   onToggle: () => void;
   badges: NavBadges;
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
 }) {
   const { data: settings } = useSettings();
   const avatar = settings?.profile_image_url?.trim() || "/Profile-Picture.png";
+  // On mobile the nav is a slide-in drawer; selecting a tab closes it.
+  const select = (tab: AdminTab) => { onSelect(tab); onMobileClose?.(); };
   return (
+    <>
+    {/* Mobile backdrop */}
+    {mobileOpen && (
+      <div
+        onClick={onMobileClose}
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+        aria-hidden
+      />
+    )}
     <aside
-      className={`${
-        collapsed ? "w-24" : "w-72"
-      } bg-[#080a10]/90 backdrop-blur-2xl border-r border-white/10 flex flex-col justify-between p-5 transition-all duration-300 relative z-30 shrink-0`}
+      className={`fixed lg:relative inset-y-0 left-0 z-50 lg:z-30 shrink-0 w-72 ${
+        collapsed ? "lg:w-24" : "lg:w-72"
+      } ${mobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 bg-[#080a10]/95 lg:bg-[#080a10]/90 backdrop-blur-2xl border-r border-white/10 flex flex-col justify-between p-5 transition-transform duration-300 ease-out`}
     >
       <div className="min-h-0 flex flex-col">
         <div className="flex items-center justify-between mb-8 pb-5 border-b border-white/10">
@@ -102,22 +118,28 @@ export default function Sidebar({
                 unoptimized
               />
             </div>
-            {!collapsed && (
-              <div className="flex flex-col">
-                <span className="font-extrabold tracking-wider text-base font-space-grotesk text-white">
-                  MRP-OS
-                </span>
-                <span className="text-xs font-mono text-[#00FFC2] font-semibold tracking-widest uppercase">
-                  v5.0 PROD CORE
-                </span>
-              </div>
-            )}
+            <div className={`flex flex-col ${collapsed ? "lg:hidden" : ""}`}>
+              <span className="font-extrabold tracking-wider text-base font-space-grotesk text-white">
+                MRP-OS
+              </span>
+              <span className="text-xs font-mono text-[#00FFC2] font-semibold tracking-widest uppercase">
+                v5.0 PROD CORE
+              </span>
+            </div>
           </div>
           <button
             onClick={onToggle}
-            className="p-2 rounded-xl bg-white/5 border border-white/10 hover:border-[#00FFC2]/50 text-gray-300 hover:text-[#00FFC2] transition"
+            className="hidden lg:inline-flex p-2 rounded-xl bg-white/5 border border-white/10 hover:border-[#00FFC2]/50 text-gray-300 hover:text-[#00FFC2] transition"
+            title="Collapse sidebar"
           >
             <Activity className="w-5 h-5" />
+          </button>
+          <button
+            onClick={onMobileClose}
+            className="lg:hidden inline-flex p-2 rounded-xl bg-white/5 border border-white/10 hover:border-[#00FFC2]/50 text-gray-300 hover:text-[#00FFC2] transition"
+            title="Close menu"
+          >
+            <X className="w-5 h-5" />
           </button>
         </div>
 
@@ -129,7 +151,7 @@ export default function Sidebar({
             return (
               <button
                 key={item.id}
-                onClick={() => onSelect(item.id)}
+                onClick={() => select(item.id)}
                 className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all group relative ${
                   isActive
                     ? "bg-[#00FFC2]/15 text-[#00FFC2] border border-[#00FFC2]/50 shadow-[0_0_20px_rgba(0,255,194,0.2)] font-bold"
@@ -142,10 +164,10 @@ export default function Sidebar({
                       isActive ? "text-[#00FFC2]" : "text-gray-400 group-hover:text-white"
                     }`}
                   />
-                  {!collapsed && <span className="truncate">{item.label}</span>}
+                  <span className={`truncate ${collapsed ? "lg:hidden" : ""}`}>{item.label}</span>
                 </div>
-                {!collapsed && badge !== undefined && badge > 0 && (
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-[#7C3AED] text-white font-extrabold shadow-sm">
+                {badge !== undefined && badge > 0 && (
+                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-mono bg-[#7C3AED] text-white font-extrabold shadow-sm ${collapsed ? "lg:hidden" : ""}`}>
                     {badge}
                   </span>
                 )}
@@ -161,14 +183,13 @@ export default function Sidebar({
         </nav>
       </div>
 
-      {!collapsed && (
-        <div className="pt-4 mt-4 border-t border-white/10 text-[10px] font-mono text-gray-500">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#00FFC2] animate-pulse" />
-            SYSTEM ONLINE
-          </div>
+      <div className={`pt-4 mt-4 border-t border-white/10 text-[10px] font-mono text-gray-500 ${collapsed ? "lg:hidden" : ""}`}>
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-[#00FFC2] animate-pulse" />
+          SYSTEM ONLINE
         </div>
-      )}
+      </div>
     </aside>
+    </>
   );
 }
