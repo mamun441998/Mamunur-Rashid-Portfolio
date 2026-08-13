@@ -30,7 +30,7 @@ export default function NotificationBell({
   onNavigate,
   refreshSignal,
 }: {
-  onNavigate: (tab: AdminTab) => void;
+  onNavigate: (tab: AdminTab, entityId?: number) => void;
   refreshSignal?: number;
 }) {
   const [items, setItems] = useState<AdminNotification[]>([]);
@@ -75,7 +75,7 @@ export default function NotificationBell({
   };
 
   const openItem = (n: AdminNotification) => {
-    onNavigate(n.target as AdminTab);
+    onNavigate(n.target as AdminTab, n.entity_id);
     setOpen(false);
     markAllSeen();
   };

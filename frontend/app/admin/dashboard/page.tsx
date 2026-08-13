@@ -44,6 +44,16 @@ export default function AdminDashboard() {
     setTabState(t);
     try { localStorage.setItem(TAB_KEY, t); } catch { /* ignore */ }
   };
+  // When a notification deep-links to a specific client, open its Manage view.
+  const [focusClientId, setFocusClientId] = useState<number | null>(null);
+  const [focusNonce, setFocusNonce] = useState(0);
+  const handleNavigate = (t: AdminTab, entityId?: number) => {
+    setTab(t);
+    if (t === "clients" && entityId) {
+      setFocusClientId(entityId);
+      setFocusNonce((n) => n + 1);
+    }
+  };
   const [collapsed, setCollapsed] = useState(false);
   const [badges, setBadges] = useState<NavBadges>({});
   const [refreshing, setRefreshing] = useState(false);
@@ -143,7 +153,7 @@ export default function AdminDashboard() {
         <Topbar
           onRefresh={handleRefresh}
           onLogout={logout}
-          onNavigate={setTab}
+          onNavigate={handleNavigate}
           notifSignal={tick}
           refreshing={refreshing}
           live={live}
@@ -162,7 +172,7 @@ export default function AdminDashboard() {
             {tab === "casestudy" && <CaseStudyBuilder onChanged={loadBadges} />}
             {tab === "blog" && <BlogManager onChanged={loadBadges} />}
             {tab === "testimonials" && <TestimonialsManager onChanged={loadBadges} />}
-            {tab === "clients" && <ClientsManager onChanged={loadBadges} />}
+            {tab === "clients" && <ClientsManager onChanged={loadBadges} focusClientId={focusClientId} focusNonce={focusNonce} />}
             {tab === "crm" && <LeadsCRM onChanged={loadBadges} refreshSignal={tick} />}
             {tab === "meetings" && <MeetingsPanel onChanged={loadBadges} refreshSignal={tick} />}
             {tab === "analytics" && <AnalyticsCenter refreshSignal={tick} />}

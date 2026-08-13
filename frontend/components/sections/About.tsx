@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useRef } from "react";
+import { motion, useScroll, useTransform, useMotionTemplate } from "framer-motion";
 import Image from "next/image";
 import StatCard from "@/components/ui/StatCard";
 import { ABOUT_CONTENT } from "@/lib/constants";
@@ -27,6 +27,19 @@ const itemVariants = {
 export default function About() {
   const [activeTab, setActiveTab] = useState<"photo" | "video">("photo");
   const { data: settings } = useSettings();
+
+  // Scroll-linked photo reveal: as the image scrolls up from the hero into
+  // view it eases from a soft desaturated state to the 100% original image —
+  // clean, crisp, no blur or contrast shift. Only grayscale + a gentle opacity
+  // animate, so the end state (grayscale 0, opacity 1) is the untouched photo.
+  const photoRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: photoRef,
+    offset: ["start end", "center center"],
+  });
+  const grayscale = useTransform(scrollYProgress, [0, 0.9, 1], [1, 0, 0]);
+  const photoOpacity = useTransform(scrollYProgress, [0, 1], [0.7, 1]);
+  const photoFilter = useMotionTemplate`grayscale(${grayscale})`;
 
   // Live bio paragraphs from admin settings; fall back to static copy.
   const paragraphs =
@@ -123,7 +136,7 @@ export default function About() {
             </div>
 
             {/* MEDIA DISPLAY CONTAINER */}
-            <div className="relative w-full max-w-md h-[400px] sm:h-[480px] lg:h-[460px] group">
+            <div ref={photoRef} className="relative w-full max-w-md h-[400px] sm:h-[480px] lg:h-[460px] group">
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-tr from-[var(--color-accent)] to-cyan-500 blur-2xl opacity-20 group-hover:opacity-35 transition-opacity duration-500 pointer-events-none" />
 
               <div className="relative w-full h-full rounded-3xl p-2 bg-white/5 border border-white/10 backdrop-blur-md shadow-2xl overflow-hidden">
@@ -131,15 +144,20 @@ export default function About() {
                 {/* PHOTO VIEW */}
                 {activeTab === "photo" && (
                   <div className="relative w-full h-full rounded-2xl overflow-hidden">
-                    <Image
-                      src={settings?.profile_image_url?.trim() || "/Profile-Picture.png"}
-                      alt="Mamunur Rashid"
-                      fill
-                      priority
-                      unoptimized
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover rounded-2xl grayscale group-hover:grayscale-0 transition-all duration-700"
-                    />
+                    <motion.div
+                      style={{ filter: photoFilter, opacity: photoOpacity, willChange: "filter, opacity" }}
+                      className="absolute inset-0"
+                    >
+                      <Image
+                        src={settings?.profile_image_url?.trim() || "/Profile-Picture.png"}
+                        alt="Mamunur Rashid"
+                        fill
+                        priority
+                        unoptimized
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover rounded-2xl"
+                      />
+                    </motion.div>
                     
                     {/* Floating Badge */}
                     <div className="absolute bottom-4 left-4 right-4 p-3.5 rounded-2xl bg-black/70 border border-white/10 backdrop-blur-md flex items-center justify-between text-xs font-mono z-10">

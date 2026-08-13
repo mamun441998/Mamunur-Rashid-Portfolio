@@ -15,7 +15,7 @@ import { useConfirm } from "./ConfirmDialog";
 type Toast = { type: "success" | "error"; message: string } | null;
 const MS_STATES = ["pending", "in_progress", "done"] as const;
 
-export default function ClientsManager({ onChanged }: { onChanged?: () => void }) {
+export default function ClientsManager({ onChanged, focusClientId, focusNonce }: { onChanged?: () => void; focusClientId?: number | null; focusNonce?: number }) {
   const confirm = useConfirm();
   const [clients, setClients] = useState<PortalClient[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -33,6 +33,11 @@ export default function ClientsManager({ onChanged }: { onChanged?: () => void }
 
   useEffect(() => { loadClients(); }, []);
   useEffect(() => { if (selectedId) loadDetail(selectedId); else setDetail(null); }, [selectedId]);
+
+  // Deep-link from a notification: jump straight into a specific client's Manage view.
+  useEffect(() => {
+    if (focusNonce && focusClientId) setSelectedId(focusClientId);
+  }, [focusNonce, focusClientId]);
 
   // ---------- client CRUD ----------
   const openNew = () => { setEditing(null); setCForm({ status: "active", progress: 0 }); setModalOpen(true); };

@@ -19,7 +19,7 @@ export default function Topbar({
 }: {
   onRefresh: () => void;
   onLogout: () => void;
-  onNavigate: (tab: AdminTab) => void;
+  onNavigate: (tab: AdminTab, entityId?: number) => void;
   notifSignal?: number;
   refreshing?: boolean;
   live?: boolean;
