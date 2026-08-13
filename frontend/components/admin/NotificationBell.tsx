@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Bell, Mail, MessageSquare, CalendarClock, CheckCheck } from "lucide-react";
 import { api } from "@/lib/api";
@@ -8,6 +9,7 @@ import type { AdminNotification } from "@/lib/types";
 import type { AdminTab } from "./Sidebar";
 
 const SEEN_KEY = "mrp_notif_seen"; // epoch seconds of last time the bell was opened
+const PANEL_BG = "#0d1720"; // solid brand-dark panel colour
 
 const ICON: Record<string, any> = { lead: Mail, reply: MessageSquare, meeting: CalendarClock };
 const TONE: Record<string, string> = {
@@ -26,6 +28,8 @@ function relTime(ts: number): string {
   return new Date(ts * 1000).toLocaleDateString([], { month: "short", day: "numeric" });
 }
 
+type Pos = { top: number; left: number; width: number; mobile: boolean };
+
 export default function NotificationBell({
   onNavigate,
   refreshSignal,
@@ -36,7 +40,12 @@ export default function NotificationBell({
   const [items, setItems] = useState<AdminNotification[]>([]);
   const [open, setOpen] = useState(false);
   const [seen, setSeen] = useState(0);
-  const rootRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  const [pos, setPos] = useState<Pos>({ top: 72, left: 12, width: 360, mobile: false });
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     const raw = typeof window !== "undefined" ? localStorage.getItem(SEEN_KEY) : null;
@@ -49,17 +58,20 @@ export default function NotificationBell({
 
   useEffect(() => { load(); }, [load, refreshSignal]);
 
-  // Close on outside click / Escape
-  useEffect(() => {
-    if (!open) return;
-    const onDoc = (e: MouseEvent) => { if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false); };
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
-    document.addEventListener("mousedown", onDoc);
-    document.addEventListener("keydown", onKey);
-    return () => { document.removeEventListener("mousedown", onDoc); document.removeEventListener("keydown", onKey); };
-  }, [open]);
-
-  const unreadCount = items.filter((i) => i.ts > seen).length;
+  // Anchor the (portalled) panel to the bell button.
+  const computePos = useCallback(() => {
+    const btn = btnRef.current;
+    if (!btn) return;
+    const r = btn.getBoundingClientRect();
+    const mobile = window.innerWidth < 1024;
+    if (mobile) {
+      setPos({ top: r.bottom + 8, left: 12, width: window.innerWidth - 24, mobile: true });
+    } else {
+      const width = 360;
+      const left = Math.min(r.left, window.innerWidth - width - 12);
+      setPos({ top: r.bottom + 8, left: Math.max(12, left), width, mobile: false });
+    }
+  }, []);
 
   const markAllSeen = () => {
     const now = Math.floor(Date.now() / 1000);
@@ -69,8 +81,9 @@ export default function NotificationBell({
 
   const toggle = () => {
     setOpen((o) => {
-      if (!o) setTimeout(markAllSeen, 1200); // let the "new" highlight show briefly, then clear badge
-      return !o;
+      const next = !o;
+      if (next) { computePos(); setTimeout(markAllSeen, 1200); }
+      return next;
     });
   };
 
@@ -80,38 +93,51 @@ export default function NotificationBell({
     markAllSeen();
   };
 
-  return (
-    <div ref={rootRef} className="relative">
-      <button
-        onClick={toggle}
-        title="Notifications"
-        className={`relative inline-flex items-center justify-center w-10 h-10 rounded-xl border transition ${
-          open ? "bg-[#00FFC2]/10 border-[#00FFC2]/50 text-[#00FFC2]" : "bg-white/5 border-white/10 text-gray-300 hover:border-[#00FFC2]/50 hover:text-[#00FFC2]"
-        }`}
-      >
-        <Bell className="w-5 h-5" />
-        {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#7C3AED] text-white text-[10px] font-mono font-extrabold flex items-center justify-center shadow-[0_0_10px_rgba(124,58,237,0.7)]">
-            {unreadCount > 99 ? "99+" : unreadCount}
-          </span>
-        )}
-      </button>
+  // Outside-click / Escape / reposition while open.
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (btnRef.current?.contains(t) || panelRef.current?.contains(t)) return;
+      setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    const reposition = () => computePos();
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    window.addEventListener("resize", reposition);
+    window.addEventListener("scroll", reposition, true);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+      window.removeEventListener("resize", reposition);
+      window.removeEventListener("scroll", reposition, true);
+    };
+  }, [open, computePos]);
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -8, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.98 }}
-            transition={{ duration: 0.15 }}
-            className="fixed left-3 right-3 top-[4.25rem] z-[60] lg:absolute lg:left-0 lg:right-auto lg:top-full lg:mt-2 lg:w-[360px]"
-          >
-            {/* Solid, non-animated background layer so it always paints opaque */}
-            <div
-              style={{ backgroundColor: "#0d1720" }}
+  const unreadCount = items.filter((i) => i.ts > seen).length;
+
+  const panel = mounted
+    ? createPortal(
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              ref={panelRef}
+              initial={{ opacity: 0, y: -8, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8, scale: 0.98 }}
+              transition={{ duration: 0.15 }}
+              style={{
+                position: "fixed",
+                top: pos.top,
+                left: pos.left,
+                width: pos.width,
+                zIndex: 9999,
+                backgroundColor: PANEL_BG,
+              }}
               className="rounded-2xl border border-[#00FFC2]/25 shadow-2xl shadow-black/70 overflow-hidden"
             >
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/10" style={{ backgroundColor: "#0d1720" }}>
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/10" style={{ backgroundColor: PANEL_BG }}>
                 <div className="flex items-center gap-2">
                   <Bell className="w-4 h-4 text-[#00FFC2]" />
                   <span className="text-sm font-semibold text-white font-space-grotesk">Notifications</span>
@@ -124,7 +150,7 @@ export default function NotificationBell({
                 )}
               </div>
 
-              <div className="max-h-[70vh] lg:max-h-[420px] overflow-y-auto custom-scrollbar" style={{ backgroundColor: "#0d1720" }}>
+              <div className="max-h-[70vh] lg:max-h-[420px] overflow-y-auto custom-scrollbar" style={{ backgroundColor: PANEL_BG }}>
                 {items.length === 0 ? (
                   <div className="px-4 py-10 text-center">
                     <Bell className="w-7 h-7 text-gray-600 mx-auto mb-2" />
@@ -159,10 +185,31 @@ export default function NotificationBell({
                   </ul>
                 )}
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )
+    : null;
+
+  return (
+    <div className="relative">
+      <button
+        ref={btnRef}
+        onClick={toggle}
+        title="Notifications"
+        className={`relative inline-flex items-center justify-center w-10 h-10 rounded-xl border transition ${
+          open ? "bg-[#00FFC2]/10 border-[#00FFC2]/50 text-[#00FFC2]" : "bg-white/5 border-white/10 text-gray-300 hover:border-[#00FFC2]/50 hover:text-[#00FFC2]"
+        }`}
+      >
+        <Bell className="w-5 h-5" />
+        {unreadCount > 0 && (
+          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#7C3AED] text-white text-[10px] font-mono font-extrabold flex items-center justify-center shadow-[0_0_10px_rgba(124,58,237,0.7)]">
+            {unreadCount > 99 ? "99+" : unreadCount}
+          </span>
         )}
-      </AnimatePresence>
+      </button>
+      {panel}
     </div>
   );
 }
