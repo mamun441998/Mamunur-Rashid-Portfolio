@@ -104,56 +104,61 @@ export default function NotificationBell({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.98 }}
             transition={{ duration: 0.15 }}
-            style={{ backgroundColor: "#0b0e14" }}
-            className="absolute left-0 mt-2 w-[360px] max-w-[92vw] rounded-2xl bg-[#0b0e14] border border-white/10 shadow-2xl shadow-black/60 z-50 overflow-hidden"
+            className="fixed left-3 right-3 top-[4.25rem] z-[60] lg:absolute lg:left-0 lg:right-auto lg:top-full lg:mt-2 lg:w-[360px]"
           >
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
-              <div className="flex items-center gap-2">
-                <Bell className="w-4 h-4 text-[#00FFC2]" />
-                <span className="text-sm font-semibold text-white font-space-grotesk">Notifications</span>
-                {unreadCount > 0 && <span className="text-[10px] font-mono text-[#7C3AED] font-bold">{unreadCount} new</span>}
-              </div>
-              {items.length > 0 && (
-                <button onClick={markAllSeen} className="inline-flex items-center gap-1 text-[11px] font-mono text-gray-400 hover:text-[#00FFC2]">
-                  <CheckCheck className="w-3.5 h-3.5" /> Mark read
-                </button>
-              )}
-            </div>
-
-            <div className="max-h-[420px] overflow-y-auto custom-scrollbar">
-              {items.length === 0 ? (
-                <div className="px-4 py-10 text-center">
-                  <Bell className="w-7 h-7 text-gray-600 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500 font-mono">You&rsquo;re all caught up.</p>
+            {/* Solid, non-animated background layer so it always paints opaque */}
+            <div
+              style={{ backgroundColor: "#0b0e14" }}
+              className="rounded-2xl border border-white/10 shadow-2xl shadow-black/60 overflow-hidden"
+            >
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/10" style={{ backgroundColor: "#0b0e14" }}>
+                <div className="flex items-center gap-2">
+                  <Bell className="w-4 h-4 text-[#00FFC2]" />
+                  <span className="text-sm font-semibold text-white font-space-grotesk">Notifications</span>
+                  {unreadCount > 0 && <span className="text-[10px] font-mono text-[#7C3AED] font-bold">{unreadCount} new</span>}
                 </div>
-              ) : (
-                <ul>
-                  {items.map((n) => {
-                    const Icon = ICON[n.type] || Bell;
-                    const isNew = n.ts > seen;
-                    return (
-                      <li key={n.id}>
-                        <button
-                          onClick={() => openItem(n)}
-                          className={`w-full text-left flex gap-3 px-4 py-3 border-b border-white/5 transition hover:bg-white/[0.04] ${isNew ? "bg-[#00FFC2]/[0.04]" : ""}`}
-                        >
-                          <span className={`shrink-0 w-9 h-9 rounded-lg border flex items-center justify-center ${TONE[n.type] || "text-gray-400 bg-white/5 border-white/10"}`}>
-                            <Icon className="w-4 h-4" />
-                          </span>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2">
-                              <p className="text-sm font-semibold text-white truncate">{n.title}</p>
-                              {isNew && <span className="shrink-0 w-2 h-2 rounded-full bg-[#7C3AED]" />}
+                {items.length > 0 && (
+                  <button onClick={markAllSeen} className="inline-flex items-center gap-1 text-[11px] font-mono text-gray-400 hover:text-[#00FFC2]">
+                    <CheckCheck className="w-3.5 h-3.5" /> Mark read
+                  </button>
+                )}
+              </div>
+
+              <div className="max-h-[70vh] lg:max-h-[420px] overflow-y-auto custom-scrollbar" style={{ backgroundColor: "#0b0e14" }}>
+                {items.length === 0 ? (
+                  <div className="px-4 py-10 text-center">
+                    <Bell className="w-7 h-7 text-gray-600 mx-auto mb-2" />
+                    <p className="text-sm text-gray-500 font-mono">You&rsquo;re all caught up.</p>
+                  </div>
+                ) : (
+                  <ul>
+                    {items.map((n) => {
+                      const Icon = ICON[n.type] || Bell;
+                      const isNew = n.ts > seen;
+                      return (
+                        <li key={n.id}>
+                          <button
+                            onClick={() => openItem(n)}
+                            className={`w-full text-left flex gap-3 px-4 py-3 border-b border-white/5 transition hover:bg-white/[0.06] ${isNew ? "bg-[#00FFC2]/[0.06]" : ""}`}
+                          >
+                            <span className={`shrink-0 w-9 h-9 rounded-lg border flex items-center justify-center ${TONE[n.type] || "text-gray-400 bg-white/5 border-white/10"}`}>
+                              <Icon className="w-4 h-4" />
+                            </span>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2">
+                                <p className="text-sm font-semibold text-white truncate">{n.title}</p>
+                                {isNew && <span className="shrink-0 w-2 h-2 rounded-full bg-[#7C3AED]" />}
+                              </div>
+                              {n.subtitle && <p className="text-xs text-gray-400 truncate mt-0.5">{n.subtitle}</p>}
+                              <p className="text-[10px] font-mono text-gray-600 mt-1">{relTime(n.ts)}</p>
                             </div>
-                            {n.subtitle && <p className="text-xs text-gray-400 truncate mt-0.5">{n.subtitle}</p>}
-                            <p className="text-[10px] font-mono text-gray-600 mt-1">{relTime(n.ts)}</p>
-                          </div>
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
             </div>
           </motion.div>
         )}
