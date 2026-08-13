@@ -50,14 +50,15 @@ export default function About() {
           .filter(Boolean)
       : ABOUT_CONTENT.paragraphs;
 
-  // Override the first two stat values from settings; keep labels + rest as-is.
-  const stats = ABOUT_CONTENT.stats.map((stat, i) => {
-    if (i === 0 && settings?.years_experience?.trim())
-      return { ...stat, value: settings.years_experience.trim() };
-    if (i === 1 && settings?.projects_completed?.trim())
-      return { ...stat, value: settings.projects_completed.trim() };
-    return stat;
-  });
+  // All four stat counters are admin-controlled (Portfolio CMS → Stat Counters).
+  // Each falls back to the static default only when its setting is empty.
+  const s = settings;
+  const stats = [
+    { value: s?.years_experience?.trim()  || ABOUT_CONTENT.stats[0].value, label: ABOUT_CONTENT.stats[0].label },
+    { value: s?.projects_completed?.trim() || ABOUT_CONTENT.stats[1].value, label: ABOUT_CONTENT.stats[1].label },
+    { value: s?.happy_clients?.trim()      || ABOUT_CONTENT.stats[2].value, label: ABOUT_CONTENT.stats[2].label },
+    { value: s?.satisfaction?.trim()       || ABOUT_CONTENT.stats[3].value, label: ABOUT_CONTENT.stats[3].label },
+  ];
 
   return (
     <section

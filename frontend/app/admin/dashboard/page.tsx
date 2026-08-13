@@ -141,7 +141,7 @@ export default function AdminDashboard() {
 
   return (
     <ConfirmProvider>
-    <div className="flex h-screen w-screen bg-[#050505] text-gray-100 font-sans overflow-hidden">
+    <div className="flex h-[100dvh] w-screen bg-[#050505] text-gray-100 font-sans overflow-hidden">
       <Sidebar
         active={tab}
         onSelect={setTab}
@@ -164,7 +164,7 @@ export default function AdminDashboard() {
           lastUpdated={lastUpdated}
         />
 
-        <main className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6">
+        <main className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4 pb-28 sm:p-6 sm:pb-10">
           {/* refreshKey remounts only on manual refresh; tick keeps modules live in place */}
           <div key={`${tab}-${refreshKey}`}>
             {tab === "dashboard" && <DashboardCore counts={counts} refreshSignal={tick} />}

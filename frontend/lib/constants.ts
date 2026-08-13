@@ -39,9 +39,9 @@ export const ABOUT_CONTENT = {
   ],
   stats: [
     { value: "2+", label: "Years Experience" },
-    { value: "3+", label: "Projects Shipped" },
-    { value: "18+", label: "Core Skills" },
-    { value: "100%", label: "Remote Ready" },
+    { value: "20+", label: "Projects Completed" },
+    { value: "3+", label: "Happy Clients" },
+    { value: "100%", label: "Satisfaction" },
   ],
 };
 
